@@ -4,9 +4,13 @@ module Mongoidable
   class Ability
     include ::Mongoid::Document
 
+    def initialize(*args)
+      super(*args)
+    end
+
     attr_accessor :check_block
 
-    field :action, type: String
+    field :action, type: Symbol
     field :subject, type: String
     field :base_behavior, type: Boolean, default: true
 

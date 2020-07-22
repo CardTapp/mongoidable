@@ -2,6 +2,7 @@
 
 class User
   include Mongoid::Document
+  include Mongoidable
 
   belongs_to :parent1, class_name: "Parent1", required: false
   belongs_to :parent2, class_name: "Parent2", required: false
@@ -9,6 +10,8 @@ class User
   inherits_abilities_from(:parent1)
   inherits_abilities_from(:parent2)
 
-  class_abilities.can "do_user_class_stuff", User
-  class_abilities.cannot "do_other_user_class_stuff", User
+  abilities.define do
+    can :do_user_class_stuff, User
+    cannot :do_other_user_class_stuff, User
+  end
 end
