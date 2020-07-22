@@ -31,8 +31,6 @@ module Mongoidable
           sum.merge(ancestor_class.abilities)
         end
         sum
-      rescue StandardError => error
-        error.to_s
       end
     end
   end

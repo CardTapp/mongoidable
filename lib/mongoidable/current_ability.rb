@@ -6,8 +6,6 @@ module Mongoidable
       parental_abilities.
           merge(self.class.abilities).
           merge(own_abilities)
-    rescue StandardError => error
-      error.to_s
     end
   end
 end
