@@ -1,13 +1,14 @@
 # frozen_string_literal: true
 
 module Mongoidable
+  # Defines the means to inherit abilities from model relationships.
   module ParentAbilities
     extend ActiveSupport::Concern
 
     class_methods do
       def inherits_from
         unless @inherits_from.present?
-          @inherits_from = ancestor_classes.dup.reverse.inject([]) { |sum, ancestor| sum + ancestor.inherits_from }
+          @inherits_from = ancestor_classes.dup.reverse.reduce([]) { |sum, ancestor| sum + ancestor.inherits_from }
         end
         @inherits_from
       end
@@ -16,6 +17,8 @@ module Mongoidable
         inherits_from << validate_relation(relation)
         inherits_from.uniq!
       end
+
+      private
 
       def validate_relation(relation_key)
         raise ArgumentError, "Could not find relation #{relation_key}" unless relations.key?(relation_key.to_s)
@@ -27,6 +30,7 @@ module Mongoidable
       end
     end
 
+    # abilities defined by calls to inherits_abilities_from
     def parental_abilities
       sum = Mongoidable::Abilities.new
       self.class.inherits_from.each do |parent_relation|

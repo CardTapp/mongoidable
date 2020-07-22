@@ -35,11 +35,37 @@ RSpec.describe "mongoid_ext" do
     end
 
     it "classes properly inherit abilities in derived classes" do
-      expect(Inheritance.abilities.permissions).to eq({ can: { do_inherited_class_stuff: { "User"=>[] }, do_user_class_stuff: { "User"=>[] } }, cannot: { do_other_inherited_class_stuff: { "User"=>[] }, do_other_user_class_stuff: { "User"=>[] } } })
+      expect(Inheritance.abilities.permissions).to eq(
+          {
+              can:
+                      {
+                          do_inherited_class_stuff: { "User"=>[] },
+                          do_user_class_stuff:      { "User"=>[] }
+                      },
+              cannot:
+                      {
+                          do_other_inherited_class_stuff: { "User"=>[] },
+                          do_other_user_class_stuff:      { "User"=>[] }
+                      }
+          }
+        )
     end
 
     it "instances properly inherit abilities in derived classes" do
-      expect(Inheritance.new.current_ability.permissions).to eq({ can: { do_inherited_class_stuff: { "User"=>[] }, do_user_class_stuff: { "User"=>[] } }, cannot: { do_other_inherited_class_stuff: { "User"=>[] }, do_other_user_class_stuff: { "User"=>[] } } })
+      expect(Inheritance.new.current_ability.permissions).to eq(
+          {
+              can:
+                      {
+                          do_inherited_class_stuff: { "User"=>[] },
+                          do_user_class_stuff:      { "User"=>[] }
+                      },
+              cannot:
+                      {
+                          do_other_inherited_class_stuff: { "User"=>[] },
+                          do_other_user_class_stuff:      { "User"=>[] }
+                      }
+          }
+        )
     end
   end
 

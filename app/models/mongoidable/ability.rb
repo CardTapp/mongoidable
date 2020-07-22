@@ -1,12 +1,9 @@
 # frozen_string_literal: true
 
 module Mongoidable
+  # A mongoid document used to store adhoc abilities.
   class Ability
     include ::Mongoid::Document
-
-    def initialize(*args)
-      super(*args)
-    end
 
     attr_accessor :check_block
 
@@ -14,7 +11,6 @@ module Mongoidable
     field :subject, type: String
     field :base_behavior, type: Boolean, default: true
 
-    # TODO: Need to handle extra and block assignments
     field :extra, type: Array
 
     validates_presence_of :action

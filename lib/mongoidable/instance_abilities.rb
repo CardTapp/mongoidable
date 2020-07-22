@@ -1,12 +1,23 @@
 # frozen_string_literal: true
 
 module Mongoidable
+  # Defines methods necessary to add and remove instance abilities
   module InstanceAbilities
+    # Add an ability to the current instance
+    # Abilities may be passed in the following formats (Ability may be a derived type)
+    #   add_instance_ability(Ability.new)
+    #   add_instance_ability(base_behavior, action, subject, extra)
+    #   add_instance_ability(base_behavior: value, action: value, subject: value, extra: value)
     def add_instance_ability(*args)
       ability = parse_ability_args(*args)
       instance_abilities << ability
     end
 
+    # Remove an ability from the current instance
+    # Abilities may be passed in the following formats (Ability may be a derived type)
+    #   add_instance_ability(Ability.new)
+    #   add_instance_ability(base_behavior, action, subject, extra)
+    #   add_instance_ability(base_behavior: value, action: value, subject: value, extra: value)
     def remove_instance_ability(*args)
       ability = parse_ability_args(*args)
       found_ability = instance_abilities.where(base_behavior: ability.base_behavior, action: ability.action, subject: ability.subject).first
