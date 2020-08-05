@@ -2,10 +2,10 @@
 
 class Parent1
   include Mongoid::Document
-  include Mongoidable
+  include Mongoidable::Document
 
-  abilities.define do
-    can :do_parent1_class_stuff, User
-    cannot :do_parent2_class_stuff, User
+  define_abilities do |abilities|
+    abilities.can :do_parent1_class_stuff, User
+    abilities.cannot :do_parent2_class_stuff, User
   end
 end

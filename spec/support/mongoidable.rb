@@ -6,4 +6,6 @@ module MongoidableContext
   end
 end
 
-Mongoidable.context_module = MongoidableContext
+Mongoidable.configure do |config|
+  config.context_module = MongoidableContext
+end

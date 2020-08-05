@@ -30,22 +30,39 @@ RSpec.describe "mongoid_ext" do
     end
 
     it "classes properly inherit relations in derived classes" do
-      inheritance = Inheritance.inherits_from.map { |relation| relation.name }
-      expect(inheritance).to eq %i[parent1 parent2 parent3]
+      parent_1 = Parent1.new
+      parent_2 = Parent2.new
+      parent_3 = Parent3.new
+      permissions = Inheritance.new(parent1: parent_1, parent2: parent_2, parent3: parent_3).current_ability.permissions
+      expect(permissions).to eq({
+                                    can:    {
+                                        do_inherited_class_stuff: { "User" => [] },
+                                        do_parent1_class_stuff:   { "User" => [] },
+                                        do_parent2_class_stuff:   { "User" => [] },
+                                        do_parent3_class_stuff:   { "User" => [] },
+                                        do_user_class_stuff:      { "User" => [] }
+                                    },
+                                    cannot: {
+                                        do_other_inherited_class_stuff: { "User" => [] },
+                                        do_other_user_class_stuff:      { "User" => [] },
+                                        do_parent1_class_stuff:         { "User" => [] },
+                                        do_parent2_class_stuff:         { "User" => [] }
+                                    }
+                                })
     end
 
     it "classes properly inherit abilities in derived classes" do
-      expect(Inheritance.abilities.permissions).to eq(
+      expect(Inheritance.new.current_ability.permissions).to eq(
           {
               can:
                       {
-                          do_inherited_class_stuff: { "User"=>[] },
-                          do_user_class_stuff:      { "User"=>[] }
+                          do_inherited_class_stuff: { "User" => [] },
+                          do_user_class_stuff:      { "User" => [] }
                       },
               cannot:
                       {
-                          do_other_inherited_class_stuff: { "User"=>[] },
-                          do_other_user_class_stuff:      { "User"=>[] }
+                          do_other_inherited_class_stuff: { "User" => [] },
+                          do_other_user_class_stuff:      { "User" => [] }
                       }
           }
         )
@@ -56,13 +73,13 @@ RSpec.describe "mongoid_ext" do
           {
               can:
                       {
-                          do_inherited_class_stuff: { "User"=>[] },
-                          do_user_class_stuff:      { "User"=>[] }
+                          do_inherited_class_stuff: { "User" => [] },
+                          do_user_class_stuff:      { "User" => [] }
                       },
               cannot:
                       {
-                          do_other_inherited_class_stuff: { "User"=>[] },
-                          do_other_user_class_stuff:      { "User"=>[] }
+                          do_other_inherited_class_stuff: { "User" => [] },
+                          do_other_user_class_stuff:      { "User" => [] }
                       }
           }
         )
@@ -108,8 +125,12 @@ RSpec.describe "mongoid_ext" do
 
   describe "current_abilities" do
     it "traverses class and instance abilities" do
-      parent_1 = Parent1.new(instance_abilities: [{ base_behavior: true, action: :do_parent1_instance_things, subject: "on_something" }])
-      parent_2 = Parent2.new(instance_abilities: [{ base_behavior: true, action: :do_parent2_instance_things, subject: "on_something" }])
+      parent_1 = Parent1.new(instance_abilities: [
+                                 { base_behavior: true, action: :do_parent1_instance_things, subject: "on_something" }
+                             ])
+      parent_2 = Parent2.new(instance_abilities: [
+                                 { base_behavior: true, action: :do_parent2_instance_things, subject: "on_something" }
+                             ])
       user = User.new(
           instance_abilities: [{ base_behavior: true, action: :do_user_instance_things, subject: "on_another_thing" }],
           parent1:            parent_1,
@@ -118,43 +139,30 @@ RSpec.describe "mongoid_ext" do
 
       expect(user.current_ability.permissions).to eq({
                                                          can:    {
-                                                             do_parent1_class_stuff:     { "User"=>[] },
-                                                             do_parent1_instance_things: { "on_something"=>[] },
-                                                             do_parent2_class_stuff:     { "User"=>[] },
-                                                             do_parent2_instance_things: { "on_something"=>[] },
-                                                             do_user_class_stuff:        { "User"=>[] },
-                                                             do_user_instance_things:    { "on_another_thing"=>[] }
+                                                             do_parent1_class_stuff:     { "User" => [] },
+                                                             do_parent1_instance_things: { "on_something" => [] },
+                                                             do_parent2_class_stuff:     { "User" => [] },
+                                                             do_parent2_instance_things: { "on_something" => [] },
+                                                             do_user_class_stuff:        { "User" => [] },
+                                                             do_user_instance_things:    { "on_another_thing" => [] }
                                                          },
                                                          cannot: {
-                                                             do_parent2_class_stuff:    { "User"=>[] },
-                                                             do_parent1_class_stuff:    { "User"=>[] },
-                                                             do_other_user_class_stuff: { "User"=>[] }
+                                                             do_parent2_class_stuff:    { "User" => [] },
+                                                             do_parent1_class_stuff:    { "User" => [] },
+                                                             do_other_user_class_stuff: { "User" => [] }
                                                          }
                                                      })
     end
 
     it "allows blocks in ability definitions" do
-      User.abilities.define do
-        can :do_stuff_to_other_user, User do |user|
+      User.define_abilities do |abilities|
+        abilities.can :do_stuff_to_other_user, User do |user|
           user.id == "1"
         end
       end
       current_user = User.new
       current_user.current_ability
       other_user = User.new(id: "1")
-      expect(current_user.current_ability).to be_able_to(:do_stuff_to_other_user, other_user)
-
-      other_user = User.new(id: "2")
-      expect(current_user.current_ability).not_to be_able_to(:do_stuff_to_other_user, other_user)
-    end
-
-    it "allows hashes in ability definitions" do
-      current_user = User.new
-      other_user = User.new(id: "1")
-      allow(User.abilities).to receive(:current_user).and_return(current_user)
-      User.abilities.define do
-        can :do_stuff_to_other_user, id: current_user.id
-      end
       expect(current_user.current_ability).to be_able_to(:do_stuff_to_other_user, other_user)
 
       other_user = User.new(id: "2")

@@ -5,21 +5,26 @@ require "cancan"
 require "memoist"
 
 require "mongoidable/class_abilities"
+require "mongoidable/configuration"
 require "mongoidable/current_ability"
 require "mongoidable/document_extensions"
 require "mongoidable/engine"
 require "mongoidable/instance_abilities"
-require "mongoidable/parent_abilities"
 
 module Mongoidable
-  extend ActiveSupport::Concern
-  mattr_accessor :context_module
+  class << self
+    def configuration
+      @configuration ||= Configuration.new
+    end
 
-  included do
-    include Mongoidable::ClassAbilities
-    include Mongoidable::CurrentAbility
-    include Mongoidable::DocumentExtensions
-    include Mongoidable::InstanceAbilities
-    include Mongoidable::ParentAbilities
+    def reset
+      @configuration = Configuration.new
+    end
+
+    def configure
+      yield(configuration)
+    end
   end
 end
+
+require "mongoidable/document"

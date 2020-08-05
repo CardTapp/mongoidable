@@ -5,8 +5,8 @@ class Inheritance < User
 
   inherits_abilities_from(:parent3)
 
-  abilities.define do
-    can :do_inherited_class_stuff, User
-    cannot :do_other_inherited_class_stuff, User
+  define_abilities do |abilities|
+    abilities.can :do_inherited_class_stuff, User
+    abilities.cannot :do_other_inherited_class_stuff, User
   end
 end
