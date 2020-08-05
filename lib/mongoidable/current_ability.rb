@@ -12,7 +12,7 @@ module Mongoidable
       abilities = Mongoidable::Abilities.new
       add_inherited_abilities(abilities)
       add_ancestral_abilities(abilities)
-      sum.merge(own_abilities)
+      abilities.merge(own_abilities)
     end
 
     private
