@@ -1,8 +1,54 @@
 # Mongoidable
-Short description and motivation.
+An implementation of cancancan (https://github.com/CanCanCommunity/cancancan) which allows abilities to be statically or dynamically defined in one or many classes.
 
-## Usage
-How to use my plugin.
+Using mongoidable you can define a mongoid document as having abilities and inheriting abilities from another document.
+
+Example:
+
+```
+class User
+  include Mongoid::Document
+  include Mongoidable::Document
+
+  belongs_to :parent, class_name: "Parent1", required: false
+
+  inherits_abilities_from(:parent)
+
+  define_abilities do |abilities|
+    abilities.can :user_class_thing, User
+    abilities.cannot :other_user_class_thing, User
+  end
+end
+
+class Parent
+  include Mongoid::Document
+  include Mongoidable::Document
+
+  define_abilities do |abilities|
+    abilities.can :parent_class_thing, User
+    abilities.cannot :other_parent_class_thing, User
+  end
+end
+user = User.new
+user.add_instance_ability(true, :random_user_instance_thing, User)
+parent = Parent.new
+parent.add_instance_ability(true, :random_parent_instance_thing, User)
+
+user.parent = parent
+
+puts user.can?(:user_class_thing)
+true
+puts user.can?(:other_user_class_thing)
+false
+puts user.can?(:parent_class_thing)
+true
+puts user.can?(:other_parent_class_thing)
+false
+puts user.can?(:random_user_instance_thing)
+true
+puts user.can?(:random_parent__instance_thing)
+true
+```
 
 ## Installation
 Add this line to your application's Gemfile:
@@ -21,8 +67,20 @@ Or install it yourself as:
 $ gem install mongoidable
 ```
 
-## Contributing
-Contribution directions go here.
+## Configuration
 
-## License
-The gem is available as open source under the terms of the [MIT License](https://opensource.org/licenses/MIT).
+It is possible to configure mongoidable to allow certain context in the ability definition blocks. To configure this context create a module that will provide the contexts and set config.context_module to the module in an initializer.
+
+Example
+
+```
+module MongoidableContext
+  def current_user
+    UserInfo.current_user
+  end
+end
+
+Mongoidable.configure do |config|
+  config.context_module = MongoidableContext
+end
+```

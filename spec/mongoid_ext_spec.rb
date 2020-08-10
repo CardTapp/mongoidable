@@ -25,7 +25,7 @@ RSpec.describe "mongoid_ext" do
       expect { User.inherits_abilities_from(:string) }.to raise_error(ArgumentError)
     end
 
-    it "passes validate whe klass is a Mongoid::Document" do
+    it "passes validation when klass is a Mongoid::Document" do
       expect { User.inherits_abilities_from(:parent1) }.not_to raise_error(ArgumentError)
     end
 

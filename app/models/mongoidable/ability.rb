@@ -7,10 +7,13 @@ module Mongoidable
 
     attr_accessor :check_block
 
+    # The action being defined (:something)
     field :action, type: Symbol
+    # The class or instance the ability is defined for
     field :subject, type: String
+    # Is this a grant or a revocation
     field :base_behavior, type: Boolean, default: true
-
+    # Extra arguments as defined by cancancan.
     field :extra, type: Array
 
     validates_presence_of :action
