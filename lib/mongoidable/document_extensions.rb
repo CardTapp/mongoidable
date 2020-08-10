@@ -7,8 +7,6 @@ module Mongoidable
 
     included do
       embeds_many :instance_abilities, class_name: "Mongoidable::Ability"
-
-      index({ _id: 1, "instance_abilities.name": 1 }, { background: true, unique: true })
     end
   end
 end

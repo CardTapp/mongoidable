@@ -8,6 +8,7 @@ require File.expand_path("dummy/config/environment", __dir__)
 abort("The Rails environment is running in production mode!") if Rails.env.production?
 require "rspec/rails"
 
+require_relative "support/database_cleaner"
 require_relative "support/mongoidable"
 # Add additional requires below this line. Rails is not loaded until this point!
 

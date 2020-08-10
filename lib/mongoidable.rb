@@ -2,9 +2,14 @@
 
 require "mongoid"
 require "cancan"
-require "memoist"
+require "cancan/model_adapters/active_record_5_adapter"
+require "cancan/model_adapters/active_record_4_adapter"
+require "cancancan/mongoid"
 
+require "memoist"
+require "mongoidable/active_record_disabler"
 require "mongoidable/class_abilities"
+require "mongoidable/class_type"
 require "mongoidable/configuration"
 require "mongoidable/current_ability"
 require "mongoidable/document_extensions"

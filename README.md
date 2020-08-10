@@ -30,9 +30,9 @@ class Parent
   end
 end
 user = User.new
-user.add_instance_ability(true, :random_user_instance_thing, User)
+user.instance_abilities << Mongoidable::Ability.new(base_behavior: true, action: :random_user_instance_thing, subject: User)
 parent = Parent.new
-parent.add_instance_ability(true, :random_parent_instance_thing, User)
+parent.instance_abilities << Mongoidable::Ability.new(base_behavior: true, action: :random_parent_instance_thing, subject: User)
 
 user.parent = parent
 

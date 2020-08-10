@@ -86,65 +86,26 @@ RSpec.describe "mongoid_ext" do
     end
   end
 
-  describe "add_own_ability" do
-    let(:user) { User.new }
-    let(:ability) { Mongoidable::Ability.new(base_behavior: true, action: :do_stuff, subject: "on_thing") }
-
-    it "adds an ability to the owner using an ability parameter" do
-      user.add_instance_ability(ability)
-      expect(user.instance_abilities.where(action: :do_stuff).first).to be
-    end
-
-    it "adds an ability to the owner using parameter values" do
-      user.add_instance_ability(true, :do_stuff, "on_thing")
-      expect(user.instance_abilities.where(action: :do_stuff).first).to be
-    end
-  end
-
-  describe "remove_own_ability" do
-    let(:user) { User.new }
-    let(:ability) { Mongoidable::Ability.new(base_behavior: true, action: :do_stuff, subject: "on_thing") }
-    it "removes an ability from the owner using parameter values" do
-      user.add_instance_ability(ability)
-      user.save
-      expect(user.instance_abilities.where(action: :do_stuff).first).to be
-
-      user.remove_instance_ability(true, :do_stuff, "on_thing")
-      expect(user.instance_abilities.where(action: :do_stuff).first).not_to be
-    end
-
-    it "removes an ability from the owner using an ability parameter" do
-      user.add_instance_ability(ability)
-      user.save
-      expect(user.instance_abilities.where(action: :do_stuff).first).to be
-
-      user.remove_instance_ability(ability)
-      expect(user.instance_abilities.where(action: :do_stuff).first).not_to be
-    end
-  end
-
   describe "current_abilities" do
     it "traverses class and instance abilities" do
-      parent_1 = Parent1.new(instance_abilities: [
-                                 { base_behavior: true, action: :do_parent1_instance_things, subject: "on_something" }
-                             ])
-      parent_2 = Parent2.new(instance_abilities: [
-                                 { base_behavior: true, action: :do_parent2_instance_things, subject: "on_something" }
-                             ])
+      parent_1 = Parent1.new
+      parent_1.instance_abilities << Mongoidable::Ability.new(base_behavior: true, action: :do_parent1_instance_things, subject: User)
+      parent_2 = Parent2.new
+      parent_2.instance_abilities << Mongoidable::Ability.new(base_behavior: true, action: :do_parent2_instance_things, subject: User)
       user = User.new(
-          instance_abilities: [{ base_behavior: true, action: :do_user_instance_things, subject: "on_another_thing" }],
-          parent1:            parent_1,
-          parent2:            parent_2
+          parent1: parent_1,
+          parent2: parent_2
         )
+      user.instance_abilities << Mongoidable::Ability.new(base_behavior: true, action: :do_user_instance_things, subject: User)
 
       expect(user.current_ability.permissions).to eq({
                                                          can:    {
                                                              do_parent1_class_stuff:     { "User" => [] },
-                                                             do_parent1_instance_things: { "on_something" => [] },
+                                                             do_parent1_instance_things: { "User" => [] },
                                                              do_parent2_class_stuff:     { "User" => [] },
-                                                             do_parent2_instance_things: { "on_something" => [] },
+                                                             do_parent2_instance_things: { "User" => [] },
                                                              do_user_class_stuff:        { "User" => [] },
-                                                             do_user_instance_things:    { "on_another_thing" => [] }
+                                                             do_user_instance_things:    { "User" => [] }
                                                          },
                                                          cannot: {
                                                              do_parent2_class_stuff:    { "User" => [] },
