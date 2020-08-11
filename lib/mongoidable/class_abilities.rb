@@ -27,19 +27,33 @@ module Mongoidable
       end
 
       def inherits_abilities_from(relation)
-        inherits_from << validate_relation(relation)
-        inherits_from.uniq!
+        inherits_from << { name: relation } if valid_singular_relation?(relation)
+        inherits_from.uniq! { |item| item[:name] }
+      end
+
+      def inherits_abilities_from_many(relation, order_by, direction = :asc)
+        inherits_from << { name: relation, order_by: order_by, direction: direction } if valid_many_relation?(relation)
+        inherits_from.uniq! { |item| item[:name] }
       end
 
       private
 
-      def validate_relation(relation_key)
+      def valid_singular_relation?(relation_key)
         raise ArgumentError, "Could not find relation #{relation_key}" unless relation_exists?(relation_key)
 
         relation = relations[relation_key.to_s]
-        raise ArgumentError, "Only singular relations are supported" unless singular_relation?(relation)
+        raise ArgumentError, "Attempt to use singular inheritance on many relation" unless singular_relation?(relation)
 
-        relations[relation_key.to_s]
+        true
+      end
+
+      def valid_many_relation?(relation_key)
+        raise ArgumentError, "Could not find relation #{relation_key}" unless relation_exists?(relation_key)
+
+        relation = relations[relation_key.to_s]
+        raise ArgumentError "Attempt to use many inheritance on singular relation" if singular_relation?(relation)
+
+        true
       end
 
       def relation_exists?(key)

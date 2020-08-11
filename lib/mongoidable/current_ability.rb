@@ -19,14 +19,22 @@ module Mongoidable
 
     def add_inherited_abilities(abilities)
       self.class.inherits_from.reduce(abilities) do |sum, inherited_from|
-        relation = send(inherited_from.name)
-        sum.merge(relation.current_ability) if relation.present?
+        relation = send(inherited_from[:name])
+        order_by = inherited_from[:order_by]
+        descending = inherited_from[:direction] == :desc
+        next sum unless relation.present?
+
+        relations = Array.wrap(relation)
+        relations.sort_by! { |item| item.send(order_by) } if order_by
+        relations.reverse! if descending
+        relations.each { |object| sum.merge(object.current_ability) }
+        sum
       end
     end
 
     def add_ancestral_abilities(abilities)
       self.class.ancestral_abilities.each do |ancestral_ability|
-        ancestral_ability.call(abilities)
+        ancestral_ability.call(abilities, self)
       end
     end
   end

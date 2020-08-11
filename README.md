@@ -14,7 +14,7 @@ class User
 
   inherits_abilities_from(:parent)
 
-  define_abilities do |abilities|
+  define_abilities do |abilities, model|
     abilities.can :user_class_thing, User
     abilities.cannot :other_user_class_thing, User
   end
@@ -24,7 +24,7 @@ class Parent
   include Mongoid::Document
   include Mongoidable::Document
 
-  define_abilities do |abilities|
+  define_abilities do |abilities, model|
     abilities.can :parent_class_thing, User
     abilities.cannot :other_parent_class_thing, User
   end

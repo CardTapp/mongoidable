@@ -6,15 +6,15 @@ module Mongoidable
     private
 
     def own_abilities
-      @own_abilities = Mongoidable::Abilities.new
+      own_abilities = Mongoidable::Abilities.new
       instance_abilities.each do |ability|
         if ability.base_behavior
-          @own_abilities.can(ability.action, ability.subject, *ability.extra)
+          own_abilities.can(ability.action, ability.subject, *ability.extra)
         else
-          @own_abilities.cannot(ability.action, ability.subject, *ability.extra)
+          own_abilities.cannot(ability.action, ability.subject, *ability.extra)
         end
       end
-      @own_abilities
+      own_abilities
     end
   end
 end
