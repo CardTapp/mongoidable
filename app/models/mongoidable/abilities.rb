@@ -4,5 +4,9 @@
 module Mongoidable
   class Abilities
     include ::CanCan::Ability
+
+    def to_casl_list
+      rules.map { |rule| Mongoidable::CaslHash.new(rule) }
+    end
   end
 end

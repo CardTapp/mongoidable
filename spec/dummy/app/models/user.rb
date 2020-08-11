@@ -4,6 +4,8 @@ class User
   include Mongoid::Document
   include Mongoidable::Document
 
+  field :name, type: String
+
   belongs_to :parent1, class_name: "Parent1", required: false
   belongs_to :parent2, class_name: "Parent2", required: false
   embeds_many :embedded_parents, class_name: "Parent1"

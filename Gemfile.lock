@@ -5,8 +5,10 @@ PATH
       cancancan
       cancancan-mongoid
       memoist
+      method_source
       mongoid (~> 6.4.5)
       rails (~> 5.2.4, >= 5.2.4.3)
+      ruby2js
 
 GEM
   remote: https://rubygems.org/
@@ -166,6 +168,8 @@ GEM
     rubocop-thread_safety (0.3.4)
       rubocop (>= 0.51.0)
     ruby-progressbar (1.10.1)
+    ruby2js (3.2.0)
+      parser
     sprockets (4.0.2)
       concurrent-ruby (~> 1.0)
       rack (> 1, < 3)
