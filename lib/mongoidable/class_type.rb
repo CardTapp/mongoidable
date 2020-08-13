@@ -10,6 +10,8 @@ module Mongoidable
           object.name
         elsif object.is_a? Module
           object.name
+        elsif object.is_a? Symbol
+          object.to_s
         elsif Object.const_defined?(object)
           object
         else
@@ -20,15 +22,17 @@ module Mongoidable
       end
 
       def demongoize(object)
-        object == "" ? nil : object.constantize
+        if object == ""
+          nil
+        elsif object.classify.safe_constantize
+          object.constantize
+        else
+          object.to_s.to_sym
+        end
       end
 
       def evolve(object)
-        case object
-          when Class then mongoize(object)
-          when nil then ""
-          else object
-        end
+        mongoize(object)
       end
     end
   end

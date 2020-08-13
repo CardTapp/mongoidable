@@ -9,6 +9,12 @@ RSpec.describe Mongoidable::Ability do
     expect(ability.subject).to eq Mongoid::Document
   end
 
+  it "accepts a symbol as the subject" do
+    ability = Mongoidable::Ability.new(base_behavior: true, action: :do_something, subject: :asdf)
+    expect(ability).to be_valid
+    expect(ability.subject).to eq :asdf
+  end
+
   it "accepts an attribute validation" do
     main_instance = User.new(id: 1)
     main_instance.instance_abilities << Mongoidable::Ability.new(base_behavior: true, action: :do_something, subject: User, extra: [{ id: 2 }])

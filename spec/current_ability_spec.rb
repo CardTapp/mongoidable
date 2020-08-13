@@ -61,13 +61,13 @@ RSpec.describe "current_ability" do
 
   it "traverses class and instance abilities" do
     parent_1 = Parent1.new(instance_abilities: [
-                               { base_behavior: true, action: :do_parent1_instance_things, subject: "on_something" }
+                               { base_behavior: true, action: :do_parent1_instance_things, subject: :on_something }
                            ])
     parent_2 = Parent2.new(instance_abilities: [
-                               { base_behavior: true, action: :do_parent2_instance_things, subject: "on_something" }
+                               { base_behavior: true, action: :do_parent2_instance_things, subject: :on_something }
                            ])
     user = User.new(
-        instance_abilities: [{ base_behavior: true, action: :do_user_instance_things, subject: "on_another_thing" }],
+        instance_abilities: [{ base_behavior: true, action: :do_user_instance_things, subject: :on_another_thing }],
         parent1:            parent_1,
         parent2:            parent_2
       )
