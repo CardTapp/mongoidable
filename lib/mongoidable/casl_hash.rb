@@ -10,7 +10,9 @@ module Mongoidable
       self.inverted = rule
       self.block = rule
       self.source = rule
-      self[:description] = rule.actions.map { |action| I18n.t("mongoidable.ability.description.#{action}") }.join("/")
+      self[:description] = rule.actions.map do |action|
+        I18n.t("mongoidable.ability.description.#{action}", subject: self[:subject])
+      end.join("/")
       self[:type] = rule.rule_type
     end
 

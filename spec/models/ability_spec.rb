@@ -38,9 +38,15 @@ RSpec.describe Mongoidable::Ability do
   it "adds the ability action description to the rule" do
     main_instance = User.new(id: 1)
     main_instance.instance_abilities << Mongoidable::Ability.new(base_behavior: true, action: :do_something, subject: User, extra: [{ id: 2 }])
-    allow(I18n).to receive(:t).with("mongoidable.ability.description.do_user_class_stuff").and_return("This is my do_user_class_stuff description")
-    allow(I18n).to receive(:t).with("mongoidable.ability.description.do_other_user_class_stuff").and_return("This is my do_other_user_class_stuff description")
-    allow(I18n).to receive(:t).with("mongoidable.ability.description.do_something").and_return("This is my do_something description")
+    allow(I18n).to receive(:t).
+        with("mongoidable.ability.description.do_user_class_stuff", {:subject=>["User"]}).
+        and_return("This is my do_user_class_stuff description")
+    allow(I18n).to receive(:t).
+        with("mongoidable.ability.description.do_other_user_class_stuff", {:subject=>["User"]}).
+        and_return("This is my do_other_user_class_stuff description")
+    allow(I18n).to receive(:t).
+        with("mongoidable.ability.description.do_something", {:subject=>["User"]}).
+        and_return("This is my do_something description")
     list = main_instance.current_ability.to_casl_list
     expect(list[2][:description]).to eq "This is my do_something description"
   end
