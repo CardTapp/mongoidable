@@ -9,12 +9,19 @@ module Mongoidable
       self.conditions = rule
       self.inverted = rule
       self.block = rule
+      self.source = rule
+      self[:description] = rule.actions.map { |action| I18n.t("mongoidable.ability.description.#{action}") }.join("/")
+      self[:type] = rule.rule_type
     end
 
     private
 
     def actions=(rule)
       self[:actions] = rule.actions
+    end
+
+    def source=(rule)
+      self[:source] = rule.rule_source if rule.rule_source
     end
 
     def subject=(rule)

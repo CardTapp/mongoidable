@@ -7,13 +7,11 @@ module Mongoidable
 
     # rubocop:disable Metrics/BlockLength
     class_methods do
+      attr_reader :ability_definition
+
       # The static abilities of this class and abilities inherited from base classes
       def define_abilities(&block)
         @ability_definition = block.to_proc
-      end
-
-      def ability_definition
-        @ability_definition
       end
 
       def ancestral_abilities

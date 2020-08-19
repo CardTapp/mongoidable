@@ -9,7 +9,7 @@ module Mongoidable
   #   own instance abilities
   module CurrentAbility
     def current_ability
-      abilities = Mongoidable::Abilities.new
+      abilities = Mongoidable::Abilities.new(mongoidable_identity)
       add_inherited_abilities(abilities)
       add_ancestral_abilities(abilities)
       abilities.merge(own_abilities)
@@ -34,7 +34,9 @@ module Mongoidable
 
     def add_ancestral_abilities(abilities)
       self.class.ancestral_abilities.each do |ancestral_ability|
-        ancestral_ability.call(abilities, self)
+        abilities.class_abilities do
+          ancestral_ability.call(abilities, self)
+        end
       end
     end
   end

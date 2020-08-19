@@ -5,8 +5,15 @@ module Mongoidable
   module InstanceAbilities
     private
 
+    def mongoidable_identity
+      {
+          model: model_name.name,
+          id:    id
+      }
+    end
+
     def own_abilities
-      own_abilities = Mongoidable::Abilities.new
+      own_abilities = Mongoidable::Abilities.new(mongoidable_identity)
       instance_abilities.each do |ability|
         if ability.base_behavior
           own_abilities.can(ability.action, ability.subject, *ability.extra)

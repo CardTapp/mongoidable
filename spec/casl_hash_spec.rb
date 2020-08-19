@@ -44,12 +44,4 @@ RSpec.describe "casl_hash" do
     hash = Mongoidable::CaslHash.new(rule)
     expect(hash).not_to be_key(:block)
   end
-
-  it "adds the block as js when present" do
-    rule = CanCan::Rule.new(false, :action, User) do
-      1 + 1
-    end
-    hash = Mongoidable::CaslHash.new(rule)
-    expect(hash[:block]).to eq "var rule = new CanCan.Rule(false, \"action\", User, function() {\n  return 1 + 1\n})"
-  end
 end

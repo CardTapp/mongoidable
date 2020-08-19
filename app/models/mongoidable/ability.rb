@@ -23,9 +23,5 @@ module Mongoidable
     validates_presence_of :base_behavior
 
     embedded_in :instance_abilities
-
-    def to_a
-      [action, subject, extra]
-    end
   end
 end

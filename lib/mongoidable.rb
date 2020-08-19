@@ -11,6 +11,8 @@ require "ruby2js"
 require "ruby2js/filter/return"
 
 require "mongoidable/active_record_disabler"
+require "mongoidable/rule"
+
 require "mongoidable/casl_hash"
 require "mongoidable/class_abilities"
 require "mongoidable/class_type"
