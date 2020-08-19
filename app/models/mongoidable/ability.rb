@@ -23,5 +23,9 @@ module Mongoidable
     validates_presence_of :base_behavior
 
     embedded_in :instance_abilities
+
+    def description
+      I18n.t("mongoidable.ability.description.#{action}", subject: self[:subject])
+    end
   end
 end
