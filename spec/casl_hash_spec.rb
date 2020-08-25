@@ -42,7 +42,7 @@ RSpec.describe "casl_hash" do
   it "skips block when not present" do
     rule = CanCan::Rule.new(false, :action, User)
     hash = Mongoidable::CaslHash.new(rule)
-    expect(hash).not_to be_key(:block)
+    expect(hash).not_to be_key(:block_js)
   end
 
   it "adds the block as js when present" do
@@ -50,6 +50,6 @@ RSpec.describe "casl_hash" do
       1 + 1
     end
     hash = Mongoidable::CaslHash.new(rule)
-    expect(hash[:block]).to eq "var rule = new CanCan.Rule(false, \"action\", User, function() {\n  return 1 + 1\n})"
+    expect(hash[:block_js]).to eq "var rule = new CanCan.Rule(false, \"action\", User, function() {\n  return 1 + 1\n})"
   end
 end

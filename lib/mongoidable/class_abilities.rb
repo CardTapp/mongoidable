@@ -9,16 +9,16 @@ module Mongoidable
     class_methods do
       # The static abilities of this class and abilities inherited from base classes
       def define_abilities(&block)
-        @ability_definition = block.to_proc
+        ability_definition << block.to_proc
       end
 
       def ability_definition
-        @ability_definition
+        @ability_definition ||= []
       end
 
       def ancestral_abilities
         result = superclass.respond_to?(:ancestral_abilities) ? superclass.ancestral_abilities : []
-        result << ability_definition if ability_definition.present?
+        result += ability_definition
         result
       end
 
