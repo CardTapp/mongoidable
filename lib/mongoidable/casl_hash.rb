@@ -23,7 +23,7 @@ module Mongoidable
     end
 
     def source=(rule)
-      self[:source] = rule.rule_source if rule.rule_source
+      self[:source] = rule.rule_source.presence
     end
 
     def subject=(rule)
