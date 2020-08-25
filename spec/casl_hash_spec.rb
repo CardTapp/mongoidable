@@ -6,7 +6,7 @@ RSpec.describe "casl_hash" do
   it "sets the action" do
     rule = CanCan::Rule.new(false, :action, User)
     hash = Mongoidable::CaslHash.new(rule)
-    expect(hash[:actions]).to eq [:action]
+    expect(hash[:action]).to eq [:action]
   end
   it "sets the subject when a symbol" do
     rule = CanCan::Rule.new(false, :action, :subject)

@@ -11,7 +11,7 @@ RSpec.describe Mongoidable::Abilities do
               source:      "test",
               has_block:   false,
               subject:     [:to_thing],
-              actions:     [:do_thing],
+              action:      [:do_thing],
               description: "translation missing: en.mongoidable.ability.description.do_thing"
           },
           {
@@ -21,7 +21,7 @@ RSpec.describe Mongoidable::Abilities do
               inverted:    true,
               conditions:  { name: "Fred" },
               subject:     ["User"],
-              actions:     [:do_other_thing],
+              action:      [:do_other_thing],
               description: "translation missing: en.mongoidable.ability.description.do_other_thing"
           },
           {
@@ -31,7 +31,7 @@ RSpec.describe Mongoidable::Abilities do
               block_ruby:  "abilities.can(:do_block_thing, User) do |user|\n        user.name == \"Fred\"\n      end",
               block_js:    "abilities.can(\"do_block_thing\", User, function(user) {\n  return user.name == \"Fred\"\n})",
               subject:     ["User"],
-              actions:     [:do_block_thing],
+              action:      [:do_block_thing],
               description: "translation missing: en.mongoidable.ability.description.do_block_thing"
           }
       ]

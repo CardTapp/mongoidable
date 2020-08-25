@@ -4,7 +4,7 @@
 module Mongoidable
   class CaslHash < Hash
     def initialize(rule)
-      self.actions = rule
+      self.action = rule
       self.subject = rule
       self.conditions = rule
       self.inverted = rule
@@ -18,8 +18,8 @@ module Mongoidable
 
     private
 
-    def actions=(rule)
-      self[:actions] = rule.actions
+    def action=(rule)
+      self[:action] = rule.actions
     end
 
     def source=(rule)
