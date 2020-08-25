@@ -40,6 +40,7 @@ module Mongoidable
 
         order_by = inherited_from[:order_by]
         descending = inherited_from[:direction] == :desc
+        next sum unless relation.present?
 
         relations = Array.wrap(relation)
         relations.sort_by! { |item| item.send(order_by) } if order_by
