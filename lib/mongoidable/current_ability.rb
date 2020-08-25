@@ -8,10 +8,11 @@ module Mongoidable
   #   own static class abilities (including base class abilities)
   #   own instance abilities
   module CurrentAbility
-    def current_ability
+    attr_reader :parent_model
+    def current_ability(parent = nil)
       abilities = Mongoidable::Abilities.new(mongoidable_identity)
       add_inherited_abilities(abilities)
-      add_ancestral_abilities(abilities)
+      add_ancestral_abilities(abilities, parent)
       abilities.merge(own_abilities)
     end
 
@@ -27,16 +28,15 @@ module Mongoidable
         relations = Array.wrap(relation)
         relations.sort_by! { |item| item.send(order_by) } if order_by
         relations.reverse! if descending
-        relations.each { |object| sum.merge(object.current_ability) }
+        relations.each { |object| sum.merge(object.current_ability(self)) }
         sum
       end
     end
 
-    def add_ancestral_abilities(abilities)
+    def add_ancestral_abilities(abilities, parent)
       self.class.ancestral_abilities.each do |ancestral_ability|
-        abilities.class_abilities do
-          ancestral_ability.call(abilities, self)
-        end
+        @parent_model = parent
+        ancestral_ability.call(abilities, self)
       end
     end
   end

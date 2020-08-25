@@ -117,4 +117,20 @@ RSpec.describe "current_ability" do
     User.inherits_abilities_from_many :embedded_parents, :id
     expect(user.current_ability.cannot?(:override_thing, User)).to eq true
   end
+
+  it "passes the relations parent model to define abilities" do
+    user = User.new
+    parent = Parent1.new(id: 1)
+    user.embedded_parents << parent
+    User.inherits_abilities_from_many :embedded_parents, :id, :asc
+
+    expect(User.ability_definition).to receive(:call) do |_abilities, model|
+      expect(model.parent_model).to eq nil
+    end
+    expect(Parent1.ability_definition).to receive(:call) do |_abilities, model|
+      expect(model.parent_model).to eq user
+    end
+
+    user.current_ability
+  end
 end
