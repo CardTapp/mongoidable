@@ -124,10 +124,10 @@ RSpec.describe "current_ability" do
     user.embedded_parents << parent
     User.inherits_abilities_from_many :embedded_parents, :id, :asc
 
-    expect(User.ability_definition).to receive(:call) do |_abilities, model|
+    expect(User.ability_definition.first).to receive(:call) do |_abilities, model|
       expect(model.parent_model).to eq nil
     end
-    expect(Parent1.ability_definition).to receive(:call) do |_abilities, model|
+    expect(Parent1.ability_definition.first).to receive(:call) do |_abilities, model|
       expect(model.parent_model).to eq user
     end
 

@@ -16,13 +16,6 @@ module Mongoidable
       rules.map { |rule| Mongoidable::CaslHash.new(rule) }
     end
 
-    def class_abilities
-      self.rule_type = :static
-      yield
-    ensure
-      self.rule_type = :adhoc
-    end
-
     def cannot(action = nil, subject = nil, *attributes_and_conditions, &block)
       extra = set_rule_extras(attributes_and_conditions)
       super(action, subject, *extra, &block)
