@@ -7,8 +7,8 @@ module Mongoidable
 
     def mongoidable_identity
       {
-          model: model_name.name,
-          id:    id
+          model: model_name&.name || nil,
+          id:    attributes.nil? ? nil : id
       }
     end
 

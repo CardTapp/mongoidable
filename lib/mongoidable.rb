@@ -10,7 +10,7 @@ require "method_source"
 require "ruby2js"
 require "ruby2js/filter/return"
 
-require "mongoidable/active_record_disabler"
+require "mongoidable/cancan/active_record_disabler"
 require "mongoidable/rule"
 
 require "mongoidable/casl_hash"
