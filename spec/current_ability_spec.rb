@@ -2,7 +2,7 @@
 
 require "rails_helper"
 require "cancan/matchers"
-RSpec.describe "current_ability" do
+RSpec.describe "current_ability", :with_abilities do
   it "classes properly inherit relations in derived classes" do
     parent_1 = Parent1.new
     parent_2 = Parent2.new

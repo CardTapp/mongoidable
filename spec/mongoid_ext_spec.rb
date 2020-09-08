@@ -2,7 +2,7 @@
 
 require "rails_helper"
 require "cancan/matchers"
-RSpec.describe "mongoid_ext" do
+RSpec.describe "mongoid_ext", :with_abilities do
   describe "current_abilities" do
     it "traverses class and instance abilities" do
       parent_1 = Parent1.new(instance_abilities: [

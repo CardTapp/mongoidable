@@ -2,7 +2,7 @@
 
 require "rails_helper"
 
-RSpec.describe Mongoidable::Ability do
+RSpec.describe Mongoidable::Ability, :with_abilities do
   it "accepts a class as the subject" do
     ability = Mongoidable::Ability.new(base_behavior: true, action: :do_something, subject: Mongoid::Document)
     expect(ability).to be_valid
