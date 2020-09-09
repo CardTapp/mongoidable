@@ -12,6 +12,11 @@ module Mongoidable
         @stub_ability_rules = nil
       end
 
+      def default_abilities=(value)
+        @default_can_ability_with = value
+        @default_cannot_ability_with = !value
+
+      end
       def set_by_example(example, key)
         value = example.metadata[key]
         value = ActiveModel::Type::Boolean.new.cast(value)

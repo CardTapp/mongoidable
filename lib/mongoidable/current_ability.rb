@@ -11,10 +11,14 @@ module Mongoidable
     attr_reader :parent_model
 
     def current_ability(parent = nil)
-      abilities = Mongoidable::Abilities.new(mongoidable_identity)
-      add_inherited_abilities(abilities)
-      add_ancestral_abilities(abilities, parent)
-      abilities.merge(own_abilities)
+      if defined?(Mongoidable::RSpec) && !Mongoidable::RSpec.configuration.with_abilities
+        return Mongoidable::RSpec::AbilitiesTestStub.new(mongoidable_identity)
+      else
+        abilities = Mongoidable::Abilities.new(mongoidable_identity)
+        add_inherited_abilities(abilities)
+        add_ancestral_abilities(abilities, parent)
+        abilities.merge(own_abilities)
+      end
     end
 
     private
