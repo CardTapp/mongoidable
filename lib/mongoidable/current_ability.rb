@@ -12,10 +12,14 @@ module Mongoidable
 
     def current_ability(parent = nil, skip_cache: false)
       with_ability_cache(skip_cache) do
-        abilities = Mongoidable::Abilities.new(mongoidable_identity)
-        add_inherited_abilities(abilities, skip_cache)
-        add_ancestral_abilities(abilities, parent)
-        abilities.merge(own_abilities)
+        if defined?(Mongoidable::RSpec) && !Mongoidable::RSpec.configuration.with_abilities
+          return Mongoidable::RSpec::AbilitiesTestStub.new(mongoidable_identity)
+        else
+          abilities = Mongoidable::Abilities.new(mongoidable_identity)
+          add_inherited_abilities(abilities, skip_cache)
+          add_ancestral_abilities(abilities, parent)
+          abilities.merge(own_abilities)
+        end
       end
     end
 

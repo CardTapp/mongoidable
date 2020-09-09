@@ -3,20 +3,13 @@
 module Mongoidable
   module RSpec
     class AbilitiesTestStub
+      include CanCan::Ability
       attr_reader :ability_source
       attr_accessor :rule_type
 
       def initialize(ability_source)
         @ability_source = ability_source
         @rule_type = :adhoc
-      end
-
-      def rules
-        @rules ||= []
-      end
-
-      def to_casl_list
-        {}
       end
 
       def can?(_action, _subject, _attribute = nil, *_extra_args)

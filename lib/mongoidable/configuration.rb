@@ -7,7 +7,8 @@ module Mongoidable
                   :context_module,
                   :enable_caching,
                   :serialize_ruby,
-                  :serialize_js
+                  :serialize_js,
+                  :test_mode
 
     def initialize
       @cache_key_prefix = "Mongoidable"
@@ -16,6 +17,7 @@ module Mongoidable
       @enable_caching = true
       @serialize_ruby = true
       @serialize_js = true
+      @test_mode = false
     end
   end
 end

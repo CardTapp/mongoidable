@@ -44,8 +44,8 @@ module Mongoidable
         end
       end
 
-      def authorizes(args)
-        allow(subject).to receive_message_chain(:current_ability, :authorize!).with(*args).and_return(true)
+      def authorizes_controller
+        allow(subject).to receive_message_chain(:current_ability, :authorize!).and_return(true)
       end
     end
   end
