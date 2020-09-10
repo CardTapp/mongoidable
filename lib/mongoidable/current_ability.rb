@@ -13,8 +13,8 @@ module Mongoidable
     def current_ability(parent = nil, skip_cache: false)
       with_ability_cache(skip_cache) do
         abilities = Mongoidable::Abilities.new(mongoidable_identity)
-        add_inherited_abilities(abilities)
-        add_ancestral_abilities(abilities, parent)
+        add_inherited_abilities(abilities, skip_cache)
+        add_ancestral_abilities(abilities, parent, skip_cache)
         abilities.merge(own_abilities)
       end
     end
@@ -33,7 +33,7 @@ module Mongoidable
       end
     end
 
-    def add_inherited_abilities(abilities)
+    def add_inherited_abilities(abilities, skip_cache)
       self.class.inherits_from.reduce(abilities) do |sum, inherited_from|
         relation = send(inherited_from[:name])
         next sum unless relation.present?
@@ -44,7 +44,7 @@ module Mongoidable
         relations = Array.wrap(relation)
         relations.sort_by! { |item| item.send(order_by) } if order_by
         relations.reverse! if descending
-        relations.each { |object| sum.merge(object.current_ability(self)) }
+        relations.each { |object| sum.merge(object.current_ability(self, skip_cache: skip_cache)) }
         sum
       end
     end
