@@ -136,6 +136,10 @@ RSpec.describe "current_ability" do
   end
 
   describe "caching" do
+    before(:each) do
+      allow(Mongoidable.configuration).to receive(:enable_caching).and_return true
+    end
+
     it "uses cache if enabled" do
       user = User.new
       result = user.current_ability.to_casl_list
