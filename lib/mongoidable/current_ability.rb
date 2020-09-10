@@ -14,7 +14,7 @@ module Mongoidable
       with_ability_cache(skip_cache) do
         abilities = Mongoidable::Abilities.new(mongoidable_identity)
         add_inherited_abilities(abilities, skip_cache)
-        add_ancestral_abilities(abilities, parent, skip_cache)
+        add_ancestral_abilities(abilities, parent)
         abilities.merge(own_abilities)
       end
     end
