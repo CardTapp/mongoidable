@@ -23,7 +23,7 @@ module Mongoidable
 
     def with_ability_cache(&block)
       if Mongoidable.configuration.enable_caching
-        Rails.cache.fetch(cache_key(id), expires_in: cache_expiration, &block)
+        Rails.cache.fetch(ability_cache_key(id), expires_in: ability_cache_expiration, &block)
       else
         yield
       end
@@ -59,11 +59,11 @@ module Mongoidable
       Mongoidable.configuration
     end
 
-    def cache_key(id)
+    def ability_cache_key(id)
       "#{config.cache_key_prefix}/#{id}"
     end
 
-    def cache_expiration
+    def ability_cache_expiration
       config.cache_ttl.seconds
     end
   end
