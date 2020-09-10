@@ -11,7 +11,7 @@ module Mongoidable
     attr_reader :parent_model
 
     def current_ability(parent = nil)
-      with_cache do
+      with_ability_cache do
         abilities = Mongoidable::Abilities.new(mongoidable_identity)
         add_inherited_abilities(abilities)
         add_ancestral_abilities(abilities, parent)
@@ -21,7 +21,7 @@ module Mongoidable
 
     private
 
-    def with_cache(&block)
+    def with_ability_cache(&block)
       if Mongoidable.configuration.enable_caching
         Rails.cache.fetch(cache_key(id), expires_in: cache_expiration, &block)
       else
