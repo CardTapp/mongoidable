@@ -141,7 +141,7 @@ RSpec.describe "current_ability" do
     end
 
     it "uses cache if enabled" do
-      user = CacheModel.new
+      user = CacheModel.create
       result = user.current_ability.to_casl_list
       expect(user).not_to receive(:add_inherited_abilities)
       expect(user.current_ability.to_casl_list).to eq result
@@ -153,10 +153,17 @@ RSpec.describe "current_ability" do
           other_user.id == "1"
         end
       end
-      current_user = CacheModel.new
+      current_user = CacheModel.create
       other_user = User.new(id: "1")
       current_user.current_ability
       expect(current_user.current_ability).to be_able_to(:do_stuff_to_other_user, other_user)
+    end
+
+    it "calling current_ability with skip_cache: true skips caching" do
+      user = CacheModel.create
+      user.current_ability
+      expect(user).to receive(:add_inherited_abilities)
+      user.current_ability(skip_cache: true)
     end
   end
 end

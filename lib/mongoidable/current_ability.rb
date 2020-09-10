@@ -10,8 +10,8 @@ module Mongoidable
   module CurrentAbility
     attr_reader :parent_model
 
-    def current_ability(parent = nil)
-      with_ability_cache do
+    def current_ability(parent = nil, skip_cache: false)
+      with_ability_cache(skip_cache) do
         abilities = Mongoidable::Abilities.new(mongoidable_identity)
         add_inherited_abilities(abilities)
         add_ancestral_abilities(abilities, parent)
@@ -25,8 +25,8 @@ module Mongoidable
       config.enable_caching && !new_record?
     end
 
-    def with_ability_cache(&block)
-      if should_cache?
+    def with_ability_cache(skip_cache, &block)
+      if should_cache? && !skip_cache
         Rails.cache.fetch(ability_cache_key, expires_in: ability_cache_expiration, &block)
       else
         yield
