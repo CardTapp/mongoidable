@@ -21,9 +21,13 @@ module Mongoidable
 
     private
 
+    def should_cache?
+      config.enable_caching && !new_record?
+    end
+
     def with_ability_cache(&block)
-      if Mongoidable.configuration.enable_caching
-        Rails.cache.fetch(ability_cache_key(id), expires_in: ability_cache_expiration, &block)
+      if should_cache?
+        Rails.cache.fetch(ability_cache_key, expires_in: ability_cache_expiration, &block)
       else
         yield
       end
@@ -59,8 +63,8 @@ module Mongoidable
       Mongoidable.configuration
     end
 
-    def ability_cache_key(id)
-      "#{config.cache_key_prefix}/#{id}"
+    def ability_cache_key
+      "#{config.cache_key_prefix}/#{cache_key}"
     end
 
     def ability_cache_expiration
