@@ -44,7 +44,7 @@ module Mongoidable
       @rule_type = hash[:rule_type]
       @rules = hash[:rules]
       @aliased_actions = hash[:aliased_actions]
-      @rules.each_with_index { |rule, index| add_rule_to_index(rule, index) }
+      @rules&.each_with_index { |rule, index| add_rule_to_index(rule, index) }
     end
   end
 end

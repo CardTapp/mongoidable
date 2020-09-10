@@ -141,19 +141,19 @@ RSpec.describe "current_ability" do
     end
 
     it "uses cache if enabled" do
-      user = User.new
+      user = CacheModel.new
       result = user.current_ability.to_casl_list
       expect(user).not_to receive(:add_inherited_abilities)
       expect(user.current_ability.to_casl_list).to eq result
     end
 
     it "can use a rule with block after loading from cache" do
-      User.define_abilities do |abilities, _user|
+      CacheModel.define_abilities do |abilities, _user|
         abilities.can :do_stuff_to_other_user, User do |other_user|
           other_user.id == "1"
         end
       end
-      current_user = User.new
+      current_user = CacheModel.new
       other_user = User.new(id: "1")
       current_user.current_ability
       expect(current_user.current_ability).to be_able_to(:do_stuff_to_other_user, other_user)
