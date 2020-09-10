@@ -32,5 +32,19 @@ module Mongoidable
       extra.first[:rule_type] = rule_type
       extra
     end
+
+    private
+
+    def marshal_dump
+      { ability_source: @ability_source, rule_type: @rule_type, rules: @rules, aliased_actions: @aliased_actions }
+    end
+
+    def marshal_load(hash)
+      @ability_source = hash[:ability_source]
+      @rule_type = hash[:rule_type]
+      @rules = hash[:rules]
+      @aliased_actions = hash[:aliased_actions]
+      @rules.each_with_index { |rule, index| add_rule_to_index(rule, index) }
+    end
   end
 end

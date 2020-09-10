@@ -11,13 +11,23 @@ module Mongoidable
     attr_reader :parent_model
 
     def current_ability(parent = nil)
-      abilities = Mongoidable::Abilities.new(mongoidable_identity)
-      add_inherited_abilities(abilities)
-      add_ancestral_abilities(abilities, parent)
-      abilities.merge(own_abilities)
+      with_cache do
+        abilities = Mongoidable::Abilities.new(mongoidable_identity)
+        add_inherited_abilities(abilities)
+        add_ancestral_abilities(abilities, parent)
+        abilities.merge(own_abilities)
+      end
     end
 
     private
+
+    def with_cache(&block)
+      if Mongoidable.configuration.enable_caching
+        Rails.cache.fetch(cache_key(id), expires_in: cache_expiration, &block)
+      else
+        yield
+      end
+    end
 
     def add_inherited_abilities(abilities)
       self.class.inherits_from.reduce(abilities) do |sum, inherited_from|
@@ -43,6 +53,18 @@ module Mongoidable
       end
     ensure
       abilities.rule_type = :adhoc
+    end
+
+    def config
+      Mongoidable.configuration
+    end
+
+    def cache_key(id)
+      "#{config.cache_key_prefix}/#{id}"
+    end
+
+    def cache_expiration
+      config.cache_ttl.seconds
     end
   end
 end
