@@ -21,7 +21,7 @@ require "mongoidable/current_ability"
 require "mongoidable/document_extensions"
 require "mongoidable/engine"
 require "mongoidable/instance_abilities"
-
+require "ruby2ruby"
 module Mongoidable
   class << self
     def configuration

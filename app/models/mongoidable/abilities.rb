@@ -30,6 +30,7 @@ module Mongoidable
       extra = [{}] if extra.empty?
       extra.first[:rule_source] = ability_source unless extra.first.key?(:rule_source)
       extra.first[:rule_type] = rule_type
+      extra.first[:parent] = self
       extra
     end
 
@@ -44,7 +45,23 @@ module Mongoidable
       @rule_type = hash[:rule_type]
       @rules = hash[:rules]
       @aliased_actions = hash[:aliased_actions]
-      @rules&.each_with_index { |rule, index| add_rule_to_index(rule, index) }
+
+      rules = @rules.clone
+      @rules = []
+      rules&.each do |rule|
+        # If the rule had a block, the entire block defines the rule
+        block = rule.instance_variable_get(:@block)
+        if block&.is_a?(String)
+          # evaluate the block which will add a new rule. Eval the block to re-add the rule
+          eval(rule.instance_variable_get(:@block).gsub("abilities.", ""))
+        elsif block&.is_a?(Proc)
+          # this rule was probably added by a previous block eval, just skip it
+          rule
+        else
+          # this rule has no block, just index it
+          add_rule(rule)
+        end
+      end
     end
   end
 end

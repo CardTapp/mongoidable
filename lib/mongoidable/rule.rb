@@ -4,11 +4,12 @@ require "cancan/rule"
 
 module CanCan
   module RuleExtentions
-    attr_reader :rule_source, :rule_type
+    attr_reader :rule_source, :rule_type, :abilities
 
     def initialize(base_behavior, action, subject, *extra_args, &block)
       @rule_source = extra_args.first&.delete(:rule_source)
       @rule_type = extra_args.first&.delete(:rule_type)
+      @abilities = extra_args.first&.delete(:parent)
       extra_args.shift if extra_args.first&.empty?
       super
     end
@@ -23,7 +24,7 @@ module CanCan
         conditions:    @conditions,
         rule_source:   @rule_source,
         rule_type:     @rule_type,
-        block:         serialize_block(@block) }
+        block:         @block&.source&.strip }
     end
 
     def marshal_load(hash)
@@ -34,24 +35,7 @@ module CanCan
       @conditions = hash[:conditions]
       @rule_source = hash[:rule_source]
       @rule_type = hash[:rule_type]
-      deserialize_block(hash[:block])
-    end
-
-    def serialize_block(block)
-      return nil unless block_given?
-
-      c = Class.new
-      c.class_eval do
-        define_method :serializable, block
-      end
-      s = Ruby2Ruby.translate(c, :serializable)
-      s.sub(/^def \S+\(([^)]*)\)/, 'lambda { |\1|').sub(/end$/, "}")
-    end
-
-    def deserialize_block(block_string)
-      return if block_string.blank?
-
-      eval(block_string)
+      @block = hash[:block]
     end
   end
 end
