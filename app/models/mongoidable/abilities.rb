@@ -4,16 +4,14 @@
 module Mongoidable
   class Abilities
     include ::CanCan::Ability
+    include Mongoidable::CaslList
+
     attr_reader :ability_source
     attr_accessor :rule_type
 
     def initialize(ability_source)
       @ability_source = ability_source
       @rule_type = :adhoc
-    end
-
-    def to_casl_list
-      rules.map { |rule| Mongoidable::CaslHash.new(rule) }
     end
 
     def cannot(action = nil, subject = nil, *attributes_and_conditions, &block)
