@@ -3,7 +3,7 @@
 module Mongoidable
   module RSpec
     class AbilitiesTestStub
-      include CanCan::Ability
+      include ::CanCan::Ability
       attr_reader :ability_source
       attr_accessor :rule_type
 
