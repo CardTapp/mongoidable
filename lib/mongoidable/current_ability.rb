@@ -22,7 +22,7 @@ module Mongoidable
     private
 
     def should_cache?
-      config.enable_caching && !new_record?
+      config.enable_caching
     end
 
     def with_ability_cache(skip_cache, &block)
