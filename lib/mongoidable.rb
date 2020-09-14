@@ -2,6 +2,7 @@
 
 require "mongoid"
 require "cancan"
+require "cancan/model_adapters/active_record_adapter"
 require "cancan/model_adapters/active_record_4_adapter"
 require "cancan/model_adapters/active_record_5_adapter"
 require "cancancan/mongoid"
