@@ -15,6 +15,7 @@ require "mongoidable/cancan/active_record_disabler"
 require "mongoidable/rule"
 
 require "mongoidable/casl_hash"
+require "mongoidable/casl_list"
 require "mongoidable/class_abilities"
 require "mongoidable/class_type"
 require "mongoidable/configuration"
