@@ -24,7 +24,7 @@ module CanCan
         conditions:    @conditions,
         rule_source:   @rule_source,
         rule_type:     @rule_type,
-        block:         @block&.source&.strip }
+        block:         @serialized_block || @block&.source&.strip }
     end
 
     def marshal_load(hash)
