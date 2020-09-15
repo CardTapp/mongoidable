@@ -35,7 +35,7 @@ module CanCan
       @conditions = hash[:conditions]
       @rule_source = hash[:rule_source]
       @rule_type = hash[:rule_type]
-      @block = hash[:block]
+      @serialized_block = hash[:block]
     end
   end
 end

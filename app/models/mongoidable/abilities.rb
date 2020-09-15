@@ -54,7 +54,7 @@ module Mongoidable
         if block&.is_a?(String)
           # evaluate the block which will add a new rule. Eval the block to re-add the rule
           eval(block.gsub("abilities.", ""))
-          # since the block was evaled, not read from file. We will have to stash the string
+          # since the block was evaled, not read from file, we will have to stash the string
           # version of the block in case we need to serialize it again.
           @rules.last.instance_variable_set(:@serialized_block, block)
         else
