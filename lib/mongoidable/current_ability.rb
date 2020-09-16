@@ -8,7 +8,7 @@ module Mongoidable
   #   own static class abilities (including base class abilities)
   #   own instance abilities
   module CurrentAbility
-    attr_reader :parent_model
+    attr_accessor :parent_model
 
     def current_ability(parent = nil, skip_cache: false)
       with_ability_cache(skip_cache) do

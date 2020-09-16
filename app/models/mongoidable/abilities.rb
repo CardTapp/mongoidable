@@ -50,14 +50,14 @@ module Mongoidable
       @rules = []
       rules&.each do |rule|
         # If the rule had a block, the entire block defines the rule
-        block = rule.instance_variable_get(:@serialized_block)
+        block = rule.serialized_block
         if block&.is_a?(String)
           # evaluate the block which will add a new rule. Eval the block to re-add the rule
-          rule.instance_variable_set(:@abilities, self)
+          rule.abilities = self
           rule.send(:eval, block)
           # since the block was evaled, not read from file, we will have to stash the string
           # version of the block in case we need to serialize it again.
-          @rules.last.instance_variable_set(:@serialized_block, block)
+          @rules.last.serialized_block = block
         else
           # this rule has no block, just index it
           add_rule(rule)
