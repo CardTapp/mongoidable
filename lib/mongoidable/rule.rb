@@ -24,6 +24,8 @@ module CanCan
       local_variables.map do |variable_name|
         value = Base64.encode64(Marshal.dump(@block.binding.local_variable_get(variable_name)))
         [variable_name, value]
+      rescue TypeError => error
+        raise TypeError, "While dumping #{variable_name} - #{error.message}"
       end.to_h
     end
 
