@@ -17,12 +17,17 @@ module CanCan
 
     private
 
-    def marshal_dump
+    def block_local_variables
+      return {} unless @block
+
       local_variables = @block.binding.local_variables - [:abilities]
-      local_variables = local_variables.map do |variable_name|
+      local_variables.map do |variable_name|
         value = Base64.encode64(Marshal.dump(@block.binding.local_variable_get(variable_name)))
         [variable_name, value]
       end.to_h
+    end
+
+    def marshal_dump
       { base_behavior: @base_behavior,
         actions:       @actions,
         subjects:      @subjects,
@@ -31,7 +36,7 @@ module CanCan
         rule_source:   @rule_source,
         rule_type:     @rule_type,
         block:         @serialized_block || @block&.source&.strip,
-        block_locals:  local_variables }
+        block_locals:  block_local_variables }
     end
 
     def marshal_load(hash)
