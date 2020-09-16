@@ -148,9 +148,10 @@ RSpec.describe "current_ability" do
     end
 
     it "can use a rule with block after loading from cache" do
+      thing_in_block_binding_context = "1"
       CacheModel.define_abilities do |abilities, _user|
         abilities.can :do_stuff_to_other_user, User do |other_user|
-          other_user.id == "1"
+          other_user.id == thing_in_block_binding_context
         end
       end
       current_user = CacheModel.create
