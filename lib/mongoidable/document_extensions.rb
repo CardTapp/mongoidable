@@ -8,5 +8,16 @@ module Mongoidable
     included do
       embeds_many :instance_abilities, class_name: "Mongoidable::Ability"
     end
+
+    class_methods do
+      def _load(args)
+        raw_attributes = Marshal.load(args)
+        instantiate(raw_attributes)
+      end
+    end
+
+    def _dump(*args, &block)
+      Marshal.dump(raw_attributes, *args, &block)
+    end
   end
 end

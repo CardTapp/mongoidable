@@ -1,6 +1,5 @@
 # frozen_string_literal: true
 
-require "base64"
 require "cancan/rule"
 
 module CanCan
@@ -22,7 +21,7 @@ module CanCan
 
       local_variables = @block.binding.local_variables - [:abilities]
       local_variables.map do |variable_name|
-        value = Base64.encode64(Marshal.dump(@block.binding.local_variable_get(variable_name)))
+        value = Marshal.dump(@block.binding.local_variable_get(variable_name))
         [variable_name, value]
       rescue TypeError => error
         raise TypeError, "While dumping #{variable_name} - #{error.message}"
@@ -51,7 +50,7 @@ module CanCan
       @rule_type =        hash[:rule_type]
       @serialized_block = hash[:block]
       @block_locals =     hash[:block_locals].each do |key, value|
-        hash[:block_locals][key] = Marshal.load(Base64.decode64(value))
+        hash[:block_locals][key] = Marshal.load(value)
       end
     end
 
