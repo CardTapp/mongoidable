@@ -57,8 +57,7 @@ module Mongoidable
           rule.send(:eval, block)
           # since the block was evaled, not read from file, we will have to stash the string
           # version of the block in case we need to serialize it again.
-          added_rule = @rules.last
-          added_rule.instance_variable_set(:@serialized_block, block)
+          @rules.last.instance_variable_set(:@serialized_block, block)
         else
           # this rule has no block, just index it
           add_rule(rule)
