@@ -38,6 +38,7 @@ Gem::Specification.new do |spec|
   spec.add_dependency "ruby2ruby"
   spec.add_dependency "ruby_parser"
   spec.add_development_dependency "database_cleaner"
+  spec.add_development_dependency "rspec_junit_formatter"
   spec.add_development_dependency "rspec-rails"
   spec.add_development_dependency "rubocop"
   spec.add_development_dependency "rubocop-i18n"
