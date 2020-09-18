@@ -5,19 +5,7 @@ module Mongoidable
     module ControllerMatchers
       extend ::RSpec::Matchers::DSL
 
-      ::RSpec::Matchers.define :authorize do |can_subject|
-        def callback_chain(controller)
-          cancan_callback = controller._process_action_callbacks.detect do |callback|
-            next if callback.raw_filter.is_a? Symbol
-
-            callback.raw_filter.source_location.to_s.include?("cancan/controller_resource.rb")
-          end
-          new_callbacks = controller.__callbacks.keys.map { |key| [key, ActiveSupport::Callbacks::CallbackChain.new("test chain", {})] }.to_h
-          new_callbacks[:process_action].append(cancan_callback)
-
-          new_callbacks
-        end
-
+      ::RSpec::Matchers.define :authorize do |can_subjects|
         failure_message do
           if @expected_date
             return "expected cookie to have date within #{@expected_range} of #{@expected_date}, got #{@actual_date}" if @expected_range
@@ -28,19 +16,42 @@ module Mongoidable
 
         match do |controller|
           allow(controller).to receive(@controller_action) {}
-          allow(controller).to receive(:__callbacks).and_return(callback_chain(controller))
+          allow(controller.class).to receive(:__callbacks).and_return({})
+          controller.class.define_callbacks :process_action
 
-          matcher = ::RSpec::Mocks::Matchers::Receive.new(:authorize!, nil).with(@controller_action, can_subject)
-          verify = matcher.setup_expectation(controller)
+          CanCan::ControllerResource.add_before_action(controller.class, :authorize_resource, *(@authorize_args || []))
+
+          verifiers = Array.wrap(can_subjects).map do |subject|
+            matcher = ::RSpec::Mocks::Matchers::Receive.new(:authorize!, nil).with(@controller_action, subject)
+            matcher.setup_expectation(controller)
+          end
+
+          if @through_action
+            controller.params = ActionController::Parameters.new(@action_params)
+            controller.send(@through_action)
+          end
+
           send(@controller_method, @controller_action, params: @action_params)
         ensure
-          verify
+          verifiers
         end
 
         chain :for do |controller_method, controller_action, action_params = {}|
           @controller_method = controller_method
           @controller_action = controller_action
           @action_params = action_params
+        end
+
+        chain :with do |*authorize_args|
+          @authorize_args = authorize_args
+        end
+
+        chain :through_action do |through_action|
+          @through_action = through_action
+        end
+
+        chain :and do |through_action|
+          @through_action = through_action
         end
       end
 
