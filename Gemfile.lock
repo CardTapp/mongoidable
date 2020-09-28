@@ -176,7 +176,7 @@ GEM
       rubocop (>= 0.49.1)
     rubocop-rspec (1.43.2)
       rubocop (~> 0.87)
-    rubocop-thread_safety (0.3.4)
+    rubocop-thread_safety (0.4.1)
       rubocop (>= 0.51.0)
     ruby-progressbar (1.10.1)
     ruby2js (3.2.0)
