@@ -6,22 +6,22 @@ module Mongoidable
       extend ::RSpec::Matchers::DSL
 
       class ControllerHelper < SimpleDelegator
-        def initialize(obj, controller, authorize_action, authorized_object)
+        def initialize(obj, controller, authorize_pairs)
           super(obj)
 
-          @controller        = controller
-          @authorize_action  = authorize_action
-          @authorized_object = authorized_object
+          @controller = controller
+          @authorize_pairs = authorize_pairs
         end
 
         def error_message
-          "The #{controller.class.name} did not authenticate the action #{authorize_action} against the specified object."
+          "The #{controller.class.name} did not authenticate the action #{action} against the specified object."
         end
 
-        def run_callbacks
+        def process_action
           setup_controller
 
-          matchers = [authorization_matcher]
+          matchers = authorization_matcher
+          controller._run_process_action_callbacks
 
           loaded_matcher
 
@@ -31,8 +31,7 @@ module Mongoidable
         private
 
         attr_reader :controller,
-                    :authorize_action,
-                    :authorized_object
+                    :authorize_pairs
 
         def loaded_matcher
           return unless and_load_instance
@@ -41,26 +40,23 @@ module Mongoidable
         end
 
         def authorization_matcher
-          authorize_callbacks.each do |callback|
-            callback.call(controller)
+          authorize_pairs.map do |authorize_action, authorized_object|
+            matcher = receive(:authorize!).with(authorize_action, authorized_object)
+            matcher.setup_expectation(controller)
           end
-
-          matcher = have_received(:authorize!).with(authorize_action, authorized_object)
-          matcher.setup_expectation(controller)
-
-          matcher
         end
 
         def setup_controller
           controller.params.merge! controller_params
-
           controller.params[:action]     = controller_action
           controller.params[:controller] = controller.class.name.underscore[0..-12]
+          controller.set_response!(response)
+
           allow(controller).to receive(:action_name).and_return controller_action.to_s
-
-          set_controller_instance_variables
-
           allow(controller).to receive(:authorize!)
+          allow(controller).to receive(controller_action) {}
+
+          setup_callbacks
         end
 
         def and_load_instance
@@ -79,42 +75,29 @@ module Mongoidable
           __getobj__.instance_variable_get(:@controller_params)
         end
 
-        def after_filter_name
-          __getobj__.instance_variable_get(:@after_filter_name)
-        end
-
-        def set_controller_instance_variables
-          return if instance_variables.blank?
-
-          instance_variables.each do |variable_name, use_value|
-            variable_name ||= controller_variable_name
-            controller.instance_variable_set("@#{variable_name}", use_value)
-          end
-        end
-
-        def instance_variables
-          __getobj__.instance_variable_get(:@instance_variables)
+        def run_actions_named
+          __getobj__.instance_variable_get(:@run_actions_named) || []
         end
 
         def controller_variable_name
           controller.class.name[0..-11].demodulize.singularize.underscore
         end
 
-        def authorize_callbacks
-          found_filter = after_filter_name.blank?
+        def setup_callbacks
+          cancan_callbacks = controller._process_action_callbacks.filter do |callback|
+            raw_filter = callback.raw_filter
 
-          @authorize_callbacks ||= controller._process_action_callbacks.each_with_object([]) do |action, array|
-            filter = action.raw_filter
-
-            found_filter ||= filter == after_filter_name && action_is_called?(action)
-
-            next unless found_filter
-            next unless filter.is_a?(Proc)
-            next unless filter.source_location.to_s.include?("cancan/controller_resource.rb")
-            next unless action_is_called?(action)
-
-            array << filter
+            if raw_filter.is_a?(Symbol)
+              run_actions_named.include?(raw_filter)
+            else
+              raw_filter.source_location.to_s.include?("cancan/controller_resource.rb")
+            end
           end
+
+          new_callbacks = { process_action: ActiveSupport::Callbacks::CallbackChain.new("test chain", {}) }
+          new_callbacks[:process_action].append(*cancan_callbacks)
+
+          allow(controller).to receive(:__callbacks).and_return(new_callbacks)
         end
 
         def action_is_called?(action)
@@ -127,6 +110,7 @@ module Mongoidable
       #     [optional, multiple] with_variable(variable, instance_name = nil).
       #     [optional] after_action(action_name)
       ::RSpec::Matchers.define :authorize do |authorize_action, authorized_object|
+        authorize_pairs = [[authorize_action, authorized_object]]
         failure_message do
           if @helper
             @helper.error_message
@@ -136,9 +120,9 @@ module Mongoidable
         end
 
         match do |controller|
-          @helper = Mongoidable::RSpec::ControllerMatchers::ControllerHelper.new(self, controller, authorize_action, authorized_object)
+          @helper = Mongoidable::RSpec::ControllerMatchers::ControllerHelper.new(self, controller, authorize_pairs)
 
-          verifiers = @helper.run_callbacks
+          verifiers = @helper.process_action
         ensure
           verifiers
         end
@@ -148,18 +132,19 @@ module Mongoidable
           @controller_params = controller_params
         end
 
-        chain :with_variable do |variable, instance_name = nil|
-          @instance_variables                ||= {}
-          @instance_variables[instance_name] = variable
+        chain :run_actions do |*filter_name|
+          @run_actions_named = Array.wrap(filter_name)
         end
 
-        chain :after_action do |filter_name|
-          @after_filter_name = filter_name
+        chain :and do |new_action, new_object|
+          authorize_pairs << [new_action, new_object]
         end
       end
 
       def authorizes_controller
-        allow(subject).to receive_message_chain(:current_ability, :authorize!).and_return(true)
+        def subject.current_ability
+          Mongoidable::RSpec::CurrentAbilityControllerStub.new(super)
+        end
       end
     end
   end
