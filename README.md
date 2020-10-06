@@ -84,3 +84,41 @@ Mongoidable.configure do |config|
   config.context_module = MongoidableContext
 end
 ```
+
+## Spec helpers
+
+Mongoidable adds several spec hooks that can be used to setup default behaviors. To use these hooks add the symbol to the test description or context
+
+Example
+```
+describe "that thing", :with_abilities do
+  it "does not do thing", default_can_ability_with: false do
+
+  end
+end
+```
+
+Spec hooks available in all specs
+* :with_abilities - Uses abilities with no stubs in place
+* :default_can_ability_with - Stubs the default value for a can? check Example `default_can_ability_with: true`
+* :default_cannot_ability_with - Stubs the default value for a cannot? check Example`default_cannot_ability_with: false`
+* :default_abilities - Stubs the default value for can? to true and cannot? to false
+
+Spec hooks available to controllers
+* :authorizes_controller - Stubs controller.authorize! to return true
+
+Controller Authorization Test Helpers
+Mongoidable includes a test helper for verifying that controller actions are authorized. In it's simplest form it will appear as follows
+```
+it { is_expected.to authorize(:action, subject).for(:index) }
+```
+The test helpers will stub out the controller action and any controller before_action hooks and verify only that the cancan controller authorization callback is ran. 
+
+To include specific actions use `runs_actions`. These hooks will be ran prior to verifying the correct authorize calls.
+```
+it { is_expected.to authorize(:action, subject).for(:index).run_actions(:first_hook, :second_hook }
+```
+If the action requires special parameters such as an id or format. Include the params in the `for` arguments
+```
+it { is_expected.to authorize(:action, subject).for(:index, id: 1, format: :json).run_actions(:first_hook, :second_hook }
+```
