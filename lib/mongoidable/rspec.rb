@@ -5,6 +5,7 @@ load "mongoidable/rspec/configuration.rb"
 load "mongoidable/rspec/controller_matchers.rb"
 load "mongoidable/rspec/current_ability_controller_stub.rb"
 load "mongoidable/rspec/abilities_test_stub.rb"
+load "mongoidable/rspec/exact_matcher.rb"
 
 module Mongoidable
   module RSpec

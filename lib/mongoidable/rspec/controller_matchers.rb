@@ -33,11 +33,16 @@ module Mongoidable
 
         def authorization_matcher
           authorize_pairs.map do |authorize_action, authorized_object|
-            matcher = receive(:authorize!).with(authorize_action, authorized_object)
+            matcher = receive(:authorize!).with(
+                exact_match(authorize_action),
+                exact_match(authorized_object))
             matcher.setup_expectation(controller)
           end
         end
 
+        def exact_match(value)
+          Mongoidable::RSpec::ExactMatcher.new(value)
+        end
         def setup_controller
           controller.params.merge! controller_params
           controller.params[:action]     = controller_action
