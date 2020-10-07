@@ -14,7 +14,7 @@ module Mongoidable
         end
 
         def error_message
-          "The #{controller.class.name} did not authenticate the action #{action} against the specified object."
+          "The #{controller.class.name} did not authenticate the actions #{authorize_pairs.map(&:first)} against the specified object(s)."
         end
 
         def process_action
@@ -23,8 +23,6 @@ module Mongoidable
           matchers = authorization_matcher
           controller._run_process_action_callbacks
 
-          loaded_matcher
-
           matchers
         end
 
@@ -32,12 +30,6 @@ module Mongoidable
 
         attr_reader :controller,
                     :authorize_pairs
-
-        def loaded_matcher
-          return unless and_load_instance
-
-          expect(controller.instance_variable_get("@#{and_load_instance_name}")).to be
-        end
 
         def authorization_matcher
           authorize_pairs.map do |authorize_action, authorized_object|
@@ -59,14 +51,6 @@ module Mongoidable
           setup_callbacks
         end
 
-        def and_load_instance
-          __getobj__.instance_variable_get(:@and_load_instance)
-        end
-
-        def and_load_instance_name
-          __getobj__.instance_variable_get(:@and_load_instance_name) || controller_variable_name
-        end
-
         def controller_action
           __getobj__.instance_variable_get(:@controller_action)
         end
@@ -77,10 +61,6 @@ module Mongoidable
 
         def run_actions_named
           __getobj__.instance_variable_get(:@run_actions_named) || []
-        end
-
-        def controller_variable_name
-          controller.class.name[0..-11].demodulize.singularize.underscore
         end
 
         def setup_callbacks
@@ -98,10 +78,6 @@ module Mongoidable
           new_callbacks[:process_action].append(*cancan_callbacks)
 
           allow(controller).to receive(:__callbacks).and_return(new_callbacks)
-        end
-
-        def action_is_called?(action)
-          Array.wrap(action.instance_variable_get(:@if)).all? { |ifcall| ifcall.call(controller) }
         end
       end
 

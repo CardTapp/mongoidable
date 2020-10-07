@@ -3,7 +3,7 @@
 require "rails_helper"
 require "cancan/matchers"
 
-RSpec.describe "current_ability" do
+RSpec.describe "current_ability", :with_abilities do
   it "classes properly inherit relations in derived classes" do
     parent_1 = Parent1.new
     parent_2 = Parent2.new
@@ -162,7 +162,7 @@ RSpec.describe "current_ability" do
 
     it "calling current_ability with skip_cache: true skips caching" do
       user = CacheModel.create
-      user.current_ability
+      user.current_ability(skip_cache: true)
       expect(user).to receive(:add_inherited_abilities)
       user.current_ability(skip_cache: true)
     end
