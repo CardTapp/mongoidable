@@ -41,6 +41,8 @@ module Mongoidable
         end
 
         def exact_match(value)
+          return value if value.is_a?(Mongoidable::RSpec::InstanceVariableMatcher)
+
           Mongoidable::RSpec::ExactMatcher.new(value)
         end
         def setup_controller
@@ -126,6 +128,10 @@ module Mongoidable
         def subject.current_ability
           Mongoidable::RSpec::CurrentAbilityControllerStub.new(super)
         end
+      end
+
+      def instance_variable(variable_name)
+        Mongoidable::RSpec::InstanceVariableMatcher.new(variable_name, subject)
       end
     end
   end

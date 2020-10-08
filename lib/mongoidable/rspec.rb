@@ -6,6 +6,7 @@ load "mongoidable/rspec/controller_matchers.rb"
 load "mongoidable/rspec/current_ability_controller_stub.rb"
 load "mongoidable/rspec/abilities_test_stub.rb"
 load "mongoidable/rspec/exact_matcher.rb"
+load "mongoidable/rspec/instance_variable_matcher.rb"
 
 module Mongoidable
   module RSpec
@@ -24,6 +25,7 @@ module Mongoidable
     end
 
     ::RSpec.configure do |config|
+      config.include Mongoidable::RSpec::ControllerMatchers, type: :controller
       config.include Mongoidable::RSpec::ControllerMatchers, type: :controller
 
       config.prepend_before(:each) do |example|
