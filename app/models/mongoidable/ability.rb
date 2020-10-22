@@ -18,7 +18,7 @@ module Mongoidable
 
     validates :action, presence: true
     validate :subject do |object|
-      raise ArgumentError, ":subject cannot be blank" if object.subject.nil?
+      raise ArgumentError, _(":subject cannot be blank") if object.subject.nil?
     end
     validates :base_behavior, presence: true
 
