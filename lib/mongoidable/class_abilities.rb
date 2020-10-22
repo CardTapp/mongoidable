@@ -61,7 +61,7 @@ module Mongoidable
       end
 
       def singular_relation?(relation)
-        !relation.relation.macro.to_s.include?("many")
+        relation.relation.macro.to_s.exclude?("many")
       end
     end
     # rubocop:enable Metrics/BlockLength

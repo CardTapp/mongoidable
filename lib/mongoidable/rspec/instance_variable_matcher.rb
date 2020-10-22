@@ -8,11 +8,9 @@ module Mongoidable
         @subject = subject
       end
 
-      def ==(value)
-        variable_value == value
-      end
+      delegate :==, to: :variable_value
 
-      def ===(value)
+      def ===(_other)
         false
       end
 

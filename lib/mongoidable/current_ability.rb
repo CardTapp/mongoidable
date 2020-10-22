@@ -10,46 +10,32 @@ module Mongoidable
   module CurrentAbility
     attr_accessor :parent_model
 
-    def current_ability(parent = nil, skip_cache: false)
-      with_ability_cache(skip_cache) do
-        if defined?(Mongoidable::RSpec) && !Mongoidable::RSpec.configuration.with_abilities
-          return Mongoidable::RSpec::AbilitiesTestStub.new(mongoidable_identity)
-        else
-          abilities = Mongoidable::Abilities.new(mongoidable_identity)
-          add_inherited_abilities(abilities, skip_cache)
-          add_ancestral_abilities(abilities, parent)
-          abilities.merge(own_abilities)
-        end
+    def current_ability(parent = nil)
+      if defined?(Mongoidable::RSpec) && !Mongoidable::RSpec.configuration.with_abilities
+        Mongoidable::RSpec::AbilitiesTestStub.new(mongoidable_identity)
+      else
+        abilities = Mongoidable::Abilities.new(mongoidable_identity, parent || self)
+        add_inherited_abilities(abilities)
+        add_ancestral_abilities(abilities, parent)
+        abilities.merge(own_abilities)
       end
     end
 
     private
 
-    def should_cache?
-      config.enable_caching
-    end
-
-    def with_ability_cache(skip_cache, &block)
-      if should_cache? && !skip_cache
-        Rails.cache.fetch(ability_cache_key, expires_in: ability_cache_expiration, &block)
-      else
-        yield
-      end
-    end
-
-    def add_inherited_abilities(abilities, skip_cache)
+    def add_inherited_abilities(abilities)
       self.class.inherits_from.reduce(abilities) do |sum, inherited_from|
         relation = send(inherited_from[:name])
-        next sum unless relation.present?
+        next sum if relation.blank?
 
         order_by = inherited_from[:order_by]
         descending = inherited_from[:direction] == :desc
-        next sum unless relation.present?
+        next sum if relation.blank?
 
         relations = Array.wrap(relation)
         relations.sort_by! { |item| item.send(order_by) } if order_by
         relations.reverse! if descending
-        relations.each { |object| sum.merge(object.current_ability(self, skip_cache: skip_cache)) }
+        relations.each { |object| sum.merge(object.current_ability(self)) }
         sum
       end
     end
@@ -62,18 +48,6 @@ module Mongoidable
       end
     ensure
       abilities.rule_type = :adhoc
-    end
-
-    def config
-      Mongoidable.configuration
-    end
-
-    def ability_cache_key
-      "#{config.cache_key_prefix}/#{cache_key}"
-    end
-
-    def ability_cache_expiration
-      config.cache_ttl.seconds
     end
   end
 end

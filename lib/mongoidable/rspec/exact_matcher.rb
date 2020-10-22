@@ -7,11 +7,11 @@ module Mongoidable
         @expected = expected
       end
 
-      def ==(value)
-        @expected == value
+      def ==(other)
+        @expected == other
       end
 
-      def ===(value)
+      def ===(_other)
         false
       end
 

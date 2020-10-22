@@ -1,7 +1,7 @@
 # frozen_string_literal: true
 
 class Inheritance < User
-  belongs_to :parent3, class_name: "Parent3", required: false
+  belongs_to :parent3, class_name: "Parent3", optional: true
 
   inherits_abilities_from(:parent3)
 

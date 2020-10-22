@@ -14,6 +14,7 @@ module Mongoidable
         I18n.t("mongoidable.ability.description.#{action}", subject: self[:subject])
       end.join("/")
       self[:type] = rule.rule_type
+      super
     end
 
     private
@@ -31,7 +32,7 @@ module Mongoidable
     end
 
     def conditions=(rule)
-      self[:conditions] = rule.conditions unless rule.conditions.blank?
+      self[:conditions] = rule.conditions if rule.conditions.present?
     end
 
     def inverted=(rule)

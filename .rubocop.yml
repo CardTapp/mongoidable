@@ -1,4 +1,10 @@
-require: rubocop-performance
+require:
+  - rubocop/require_tools
+  - rubocop-i18n
+  - rubocop-performance
+  - rubocop-rails
+  - rubocop-rspec
+  - rubocop-thread_safety
 
 AllCops:
   TargetRubyVersion: 2.7
@@ -12,6 +18,7 @@ AllCops:
     - 'config.ru'
     - 'bin/**/*'
     - 'node_modules/**/*'
+  NewCops: enable
   UseCache: false
 
 Layout/BlockAlignment:

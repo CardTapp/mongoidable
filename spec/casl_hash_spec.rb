@@ -8,31 +8,37 @@ RSpec.describe "casl_hash" do
     hash = Mongoidable::CaslHash.new(rule)
     expect(hash[:action]).to eq [:action]
   end
+
   it "sets the subject when a symbol" do
     rule = CanCan::Rule.new(false, :action, :subject)
     hash = Mongoidable::CaslHash.new(rule)
     expect(hash[:subject]).to eq [:subject]
   end
+
   it "sets the subject when a class" do
     rule = CanCan::Rule.new(false, :action, User)
     hash = Mongoidable::CaslHash.new(rule)
     expect(hash[:subject]).to eq ["User"]
   end
+
   it "sets the conditions when present" do
     rule = CanCan::Rule.new(false, :action, User, { id: 1 })
     hash = Mongoidable::CaslHash.new(rule)
     expect(hash[:conditions]).to eq({ id: 1 })
   end
+
   it "skips the conditions when not present" do
     rule = CanCan::Rule.new(false, :action, User)
     hash = Mongoidable::CaslHash.new(rule)
-    expect(hash[:conditions]).not_to be
+    expect(hash.key?(:conditions)).to eq false
   end
+
   it "sets inverted when base_behavior is false" do
     rule = CanCan::Rule.new(false, :action, User)
     hash = Mongoidable::CaslHash.new(rule)
     expect(hash[:inverted]).to be_truthy
   end
+
   it "skips inverted when base_behavior is true" do
     rule = CanCan::Rule.new(true, :action, User)
     hash = Mongoidable::CaslHash.new(rule)

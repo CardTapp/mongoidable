@@ -12,6 +12,7 @@ RSpec.describe "current_ability", :with_abilities do
     expect(permissions).to eq({
                                   can:    {
                                       do_inherited_class_stuff: { "User" => [] },
+                                      do_nested_stuff:          { "User"=>[] },
                                       do_parent1_class_stuff:   { "User" => [] },
                                       do_parent2_class_stuff:   { "User" => [] },
                                       do_parent3_class_stuff:   { "User" => [] },
@@ -75,6 +76,7 @@ RSpec.describe "current_ability", :with_abilities do
 
     expect(user.current_ability.permissions).to eq({
                                                        can:    {
+                                                           do_nested_stuff:            { "User"=>[] },
                                                            do_parent1_class_stuff:     { "User" => [] },
                                                            do_parent1_instance_things: { "on_something" => [] },
                                                            do_parent2_class_stuff:     { "User" => [] },
@@ -136,15 +138,22 @@ RSpec.describe "current_ability", :with_abilities do
   end
 
   describe "caching" do
-    before(:each) do
+    before do
       allow(Mongoidable.configuration).to receive(:enable_caching).and_return true
     end
 
     it "uses cache if enabled" do
+      ability_proc = -> {}
+      CacheModel.define_abilities do |abilities, _model|
+        abilities.can :action, :subject do
+          ability_proc.call
+          true
+        end
+      end
       user = CacheModel.create
-      result = user.current_ability.to_casl_list
-      expect(user).not_to receive(:add_inherited_abilities)
-      expect(user.current_ability.to_casl_list).to eq result
+      expect(user.current_ability.can?(:action, :subject)).to eq true
+      expect(ability_proc).not_to receive(:call)
+      expect(user.current_ability.can?(:action, :subject)).to eq true
     end
 
     it "can use a rule with block after loading from cache" do

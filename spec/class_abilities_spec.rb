@@ -3,7 +3,7 @@
 require "rails_helper"
 require "cancan/matchers"
 RSpec.describe "class_abilities", :with_abilities do
-  after(:each) do
+  after do
     Object.send(:remove_const, :User)
     load "dummy/app/models/user.rb"
   end

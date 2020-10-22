@@ -6,8 +6,8 @@ class User
 
   field :name, type: String
 
-  belongs_to :parent1, class_name: "Parent1", required: false
-  belongs_to :parent2, class_name: "Parent2", required: false
+  belongs_to :parent1, class_name: "Parent1", optional: true
+  belongs_to :parent2, class_name: "Parent2", optional: true
   embeds_many :embedded_parents, class_name: "Parent1"
   inherits_abilities_from(:parent1)
   inherits_abilities_from(:parent2)

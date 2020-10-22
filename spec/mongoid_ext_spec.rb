@@ -19,6 +19,7 @@ RSpec.describe "mongoid_ext", :with_abilities do
 
       expect(user.current_ability.permissions).to eq({
                                                          can:    {
+                                                             do_nested_stuff:            { "User"=>[] },
                                                              do_parent1_class_stuff:     { "User" => [] },
                                                              do_parent1_instance_things: { "on_something" => [] },
                                                              do_parent2_class_stuff:     { "User" => [] },
