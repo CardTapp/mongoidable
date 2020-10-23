@@ -17,7 +17,7 @@ module Mongoidable
 
     def cannot?(*args)
       if can_cache?
-        Rails.cache.fetch(ability_cache_key(args)) { super }
+        Rails.cache.fetch(ability_cache_key(args), cache_options) { super }
       else
         super
       end
@@ -30,7 +30,7 @@ module Mongoidable
 
     def can?(*args)
       if can_cache?
-        Rails.cache.fetch(ability_cache_key(args)) { super }
+        Rails.cache.fetch(ability_cache_key(args), cache_options) { super }
       else
         super
       end
@@ -64,6 +64,13 @@ module Mongoidable
 
     def ability_cache_expiration
       config.cache_ttl.seconds
+    end
+
+    def cache_options
+      {
+          expires_in:         ability_cache_expiration,
+          race_condition_ttl: 10.seconds
+      }
     end
   end
 end
