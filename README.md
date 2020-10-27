@@ -99,7 +99,8 @@ end
 ```
 
 Spec hooks available in all specs
-* :with_abilities - Uses abilities with no stubs in place
+* with_abilities: true - Uses abilities with no stubs in place
+* with_abilities: {action: :subject, action2: :subject2} adds only these checks to the ability list
 * :default_can_ability_with - Stubs the default value for a can? check Example `default_can_ability_with: true`
 * :default_cannot_ability_with - Stubs the default value for a cannot? check Example`default_cannot_ability_with: false`
 * :default_abilities - Stubs the default value for can? to true and cannot? to false

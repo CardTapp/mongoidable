@@ -19,16 +19,25 @@ module Mongoidable
           abilities.can? action, subject
         else
           value = config.default_can_ability_with
-          raise _("Test ability configuration missing") unless !value.nil? || test_abilities_configured?
+          raise "Test ability configuration missing" unless !value.nil? || test_abilities_configured?
 
           return value unless value.nil?
 
-          raise _("Invalid ability configuration")
+          raise "Invalid ability configuration"
         end
       end
 
       def cannot?(*args)
-        !can?(*args)
+        if config.with_abilities
+          !abilities.can? action, subject
+        else
+          value = config.default_cannot_ability_with
+          raise "Test ability configuration missing" unless !value.nil? || test_abilities_configured?
+
+          return value unless value.nil?
+
+          raise "Invalid ability configuration"
+        end
       end
 
       def cannot(action = nil, subject = nil, *attributes_and_conditions, &block)

@@ -42,7 +42,7 @@ module Mongoidable
         raise ArgumentError, "Could not find relation #{relation_key}" unless relation_exists?(relation_key)
 
         relation = relations[relation_key.to_s]
-        raise ArgumentError, _("Attempt to use singular inheritance on many relation") unless singular_relation?(relation)
+        raise ArgumentError, "Attempt to use singular inheritance on many relation" unless singular_relation?(relation)
 
         true
       end
