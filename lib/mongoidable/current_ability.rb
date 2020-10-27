@@ -11,8 +11,8 @@ module Mongoidable
     attr_accessor :parent_model
 
     def current_ability(parent = nil)
-      if defined?(Mongoidable::RSpec) && !Mongoidable::RSpec.configuration.with_abilities
-        Mongoidable::RSpec::AbilitiesTestStub.new(mongoidable_identity)
+      if defined?(Mongoidable::RSpec) && Mongoidable::RSpec.configuration.with_abilities != true
+        Mongoidable::RSpec::AbilitiesTestStub.new(mongoidable_identity, parent || self)
       else
         abilities = Mongoidable::Abilities.new(mongoidable_identity, parent || self)
         add_inherited_abilities(abilities)

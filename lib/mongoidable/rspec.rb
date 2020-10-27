@@ -24,18 +24,20 @@ module Mongoidable
       end
     end
 
-    ::RSpec.configure do |config|
-      config.include Mongoidable::RSpec::ControllerMatchers, type: :controller
-      config.include Mongoidable::RSpec::ControllerMatchers, type: :controller
+    ::RSpec.configure do |rspec_config|
+      rspec_config.include Mongoidable::RSpec::ControllerMatchers, type: :controller
+      rspec_config.include Mongoidable::RSpec::ControllerMatchers, type: :controller
 
-      config.prepend_before(:each) do |example|
+      rspec_config.prepend_before(:each) do |example|
         Mongoidable::RSpec.reset
         meta = example.metadata
-        Mongoidable::RSpec.configuration.with_abilities = true if meta[:with_abilities] || meta[:type] == :feature
-        Mongoidable::RSpec.configuration.set_by_example(example, :default_can_ability_with) unless meta[:default_can_ability_with].nil?
-        Mongoidable::RSpec.configuration.set_by_example(example, :default_cannot_ability_with) unless meta[:default_cannot_ability_with].nil?
-        Mongoidable::RSpec.configuration.set_by_example(example, :default_abilities) unless meta[:default_abilities].nil?
-
+        Mongoidable::RSpec.configuration.tap do |config|
+          config.with_abilities = true if meta[:type] == :feature
+          config.with_abilities = meta[:with_abilities] if meta.key?(:with_abilities) && config.with_abilities != true
+          config.set_by_example(example, :default_can_ability_with) unless meta[:default_can_ability_with].nil?
+          config.set_by_example(example, :default_cannot_ability_with) unless meta[:default_cannot_ability_with].nil?
+          config.set_by_example(example, :default_abilities) unless meta[:default_abilities].nil?
+        end
         authorizes_controller if meta[:authorizes_controller].present?
       end
     end
