@@ -27,7 +27,7 @@ module Mongoidable
         end
       end
 
-      def cannot?(*args)
+      def cannot?(action, subject, _attribute = nil, *_extra_args)
         if config.with_abilities
           !abilities.can? action, subject
         else
