@@ -17,7 +17,7 @@ module Mongoidable
 
     def cannot?(*args)
       if can_cache?
-        Rails.cache.fetch(ability_cache_key(args), cache_options) { super }
+        !Rails.cache.fetch(ability_cache_key(args), cache_options) { !super }
       else
         super
       end

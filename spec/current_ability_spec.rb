@@ -154,6 +154,24 @@ RSpec.describe "current_ability", :with_abilities do
       expect(user.current_ability.can?(:action, :subject)).to eq true
       expect(ability_proc).not_to receive(:call)
       expect(user.current_ability.can?(:action, :subject)).to eq true
+      expect(user.current_ability.cannot?(:action, :subject)).to eq false
+    end
+
+    it "cannot? uses cache if enabled" do
+      ability_proc = -> {}
+
+      CacheModel.define_abilities do |abilities, _model|
+        abilities.can :action, :subject do
+          ability_proc.call
+          true
+        end
+      end
+
+      user = CacheModel.create
+      expect(user.current_ability.cannot?(:fake_action, :subject)).to eq true
+      expect(ability_proc).not_to receive(:call)
+      expect(user.current_ability.cannot?(:fake_action, :subject)).to eq true
+      expect(user.current_ability.can?(:fake_action, :subject)).to eq false
     end
 
     it "can use a rule with block after loading from cache" do
