@@ -59,7 +59,11 @@ module Mongoidable
     end
 
     def ability_cache_key(args)
-      "#{config.cache_key_prefix}/#{parent_model.cache_key}/#{args}"
+      "#{config.cache_key_prefix}/#{parent_model.cache_key}/#{cache_normalize_args(args)}"
+    end
+
+    def cache_normalize_args(args)
+      args.map { |arg| arg.respond_to?(:cache_key) ? arg.cache_key : arg }
     end
 
     def ability_cache_expiration
