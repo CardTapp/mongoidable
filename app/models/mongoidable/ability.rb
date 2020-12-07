@@ -17,8 +17,9 @@ module Mongoidable
     field :extra, type: Array
 
     validates :action, presence: true
-    validate :subject do |object|
-      raise ArgumentError, ":subject cannot be blank" if object.subject.nil?
+    validate do |object|
+      errors[:subject] << "cannot be blank" if object.subject.nil?
+      errors[:parent] << "does not support type #{_parent}" unless valid_for_parent?
     end
     validates :base_behavior, presence: true
 
@@ -31,6 +32,10 @@ module Mongoidable
     end
 
     private
+
+    def valid_for_parent?
+      true
+    end
 
     def touch_parent
       _parent.touch
