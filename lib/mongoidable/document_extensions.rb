@@ -7,6 +7,10 @@ module Mongoidable
 
     included do
       embeds_many :instance_abilities, class_name: "Mongoidable::Ability"
+
+      after_find do
+        instance_abilities.each { |ability| ability.parentize(self) }
+      end
     end
   end
 end

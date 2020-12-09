@@ -13,6 +13,7 @@ require "ruby2js/filter/return"
 
 require "mongoidable/cancan/active_record_disabler"
 require "mongoidable/rule"
+require "mongoidable/relations_dirty_tracking"
 
 require "mongoidable/casl_hash"
 require "mongoidable/casl_list"

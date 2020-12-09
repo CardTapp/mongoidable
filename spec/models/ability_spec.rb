@@ -10,12 +10,13 @@ RSpec.describe Mongoidable::Ability, :with_abilities do
     end
 
     def valid_for_parent?
-      return @valid
+      @valid
     end
   end
 
   it "is valid for any parent model by default" do
     ability = described_class.new(base_behavior: true, action: :do_something, subject: User, extra: [{ id: 2 }])
+    ability.parentize(Object.new)
     expect(ability.valid?).to eq true
   end
 
@@ -26,12 +27,14 @@ RSpec.describe Mongoidable::Ability, :with_abilities do
 
   it "accepts a class as the subject" do
     ability = described_class.new(base_behavior: true, action: :do_something, subject: Mongoid::Document)
+    ability.parentize(Object.new)
     expect(ability).to be_valid
     expect(ability.subject).to eq Mongoid::Document
   end
 
   it "accepts a symbol as the subject" do
     ability = described_class.new(base_behavior: true, action: :do_something, subject: :asdf)
+    ability.parentize(Object.new)
     expect(ability).to be_valid
     expect(ability.subject).to eq :asdf
   end
