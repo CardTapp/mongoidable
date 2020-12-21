@@ -5,15 +5,15 @@ module Mongoidable
     class << self
       def mongoize(object)
         if object.nil?
-          ""
+          {type: "nil", value: nil}
         elsif object.is_a? Class
-          object.name
+          {type: "class", value: object.name}
         elsif object.is_a? Module
-          object.name
+          {type: "module", value: object.name}
+        elsif object.is_a? String
+          {type: "string", value: object}
         elsif object.is_a? Symbol
-          object.to_s
-        elsif Object.const_defined?(object)
-          object
+          {type: "symbol", value: object.to_s}
         else
           raise ArgumentError, "Unable to serialize #{object}"
         end
@@ -22,12 +22,18 @@ module Mongoidable
       end
 
       def demongoize(object)
-        if object == ""
+        type, value = object.values_at(:type, :value)
+        case type
+        when "nil"
           nil
-        elsif object.classify.safe_constantize
-          object.constantize
+        when "module", "class"
+          value.classify.safe_constantize
+        when "symbol"
+          value.to_sym
+        when "string"
+          value.to_s
         else
-          object.to_s.to_sym
+                       raise ArgumentError, "Unable to deserialize #{object}"
         end
       end
 
