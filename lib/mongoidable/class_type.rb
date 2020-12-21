@@ -4,7 +4,9 @@ module Mongoidable
   class ClassType
     class << self
       def mongoize(object)
-        if object.nil?
+        if object.is_a?(Hash) && %w[type value].all?{|key| object.with_indifferent_access.key?(key)}
+          object
+        elsif object.nil?
           {type: "nil", value: nil}
         elsif object.is_a? Class
           {type: "class", value: object.name}
