@@ -22,7 +22,7 @@ module Mongoidable
       end
 
       def demongoize(object)
-        type, value = object.values_at(:type, :value)
+        type, value = object.to_h.with_indifferent_access.values_at(:type, :value)
         case type
         when "nil"
           nil
