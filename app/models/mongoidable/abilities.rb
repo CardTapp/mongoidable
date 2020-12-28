@@ -48,6 +48,11 @@ module Mongoidable
       extra
     end
 
+    def reset
+      @rules = nil
+      @rules_index = nil
+    end
+
     private
 
     def can_cache?

@@ -11,10 +11,11 @@ module Mongoidable
     attr_accessor :parent_model
 
     def current_ability(parent = nil, skip_cache: false)
-      abilities = Mongoidable::Abilities.new(mongoidable_identity, parent || self)
-      add_inherited_abilities(abilities, skip_cache)
-      add_ancestral_abilities(abilities, parent, skip_cache)
-      abilities.merge(own_abilities(skip_cache))
+      @abilities ||= Mongoidable::Abilities.new(mongoidable_identity, parent || self)
+      @abilities.reset
+      add_inherited_abilities(@abilities, skip_cache)
+      add_ancestral_abilities(@abilities, parent, skip_cache)
+      @abilities.merge(own_abilities(skip_cache))
     end
 
     private
