@@ -6,7 +6,9 @@ module Mongoidable
     extend ActiveSupport::Concern
 
     included do
-      embeds_many :instance_abilities, class_name: "Mongoidable::Ability"
+      raise TypeError unless Mongoidable.configuration.ability_class.constantize.superclass == Mongoidable::Ability
+
+      embeds_many :instance_abilities, class_name: Mongoidable.configuration.ability_class
 
       after_find do
         instance_abilities.each { |ability| ability.parentize(self) }

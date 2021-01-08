@@ -85,6 +85,8 @@ Mongoidable.configure do |config|
 end
 ```
 
+## Extension
+You may find in your implementation that you need additional functionality for the records that are saved as an instance ability. To do so, simply derive your new class from "Mongoidable::Ability" and specify it in the config initializer. `config.ability_class = "MyApplication::Ability"`
 ## Spec helpers
 
 Mongoidable adds several spec hooks that can be used to setup default behaviors. To use these hooks add the symbol to the test description or context
