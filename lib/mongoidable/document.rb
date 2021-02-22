@@ -19,5 +19,11 @@ module Mongoidable
         @own_abilities = nil
       end
     end
+
+    class_methods do
+      def default_ability
+        Mongoidable.configuration.ability_class
+      end
+    end
   end
 end

@@ -11,7 +11,9 @@ module Mongoidable
     attr_accessor :parent_model
 
     def current_ability(parent = nil, skip_cache: false)
-      @abilities ||= Mongoidable::Abilities.new(mongoidable_identity, parent || self)
+      if skip_cache || !@abilities.present?
+        renew_abilities(parent)
+      end
       @abilities.reset
       add_inherited_abilities(@abilities, skip_cache)
       add_ancestral_abilities(@abilities, parent, skip_cache)
@@ -19,6 +21,10 @@ module Mongoidable
     end
 
     private
+
+    def renew_abilities(parent)
+      @abilities = Mongoidable::Abilities.new(mongoidable_identity, parent || self)
+    end
 
     def rel(inherited_from)
       relation = send(inherited_from[:name])
@@ -41,7 +47,8 @@ module Mongoidable
     end
 
     def add_ancestral_abilities(abilities, parent, skip_cache)
-      if @ancestral_abilities.blank? || changed_with_relations? || skip_cache
+      @ancestral_abilities = nil if skip_cache
+      if @ancestral_abilities.blank? || changed_with_relations?
         @ancestral_abilities = Mongoidable::Abilities.new(mongoidable_identity, parent || self)
         @ancestral_abilities.rule_type = :static
         self.class.ancestral_abilities.each do |ancestral_ability|

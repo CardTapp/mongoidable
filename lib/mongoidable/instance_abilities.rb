@@ -13,7 +13,8 @@ module Mongoidable
     end
 
     def own_abilities(skip_cache)
-      if @own_abilities.blank? || changed_with_relations? || skip_cache
+      @own_abilities = nil if skip_cache
+      if @own_abilities.blank? || changed_with_relations?
         @own_abilities = Mongoidable::Abilities.new(mongoidable_identity, self)
         instance_abilities.each do |ability|
           if ability.base_behavior

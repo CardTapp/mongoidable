@@ -24,7 +24,7 @@ module Mongoidable
     end
     validates :base_behavior, presence: true
 
-    embedded_in :instance_abilities, touch: true
+    embedded_in :instance_abilities
     after_destroy :touch_parent
     after_save :touch_parent
 
@@ -34,17 +34,78 @@ module Mongoidable
 
     def inspect
       behavior = base_behavior ? "can" : "cannot"
-      "#{behavior} #{action.inspect} for #{subject.inspect}"
+      "#{behavior} #{attributes["action"]} for #{attributes["subject"]} where #{attributes["extra"]}"
+    end
+
+    def ==(other)
+      other.action == action &&
+        other.subject == subject &&
+        other.extra == extra
     end
 
     private
+
+    def touch_parent
+      _parent.touch
+    end
+
+    def method_missing(m, *args, &block)
+      # A super class knows about all fields defined in derived classes.
+      # Mongoid Serializable attempts to serialize all known fields as they exist in the fields hash
+      # This can fail if self is not of a type that contains that field.
+      # If we know the field exists in some class, but we currently do not respond to it, return an empty string
+      fields.key?(m.to_s) ? "" : super
+    end
 
     def valid_for_parent?
       true
     end
 
-    def touch_parent
-      _parent.touch
+    class << self
+      extend Memoist
+
+      def from_value(value)
+        all.detect { |klass| klass.ability.to_s == value.to_s }
+      end
+
+      def all
+        return @all if @all.present?
+
+        Dir[Rails.root.join(config.load_path)].sort.each { |file| require file }
+
+        namespace = config.ability_class.to_s.deconstantize.constantize
+
+        @all = load_namespace(namespace).flatten
+      end
+
+      def ability
+        :ability
+      end
+
+      def permitted_params
+        [:action, :base_behavior, :enabled, { subject: %i[type value] }]
+      end
+
+      private
+
+      def load_namespace(namespace)
+        namespace.constants.filter_map do |const|
+          const = namespace.const_get(const)
+          if const.instance_of?(Module)
+            load_namespace(const)
+          elsif const.instance_of?(Class) && const <= Mongoidable::Ability
+            const
+          else
+            next
+          end
+        end
+      end
+
+      def config
+        Mongoidable.configuration
+      end
+
+      memoize :all
     end
   end
 end

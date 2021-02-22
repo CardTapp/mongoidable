@@ -14,7 +14,7 @@ require "ruby2js/filter/return"
 require "mongoidable/cancan/active_record_disabler"
 require "mongoidable/rule"
 require "mongoidable/relations_dirty_tracking"
-
+require "mongoidable/ability_updater"
 require "mongoidable/casl_hash"
 require "mongoidable/casl_list"
 require "mongoidable/class_abilities"
@@ -37,6 +37,14 @@ module Mongoidable
 
     def configure
       yield(configuration)
+    end
+
+    def without_cache
+      cache_setting = configuration.enable_caching
+      configuration.enable_caching = false
+      yield
+    ensure
+      configuration.enable_caching = cache_setting
     end
   end
 end

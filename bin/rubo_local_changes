@@ -1,0 +1,5 @@
+#!/usr/bin/env bash
+
+# Executes rubocop on locally changed files.
+
+git ls-files -m | grep "\.rb" | xargs bundle exec rubocop -a

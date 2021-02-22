@@ -82,4 +82,33 @@ RSpec.describe Mongoidable::Ability, :with_abilities do
     main_instance.reload
     expect(main_instance.instance_abilities.first).to be_a(self.class::DerivedAbility)
   end
+
+  it "update_ability creates a new ability" do
+    main_instance = User.create(id: 1)
+    expect(main_instance.current_ability).to be_cannot(:thing, :other_thing)
+
+    main_instance.instance_abilities.update_ability(base_behavior: true, action: :thing, subject: :other_thing, extra: [])
+
+    expect(main_instance.current_ability).to be_can(:thing, :other_thing)
+  end
+
+  it "update_ability updates an existing ability" do
+    main_instance = User.create(id: 1, instance_abilities: [Mongoidable::Ability.new(base_behavior: true, action: :thing, subject: :other_thing)])
+    expect(main_instance.current_ability).to be_can(:thing, :other_thing)
+
+    main_instance.instance_abilities.update_ability(base_behavior: false, action: :thing, subject: :other_thing, extra: [])
+    expect(main_instance.current_ability).to be_cannot(:thing, :other_thing)
+  end
+
+  describe "class methods" do
+    describe "from_value" do
+      it "returns nil if no ability is found" do
+        expect(Mongoidable::Ability.from_value(:none)).to be_nil
+      end
+
+      it "returns the matching ability" do
+        expect(Mongoidable::Ability.from_value(:ability)).to eq Mongoidable::Ability
+      end
+    end
+  end
 end
