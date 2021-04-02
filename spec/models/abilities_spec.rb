@@ -85,10 +85,6 @@ RSpec.describe Mongoidable::Abilities do
     end
   end
 
-  describe "cannot" do
-
-  end
-
   describe "reset" do
     it "resets rules and rule indexes" do
       abilities = described_class.new("test", nil)

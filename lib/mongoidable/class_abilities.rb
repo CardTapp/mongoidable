@@ -23,7 +23,6 @@ module Mongoidable
       end
 
       def accepts_policies
-
       end
 
       def inherits_from

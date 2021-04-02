@@ -27,12 +27,12 @@ module Mongoidable
 
     def query_type
       params[:type].camelize.constantize
-    rescue
+    rescue StandardError
       raise ArgumentError, "Invalid query type"
     end
 
     def find_params
-      {id: params[:owner_id]}
+      { id: params[:owner_id] }
     end
 
     memoize :object_for_index,

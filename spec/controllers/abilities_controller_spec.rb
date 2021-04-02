@@ -15,9 +15,10 @@ RSpec.describe Mongoidable::AbilitiesController, :authorizes_controller, type: :
 
   describe "authorization" do
     before { allow(subject).to receive(:current_user).and_return(user) }
+
     it do
       user = User.create
-      is_expected.to authorize(:index_abilities, instance_variable(:request_object)).for(
+      expect(subject).to authorize(:index_abilities, instance_variable(:request_object)).for(
           :index, owner_id: user.id.to_s, type: "user"
         )
       expect(instance_variable(:request_object).variable_value).to eq user
@@ -25,7 +26,7 @@ RSpec.describe Mongoidable::AbilitiesController, :authorizes_controller, type: :
 
     it do
       user = User.create
-      is_expected.to authorize(:update_abilities, instance_variable(:request_object)).for(
+      expect(subject).to authorize(:update_abilities, instance_variable(:request_object)).for(
           :create, owner_id: user.id.to_s, type: "user"
         )
       expect(instance_variable(:request_object).variable_value).to eq user
@@ -34,6 +35,7 @@ RSpec.describe Mongoidable::AbilitiesController, :authorizes_controller, type: :
 
   describe "actions" do
     before { sign_in user }
+
     describe "index" do
       it "returns abilities for the user" do
         disallowed_user.instance_abilities.create(base_behavior: true, action: :action, subject: :subject)
@@ -55,9 +57,9 @@ RSpec.describe Mongoidable::AbilitiesController, :authorizes_controller, type: :
         expect(disallowed_user.current_ability.can?(:test, Object)).to be_falsy
 
         put :create, params: {
-            owner_id:             disallowed_user.id.to_s,
-            type:                 "user",
-            "instance_abilities": [{
+            owner_id:           disallowed_user.id.to_s,
+            type:               "user",
+            instance_abilities: [{
                 action:  :test,
                 subject: { type: "class", value: "Object" },
                 enabled: true
@@ -77,9 +79,9 @@ RSpec.describe Mongoidable::AbilitiesController, :authorizes_controller, type: :
         expect(disallowed_user.current_ability.can?(test_ability.action, test_ability.subject)).to be_truthy
 
         put :create, params: {
-            owner_id:             disallowed_user.id.to_s,
-            type:                 "user",
-            "instance_abilities": [{
+            owner_id:           disallowed_user.id.to_s,
+            type:               "user",
+            instance_abilities: [{
                 action:        test_ability.action,
                 subject:       { type: "symbol", value: "subject" },
                 base_behavior: false

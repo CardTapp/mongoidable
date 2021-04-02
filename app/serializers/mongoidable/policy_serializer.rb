@@ -1,10 +1,10 @@
 # frozen_string_literal: true
 
 module Mongoidable
-    # Default serializer for policies
-    class PolicySerializer < ActiveModel::Serializer
-      include Concerns::SerializesInstanceAbilities
+  # Default serializer for policies
+  class PolicySerializer < ActiveModel::Serializer
+    include Concerns::SerializesInstanceAbilities
 
-      attributes :_id, :name, :description, :type
-    end
+    attributes :_id, :name, :description, :type
+  end
 end

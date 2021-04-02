@@ -2,13 +2,12 @@
 
 module Mongoidable
   # Policies are a grouping of policy_abilities which may be applied to other objects
-  # rubocop:disable Metrics/ClassLength:
   class Policy
     include Mongoid::Document
     include Mongoid::Timestamps
     include Mongoidable::Document
 
-    #TODO
+    # TODO
     def self.possible_types
       %w[user organization vertical]
     end
@@ -17,13 +16,13 @@ module Mongoidable
     field :description, type: String
     field :type, type: String
 
-    validates_presence_of :name
-    #TODO
-    validates_uniqueness_of :name, scope: :type, case_sensitive: true
-    #TODO
-    validates_presence_of :type
-    #TODO
-    validates_inclusion_of :type, in: possible_types
+    validates :name, presence: true
+    # TODO
+    validates :name, uniqueness: { scope: :type, case_sensitive: true }
+    # TODO
+    validates :type, presence: true
+    # TODO
+    validates :type, inclusion: { in: possible_types }
 
     include Mongoidable::Scopes::Policy
 
@@ -34,7 +33,7 @@ module Mongoidable
 
       policy_abilities = instance_abilities.clone
       policy_abilities.each do |ability|
-        next unless ability.extra.present?
+        next if ability.extra.blank?
 
         hash_attributes = ability.extra.first
         hash_attributes.each do |key, path|
@@ -45,4 +44,3 @@ module Mongoidable
     end
   end
 end
-# rubocop:enable Metrics/ClassLength:

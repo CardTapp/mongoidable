@@ -9,38 +9,42 @@ RSpec.describe Mongoidable::PoliciesController, :authorizes_controller, type: :c
 
   describe "authorization" do
     let(:policy) { double(Mongoidable::Policy) }
-    before do
-    end
+
     it {
       allow(Mongoidable::Policy).to receive(:find_by).with({ "policy_type"=>"user" }).and_return(policy)
-      is_expected.to authorize(:index, Abilities::Policy).
+      expect(subject).to authorize(:index, Abilities::Policy).
           for("index", policy_type: "user", format: :json).run_actions(:policy)
     }
+
     it {
       allow(Mongoidable::Policy).to receive(:find_by).with({ "id"=>1 }).and_return(policy)
-      is_expected.to authorize(:show, policy).
+      expect(subject).to authorize(:show, policy).
           for("show", id: 1, format: :json).run_actions(:policy)
     }
+
     it {
       allow(Mongoidable::Policy).to receive(:new).and_return(policy)
-      is_expected.to authorize(:create, policy).
+      expect(subject).to authorize(:create, policy).
           for("create", policy: { name: "test" }, format: :json).run_actions(:policy)
     }
+
     it {
       allow(Mongoidable::Policy).to receive(:find_by).with({ "id"=>1 }).and_return(policy)
       allow(policy).to receive(:subscribe)
-      is_expected.to authorize(:update, policy).
+      expect(subject).to authorize(:update, policy).
           for("update", id: 1, format: :json).run_actions(:policy)
     }
+
     it {
       allow(Mongoidable::Policy).to receive(:find_by).with({ "id"=>1 }).and_return(policy)
-      is_expected.to authorize(:destroy, policy).
+      expect(subject).to authorize(:destroy, policy).
           for("destroy", id: 1, format: :json).run_actions(:policy)
     }
   end
 
   describe "actions" do
     before { sign_in user }
+
     describe "index" do
       it "returns user type policies" do
         database_policies = FactoryBot.create_list(:policy, 10, :with_abilities, count: 3)

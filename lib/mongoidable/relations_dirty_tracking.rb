@@ -62,7 +62,7 @@ module Mongoidable
       after_save       :store_relations_shadow
 
       cattr_accessor :relations_dirty_tracking_options
-      self.relations_dirty_tracking_options = { only: [], except: ['versions'] }
+      self.relations_dirty_tracking_options = { only: [], except: ["versions"] }
 
       def store_relations_shadow
         @relations_shadow = {}
