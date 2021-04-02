@@ -27,8 +27,11 @@ Gem::Specification.new do |spec|
 
   spec.files = Dir["{app,config,db,lib}/**/*", "MIT-LICENSE", "Rakefile", "README.md"]
 
+  spec.add_dependency "active_model_serializers"
   spec.add_dependency "cancancan"
   spec.add_dependency "cancancan-mongoid"
+  spec.add_dependency "cancancan_pub_sub"
+  spec.add_dependency "devise"
   spec.add_dependency "memoist"
   spec.add_dependency "method_source"
   spec.add_dependency "mongoid", "~> 6.4.5"

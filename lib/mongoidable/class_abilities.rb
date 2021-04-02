@@ -22,6 +22,10 @@ module Mongoidable
         result
       end
 
+      def accepts_policies
+
+      end
+
       def inherits_from
         @inherits_from ||= superclass.respond_to?(:inherits_from) ? superclass.inherits_from.dup : []
       end

@@ -4,6 +4,9 @@ class User
   include Mongoid::Document
   include Mongoidable::Document
 
+  devise :database_authenticatable
+
+  field :encrypted_password, type: String, default: ""
   field :name, type: String
 
   belongs_to :parent1, class_name: "Parent1", optional: true
