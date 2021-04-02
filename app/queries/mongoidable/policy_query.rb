@@ -1,10 +1,8 @@
 # frozen_string_literal: true
 
 module Mongoidable
-module Abilities
   # Provides a policy finder for PoliciesController
   class PolicyQuery < SimpleDelegator
-    include Abilities::Concerns::UpdatesAbilities
     extend Memoist
 
     attr_reader :authorized_user, :params
@@ -12,11 +10,17 @@ module Abilities
     def initialize(authorized_user, params)
       @authorized_user = authorized_user
       @params = params
-      super(Abilities::Policy)
+      super(Mongoidable::Policy)
+    end
+
+    def object_for_update
+      object = find_by(find_params)
+      authorized_user.current_ability.subscribe(:after_authorize!) { after_authorize }
+      object
     end
 
     def object_for_index
-      filter_by_params(index_params)
+      where(index_params)
     end
 
     def object_for_show
@@ -33,12 +37,21 @@ module Abilities
 
     private
 
+    def unsafe_params
+      params.to_unsafe_hash
+    end
+
+    def after_authorize
+      abilities = Array.wrap(unsafe_params[:instance_ability] || unsafe_params[:instance_abilities])
+      Mongoidable::AbilitiesUpdater.new(object_for_update, abilities, replace: unsafe_params[:replace]).call
+    end
+
     def query_type
-      Abilities::Policy
+      Mongoidable::Policy
     end
 
     def index_params
-      params.permit(:type)
+      { owner_type: params[:owner_type] }
     end
 
     def create_params
@@ -46,12 +59,15 @@ module Abilities
     end
 
     def find_params
-      params.permit(:type, :id)
+      { id: params[:id] }
+    end
+
+    def find_id
+      { id: params.to_unsafe_hash[:id] }
     end
 
     memoize :object_for_index,
             :object_for_update,
             :find_params
   end
-end
 end

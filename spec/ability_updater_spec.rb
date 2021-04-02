@@ -10,7 +10,7 @@ RSpec.describe Mongoidable::AbilityUpdater do
   let(:model) { self.class::Model.create }
 
   it "creates an ability if necessary" do
-    updater = Mongoidable::AbilityUpdater.new(model, {action: :action, subject: :subject, base_behavior: true})
+    updater = Mongoidable::AbilityUpdater.new(model, { action: :action, subject: :subject, base_behavior: true })
     updater.call
 
     expect(model.current_ability).to be_can(:action, :subject)
@@ -25,7 +25,7 @@ RSpec.describe Mongoidable::AbilityUpdater do
 
     expect(model.current_ability).to be_can(:action, :subject)
 
-    updater = Mongoidable::AbilityUpdater.new(model, {action: :action, subject: :subject, base_behavior: false})
+    updater = Mongoidable::AbilityUpdater.new(model, { action: :action, subject: :subject, base_behavior: false })
     updater.call
 
     expect(model.current_ability).not_to be_can(:action, :subject)
@@ -37,7 +37,7 @@ RSpec.describe Mongoidable::AbilityUpdater do
 
     expect(model.current_ability).to be_can(:action, :subject)
 
-    updater = Mongoidable::AbilityUpdater.new(model, {action: :action, subject: :subject, base_behavior: true})
+    updater = Mongoidable::AbilityUpdater.new(model, { action: :action, subject: :subject, base_behavior: true })
     updater.call
 
     expect(model.current_ability).to be_can(:action, :subject)

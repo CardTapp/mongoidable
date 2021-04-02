@@ -14,9 +14,14 @@ class User
   embeds_many :embedded_parents, class_name: "Parent1"
   inherits_abilities_from(:parent1)
   inherits_abilities_from(:parent2)
+  accepts_policies(as: :policies)
 
   define_abilities do |abilities, _model|
     abilities.can :do_user_class_stuff, User
     abilities.cannot :do_other_user_class_stuff, User
+  end
+
+  def devise_scope
+    :user
   end
 end

@@ -3,59 +3,82 @@
 require "rails_helper"
 require "mongoidable"
 
-RSpec.describe Mongoidable::PoliciesController, :authorizes_controller, type: :controller do
+RSpec.describe Mongoidable::PoliciesController, type: :controller do
   routes { Mongoidable::Engine.routes }
+
   let(:user) { User.create }
 
   describe "authorization" do
     let(:policy) { double(Mongoidable::Policy) }
-    before do
-    end
+
     it {
-      allow(Mongoidable::Policy).to receive(:find_by).with({ "policy_type"=>"user" }).and_return(policy)
-      is_expected.to authorize(:index, Abilities::Policy).
-          for("index", policy_type: "user", format: :json).run_actions(:policy)
+      allow(Mongoidable::Policy).to receive(:find_by).with({ owner_type: "user" }).and_return(policy)
+      expect(subject).to authorize(:index, Mongoidable::Policy).
+          for("index", owner_type: "user", format: :json).run_actions(:policy)
     }
+
     it {
-      allow(Mongoidable::Policy).to receive(:find_by).with({ "id"=>1 }).and_return(policy)
-      is_expected.to authorize(:show, policy).
+      allow(Mongoidable::Policy).to receive(:find_by).with({ id: 1 }).and_return(policy)
+      expect(subject).to authorize(:show, policy).
           for("show", id: 1, format: :json).run_actions(:policy)
     }
+
     it {
       allow(Mongoidable::Policy).to receive(:new).and_return(policy)
-      is_expected.to authorize(:create, policy).
+      expect(subject).to authorize(:create, policy).
           for("create", policy: { name: "test" }, format: :json).run_actions(:policy)
     }
+
     it {
-      allow(Mongoidable::Policy).to receive(:find_by).with({ "id"=>1 }).and_return(policy)
+      allow(subject).to receive(:current_user).and_return User.new
+      allow(Mongoidable::Policy).to receive(:find_by).with({ id: 1 }).and_return(policy)
       allow(policy).to receive(:subscribe)
-      is_expected.to authorize(:update, policy).
+      expect(subject).to authorize(:update, policy).
           for("update", id: 1, format: :json).run_actions(:policy)
     }
+
     it {
-      allow(Mongoidable::Policy).to receive(:find_by).with({ "id"=>1 }).and_return(policy)
-      is_expected.to authorize(:destroy, policy).
+      allow(Mongoidable::Policy).to receive(:find_by).with({ id: 1 }).and_return(policy)
+      expect(subject).to authorize(:destroy, policy).
           for("destroy", id: 1, format: :json).run_actions(:policy)
     }
   end
 
   describe "actions" do
-    before { sign_in user }
-    describe "index" do
-      it "returns user type policies" do
-        database_policies = FactoryBot.create_list(:policy, 10, :with_abilities, count: 3)
+    before do
+      user.instance_abilities.create(base_behavior: true, action: :manage, subject: Mongoidable::Policy)
+      sign_in user
+    end
 
-        get :index, params: { type: "user" }
+    describe "index" do
+      routes { Mongoidable::Engine.routes }
+      it "returns user type policies" do
+        database_policies = 10.times do |index|
+          Mongoidable::Policy.create(
+              name:               index,
+              owner_type:         "user",
+              instance_abilities: [Mongoidable::Ability.new(base_behavior: true, action: :action, subject: { type: "symbol", value: "subject" })]
+            )
+        end
+
+        get :index, params: { owner_type: "user" }
         expect(response).to be_ok
         policies = JSON.parse(response.body)["abilities/policies"]
         verify_policies(policies, database_policies)
+      rescue StandardError => error
+        error
       end
     end
 
     describe "show" do
       it "returns the requested policy" do
-        database_policy = FactoryBot.create(:policy, :with_abilities, count: 3)
-        get :show, params: { id: database_policy.id.to_s, type: database_policy.type }
+        database_policy = Mongoidable::Policy.create(
+            name:               "policy",
+            owner_type:         "user",
+            instance_abilities: [Mongoidable::Ability.new(base_behavior: true, action: :action, subject: { type: "symbol", value: "subject" })]
+          )
+
+        get :show, params: { id: database_policy.id.to_s, owner_type: database_policy.owner_type }
 
         expect(response).to be_ok
         policy = JSON.parse(response.body)["policy"]
@@ -64,34 +87,20 @@ RSpec.describe Mongoidable::PoliciesController, :authorizes_controller, type: :c
     end
 
     describe "update" do
-      it "overwrites with the new policy abilities " do
-        database_policy = FactoryBot.create(:policy, :with_abilities, count: 3, base_behavior: true)
-
-        new_abilites = FactoryBot.build_list(:ability, 3, base_behavior: true).map { |ability| ability.attributes.to_h }
-
-        put :update, params: {
-            id:                 database_policy.id.to_s,
-            type:               database_policy.type,
-            replace:            true,
-            instance_abilities: new_abilites
-        }
-
-        database_policy.reload
-
-        expect(response).to be_ok
-        policy = JSON.parse(response.body)["policy"]
-        verify_policies(policy, database_policy)
-        expect(database_policy.instance_abilities.length).to eq new_abilites.length
-      end
-
       it "adds abilities" do
-        database_policy = FactoryBot.create(:policy, :with_abilities, count: 3, base_behavior: true)
+        database_policy = Mongoidable::Policy.create(
+            name:               "policy",
+            owner_type:         "user",
+            instance_abilities: [Mongoidable::Ability.new(base_behavior: true, action: :action, subject: { type: "symbol", value: "subject" })]
+          )
 
-        new_abilites = FactoryBot.build_list(:ability, 3, base_behavior: true).map(&:attributes)
+        new_abilites = 3.times.map do |index|
+          Mongoidable::Ability.create(base_behavior: true, action: index.to_s, subject: { "type" => "symbol", value: "subject" }).attributes
+        end
 
         put :update, params: {
             id:                 database_policy.id.to_s,
-            type:               database_policy.type,
+            owner_type:         database_policy.owner_type,
             replace:            false,
             instance_abilities: new_abilites
         }
@@ -101,17 +110,21 @@ RSpec.describe Mongoidable::PoliciesController, :authorizes_controller, type: :c
         expect(response).to be_ok
         policy = JSON.parse(response.body)["policy"]
         verify_policies(policy, database_policy)
-        expect(database_policy.instance_abilities.length).to eq 6
+        expect(database_policy.instance_abilities.length).to eq 4
       end
 
       it "removes abilities" do
-        database_policy = FactoryBot.create(:policy, :with_abilities, count: 3, base_behavior: true)
+        database_policy = Mongoidable::Policy.create(
+            name:               "policy",
+            owner_type:         "user",
+            instance_abilities: [Mongoidable::Ability.new(base_behavior: true, action: :action, subject: { type: "symbol", value: "subject" })]
+          )
 
         removed_ability = database_policy.instance_abilities.first.attributes
         removed_ability["base_behavior"] = false
         put :update, params: {
             id:                 database_policy.id.to_s,
-            type:               database_policy.type,
+            owner_type:         database_policy.owner_type,
             replace:            false,
             instance_abilities: [removed_ability]
         }
@@ -121,19 +134,24 @@ RSpec.describe Mongoidable::PoliciesController, :authorizes_controller, type: :c
         expect(response).to be_ok
         policy = JSON.parse(response.body)["policy"]
         verify_policies(policy, database_policy)
-        expect(database_policy.instance_abilities.length).to eq 2
+        expect(database_policy.instance_abilities.length).to eq 0
       end
     end
 
     describe "destroy" do
       it "destroys the policy" do
-        database_policy = FactoryBot.create(:policy, :with_abilities, count: 3)
+        database_policy = Mongoidable::Policy.create(
+            name:               "policy",
+            owner_type:         "user",
+            instance_abilities: [Mongoidable::Ability.new(base_behavior: true, action: :action, subject: { type: "symbol", value: "subject" })]
+          )
+
         put :destroy, params: {
-            id:   database_policy.id.to_s,
-            type: database_policy.type
+            id:         database_policy.id.to_s,
+            owner_type: database_policy.owner_type
         }
 
-        expect(Abilities::Policy.all.count).to eq 0
+        expect(Mongoidable::Policy.all.count).to eq 0
       end
     end
 

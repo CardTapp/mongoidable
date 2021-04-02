@@ -111,4 +111,20 @@ RSpec.describe Mongoidable::Ability, :with_abilities do
       end
     end
   end
+
+  describe "accepts_policies" do
+    it "sets up the embedded relationship" do
+      expect(User.new).to respond_to(:policies)
+    end
+
+    it "sets up the policy relationship" do
+      user = User.new
+      user.policies.build
+      expect(user.policies.first).to respond_to(:policy)
+    end
+
+    it "sets up ability inheritance" do
+      expect(User.inherits_from[2][:name]).to eq :policies
+    end
+  end
 end

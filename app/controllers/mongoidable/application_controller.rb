@@ -1,5 +1,7 @@
-module Mongoidable
-class ApplicationController < ActionController::API
+# frozen_string_literal: true
 
-end
+module Mongoidable
+  class ApplicationController < ActionController::API
+    delegate :current_ability, to: :current_user
+  end
 end

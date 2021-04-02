@@ -11,7 +11,7 @@ module Mongoidable
     include Mongoidable::RelationsDirtyTracking
 
     included do
-      extend Mongoidable.configuration.context_module if Mongoidable.configuration.context_module
+      extend Mongoidable.configuration.context_module.constantize if Mongoidable.configuration.context_module
       include Mongoidable::DocumentExtensions
 
       after_initialize do
@@ -22,7 +22,7 @@ module Mongoidable
 
     class_methods do
       def default_ability
-        Mongoidable.configuration.ability_class
+        Mongoidable.configuration.ability_class.constantize
       end
     end
   end

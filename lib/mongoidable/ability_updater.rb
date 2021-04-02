@@ -85,7 +85,7 @@ module Mongoidable
     end
 
     def ability_type
-      Ability.from_value(action) || parent_document.class.default_ability
+      Mongoidable::Ability.from_value(action) || parent_document.class.default_ability
     end
   end
 end

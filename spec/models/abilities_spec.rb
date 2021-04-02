@@ -3,38 +3,39 @@
 require "rails_helper"
 
 RSpec.describe Mongoidable::Abilities do
-  let(:abilities) { Mongoidable::Abilities.new("test",nil) }
+  let(:abilities) { Mongoidable::Abilities.new("test", nil) }
+
   describe "to_casl_list" do
     let(:expected_result) do
       [
-        {
-          type:        :adhoc,
-          source:      "test",
-          has_block:   false,
-          subject:     [:to_thing],
-          action:      [:do_thing],
-          description: "translation missing: en.mongoidable.ability.description.do_thing"
-        },
-        {
-          type:        :adhoc,
-          source:      "test",
-          has_block:   false,
-          inverted:    true,
-          conditions:  { name: "Fred" },
-          subject:     ["User"],
-          action:      [:do_other_thing],
-          description: "translation missing: en.mongoidable.ability.description.do_other_thing"
-        },
-        {
-          type:        :adhoc,
-          source:      "test",
-          has_block:   true,
-          block_ruby:  "abilities.can(:do_block_thing, User) do |user|\n        user.name == \"Fred\"\n      end",
-          block_js:    "abilities.can(\"do_block_thing\", User, function(user) {\n  return user.name == \"Fred\"\n})",
-          subject:     ["User"],
-          action:      [:do_block_thing],
-          description: "translation missing: en.mongoidable.ability.description.do_block_thing"
-        }
+          {
+              type:        :adhoc,
+              source:      "test",
+              has_block:   false,
+              subject:     [:to_thing],
+              action:      [:do_thing],
+              description: "translation missing: en.mongoidable.ability.description.do_thing"
+          },
+          {
+              type:        :adhoc,
+              source:      "test",
+              has_block:   false,
+              inverted:    true,
+              conditions:  { name: "Fred" },
+              subject:     ["User"],
+              action:      [:do_other_thing],
+              description: "translation missing: en.mongoidable.ability.description.do_other_thing"
+          },
+          {
+              type:        :adhoc,
+              source:      "test",
+              has_block:   true,
+              block_ruby:  "abilities.can(:do_block_thing, User) do |user|\n        user.name == \"Fred\"\n      end",
+              block_js:    "abilities.can(\"do_block_thing\", User, function(user) {\n  return user.name == \"Fred\"\n})",
+              subject:     ["User"],
+              action:      [:do_block_thing],
+              description: "translation missing: en.mongoidable.ability.description.do_block_thing"
+          }
       ]
     end
 
@@ -83,10 +84,6 @@ RSpec.describe Mongoidable::Abilities do
       expect(rule.instance_variable_get(:@rule_source)).to eq "test"
       expect(rule.instance_variable_get(:@rule_type)).to eq :adhoc
     end
-  end
-
-  describe "cannot" do
-
   end
 
   describe "reset" do

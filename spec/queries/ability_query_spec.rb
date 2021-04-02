@@ -13,9 +13,9 @@ RSpec.describe Mongoidable::AbilityQuery do
 
     describe "for document" do
       let(:params) do
-        ActionController::Parameters.new({ "type" => "user", owner_id: user.id.to_s, "instance_abilities": [{
+        ActionController::Parameters.new({ owner_type: "user", owner_id: user.id.to_s, instance_abilities: [{
                                              "action"  => "test",
-                                             "subject" => { "type": "symbol", "value": "ability" },
+                                             "subject" => { type: "symbol", value: "ability" },
                                              "enabled" => "true"
                                          }] })
       end
@@ -39,9 +39,9 @@ RSpec.describe Mongoidable::AbilityQuery do
         end
 
         it "gives the specified user the specified typed ability" do
-          params = ActionController::Parameters.new({ "type" => "user", owner_id: user.id.to_s, "instance_abilities": [{
+          params = ActionController::Parameters.new({ owner_type: "user", owner_id: user.id.to_s, instance_abilities: [{
                                                         "action"  => "organization_owner",
-                                                        "subject" => { "type": "symbol", "value": "ability" },
+                                                        "subject" => { type: "symbol", value: "ability" },
                                                         "enabled" => "true"
                                                     }] })
           query = Mongoidable::AbilityQuery.new(user, params)
@@ -51,9 +51,9 @@ RSpec.describe Mongoidable::AbilityQuery do
         end
 
         it "revokes the specified ability from the specified user" do
-          params = ActionController::Parameters.new({ "type" => "user", owner_id: user.id.to_s, "instance_abilities": [{
+          params = ActionController::Parameters.new({ owner_type: "user", owner_id: user.id.to_s, instance_abilities: [{
                                                         "action"  => "organization_owner",
-                                                        "subject" => { "type": "symbol", "value": "ability" },
+                                                        "subject" => { type: "symbol", value: "ability" },
                                                         "enabled" => "false"
                                                     }] })
           query = Mongoidable::AbilityQuery.new(user, params)

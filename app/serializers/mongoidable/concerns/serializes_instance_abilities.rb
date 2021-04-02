@@ -2,14 +2,14 @@
 
 module Mongoidable
   module Concerns
-  module SerializesInstanceAbilities
-    extend ActiveSupport::Concern
+    module SerializesInstanceAbilities
+      extend ActiveSupport::Concern
 
-    included do
-      attribute(:instance_abilities) do
-        object.instance_abilities.pluck(:id)
+      included do
+        has_many :instance_abilities do
+          object.instance_abilities.map(&:id)
+        end
       end
     end
   end
 end
-  end

@@ -8,9 +8,9 @@ module Mongoidable
     included do
       ability_class = Mongoidable.configuration.ability_class
       raise TypeError, "Mongoidable::Document can only be included in a Mongoid::Document" unless
-        ability_class.ancestors.map(&:to_s).include?(Mongoidable::Ability.name)
+        ability_class.constantize.ancestors.map(&:to_s).include?(Mongoidable::Ability.name)
 
-      embeds_many :instance_abilities, class_name: Mongoidable.configuration.ability_class.to_s do
+      embeds_many :instance_abilities, class_name: Mongoidable.configuration.ability_class do
         def update_ability(**attributes)
           Mongoidable::AbilityUpdater.new(parent_document, attributes).call
         end

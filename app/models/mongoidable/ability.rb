@@ -43,18 +43,32 @@ module Mongoidable
         other.extra == extra
     end
 
+    def merge_requirements(data)
+      return if @merged
+      return if extra.blank?
+
+      hash_attributes = extra.first
+      hash_attributes.each do |key, path|
+        next unless path.to_s.include?("merge|")
+
+        attribute_path = path.gsub("merge|", "")
+        hash_attributes[key] = data.with_indifferent_access.dig(*attribute_path.split("."))
+      end
+      @merged = true
+    end
+
     private
 
     def touch_parent
       _parent.touch
     end
 
-    def method_missing(m, *args, &block)
+    def method_missing(name, *args, &block)
       # A super class knows about all fields defined in derived classes.
       # Mongoid Serializable attempts to serialize all known fields as they exist in the fields hash
       # This can fail if self is not of a type that contains that field.
       # If we know the field exists in some class, but we currently do not respond to it, return an empty string
-      fields.key?(m.to_s) ? "" : super
+      fields.key?(name.to_s) ? "" : super
     end
 
     def valid_for_parent?
@@ -73,7 +87,7 @@ module Mongoidable
 
         Dir[Rails.root.join(config.load_path)].sort.each { |file| require file }
 
-        namespace = config.ability_class.to_s.deconstantize.constantize
+        namespace = config.ability_class.deconstantize.constantize
 
         @all = load_namespace(namespace).flatten
       end
@@ -109,3 +123,5 @@ module Mongoidable
     end
   end
 end
+
+::Ability = Mongoidable::Ability
