@@ -11,6 +11,7 @@ require "rspec/rails"
 require "mongoidable/rspec"
 
 require_relative "support/database_cleaner"
+require_relative "support/device"
 require_relative "support/mongoidable"
 require_relative "support/rails_cache"
 

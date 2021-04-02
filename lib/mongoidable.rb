@@ -1,11 +1,14 @@
 # frozen_string_literal: true
 
+require "active_model_serializers"
+require "devise"
 require "mongoid"
 require "cancan"
 require "cancan/model_adapters/active_record_adapter"
 require "cancan/model_adapters/active_record_4_adapter"
 require "cancan/model_adapters/active_record_5_adapter"
 require "cancancan/mongoid"
+require "cancancan_pub_sub"
 require "memoist"
 require "method_source"
 require "ruby2js"
