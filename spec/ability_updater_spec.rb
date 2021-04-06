@@ -9,10 +9,6 @@ RSpec.describe Mongoidable::AbilityUpdater do
   end
   let(:model) { self.class::Model.create }
 
-  around do |example|
-    Mongoidable.without_cache { example.run }
-  end
-
   it "creates an ability if necessary" do
     updater = Mongoidable::AbilityUpdater.new(model, {action: :action, subject: :subject, base_behavior: true})
     updater.call

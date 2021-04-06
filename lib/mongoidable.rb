@@ -38,14 +38,6 @@ module Mongoidable
     def configure
       yield(configuration)
     end
-
-    def without_cache
-      cache_setting = configuration.enable_caching
-      configuration.enable_caching = false
-      yield
-    ensure
-      configuration.enable_caching = cache_setting
-    end
   end
 end
 

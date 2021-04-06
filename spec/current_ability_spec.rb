@@ -136,40 +136,4 @@ RSpec.describe "current_ability", :with_abilities do
 
     user.current_ability
   end
-
-  describe "caching" do
-    before do
-      allow(Mongoidable.configuration).to receive(:enable_caching).and_return true
-    end
-
-    it "cannot? uses cache if enabled" do
-      ability_proc = -> {}
-
-      CacheModel.define_abilities do |abilities, _model|
-        abilities.can :action, :subject do
-          ability_proc.call
-          true
-        end
-      end
-
-      user = CacheModel.create
-      expect(user.current_ability.cannot?(:fake_action, :subject)).to eq true
-      expect(ability_proc).not_to receive(:call)
-      expect(user.current_ability.cannot?(:fake_action, :subject)).to eq true
-      expect(user.current_ability.can?(:fake_action, :subject)).to eq false
-    end
-
-    it "can use a rule with block after loading from cache" do
-      thing_in_block_binding_context = "1"
-      CacheModel.define_abilities do |abilities, _user|
-        abilities.can :do_stuff_to_other_user, User do |other_user|
-          other_user.id == thing_in_block_binding_context
-        end
-      end
-      current_user = CacheModel.create
-      other_user = User.new(id: "1")
-      current_user.current_ability
-      expect(current_user.current_ability).to be_able_to(:do_stuff_to_other_user, other_user)
-    end
-  end
 end
