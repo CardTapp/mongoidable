@@ -186,12 +186,5 @@ RSpec.describe "current_ability", :with_abilities do
       current_user.current_ability
       expect(current_user.current_ability).to be_able_to(:do_stuff_to_other_user, other_user)
     end
-
-    it "calling current_ability with skip_cache: true skips caching" do
-      user = CacheModel.create
-      user.current_ability(skip_cache: true)
-      expect(user).to receive(:add_inherited_abilities)
-      user.current_ability(skip_cache: true)
-    end
   end
 end

@@ -22,8 +22,6 @@ module Mongoidable
       else
         create_ability
       end
-      # Force reload of the current ability
-      parent_document.current_ability(skip_cache: true)
     end
 
     def destroy_ability
@@ -46,7 +44,7 @@ module Mongoidable
                   else
                     [action, subject_as_class.new(extra.first)]
                   end
-      parent_document.current_ability(skip_cache: true).can?(*arguments) != base_behavior
+      parent_document.current_ability.can?(*arguments) != base_behavior
     end
 
     def ability_exists?

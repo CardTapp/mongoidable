@@ -1,12 +1,35 @@
 # frozen_string_literal: true
 
-require "mongoid"
-require "active_support/concern"
-require "active_support/core_ext/module/aliasing"
+require 'mongoid'
+require 'active_support/concern'
 
 module Mongoidable
   module RelationsDirtyTracking
     extend ActiveSupport::Concern
+
+    class << self
+      DISABLED_KEY = 'mongoid/relations_dirty_tracking/disabled'
+
+      # Runs a block without invoking relations dirty tracking on the current thread.
+      # Returns the block return value.
+      def disable
+        thread_store[DISABLED_KEY] = true
+        yield
+      ensure
+        thread_store[DISABLED_KEY] = false
+      end
+
+      # Returns whether relations dirty tracking is enabled on the current thread.
+      def enabled?
+        !thread_store[DISABLED_KEY]
+      end
+
+      protected
+
+      def thread_store
+        defined?(RequestStore) ? RequestStore.store : Thread.current
+      end
+    end
 
     module ClassMethods
       def relations_dirty_tracking(options = {})
@@ -17,10 +40,16 @@ module Mongoidable
       def track_relation?(rel_name)
         rel_name = rel_name.to_s
         options = relations_dirty_tracking_options
-        to_track = (options[:only].present? && options[:only].include?(rel_name)) ||
-            (options[:only].blank? && options[:except].exclude?(rel_name))
+        to_track = (!options[:only].blank? && options[:only].include?(rel_name)) ||
+          (options[:only].blank? && !options[:except].include?(rel_name))
 
-        to_track && Mongoidable::RelationsDirtyTracking.trackable_proxies.include?(relations[rel_name].try(:relation))
+        trackables = [Mongoid::Relations::Embedded::One,
+                      Mongoid::Relations::Embedded::Many,
+                      Mongoid::Relations::Referenced::One,
+                      Mongoid::Relations::Referenced::Many,
+                      Mongoid::Relations::Referenced::ManyToMany]
+
+        to_track && trackables.include?(relations[rel_name].try(:relation))
       end
 
       def tracked_relations
@@ -37,12 +66,14 @@ module Mongoidable
 
       def store_relations_shadow
         @relations_shadow = {}
+        return if readonly? || !Mongoidable::RelationsDirtyTracking.enabled?
         self.class.tracked_relations.each do |rel_name|
           @relations_shadow[rel_name] = tracked_relation_attributes(rel_name)
         end
       end
 
       def relation_changes
+        return {} if readonly? || !Mongoidable::RelationsDirtyTracking.enabled?
         changes = {}
         @relations_shadow.each_pair do |rel_name, shadow_values|
           current_values = tracked_relation_attributes(rel_name)
@@ -67,95 +98,20 @@ module Mongoidable
         rel_name = rel_name.to_s
         meta = relations[rel_name]
         return nil unless meta
-
-        case meta
-          when Mongoidable::RelationsDirtyTracking.association_embeds_one
-            val = send(rel_name)
-            val && val.attributes.clone.delete_if { |key, _| key == "updated_at" }
-          when Mongoidable::RelationsDirtyTracking.association_embeds_many
-            val = send(rel_name)
-            val && val.map { |child| child.attributes.clone.delete_if { |key, _| key == "updated_at" } }
-          when Mongoidable::RelationsDirtyTracking.association_has_one
-            send(rel_name) && { meta.key.to_s => send(rel_name)[meta.key] }
-          when Mongoidable::RelationsDirtyTracking.association_has_many
-            send(rel_name).map { |child| { meta.key.to_s => child.id } }
-          when Mongoidable::RelationsDirtyTracking.association_habtm
-            send(rel_name).map { |child| { meta.primary_key.to_s => child.id } }
-          when Mongoidable::RelationsDirtyTracking.association_belongs_to
-            begin
-              send(meta.foreign_key) && { meta.foreign_key.to_s => send(meta.foreign_key) }
-            rescue ActiveModel::MissingAttributeError
-              nil
-            end
-        end
-      end
-    end
-
-    class << self
-      def association_belongs_to
-        if defined?(Mongoid::Association)
-          Mongoid::Association::Referenced::BelongsTo
-        else
-          Mongoid::Relations::Referenced::In
-        end
-      end
-
-      def association_has_one
-        if defined?(Mongoid::Association)
-          Mongoid::Association::Referenced::HasOne
-        else
-          Mongoid::Relations::Referenced::One
-        end
-      end
-
-      def association_has_many
-        if defined?(Mongoid::Association)
-          Mongoid::Association::Referenced::HasMany
-        else
-          Mongoid::Relations::Referenced::Many
-        end
-      end
-
-      def association_habtm
-        if defined?(Mongoid::Association)
-          Mongoid::Association::Referenced::HasAndBelongsToMany
-        else
-          Mongoid::Relations::Referenced::ManyToMany
-        end
-      end
-
-      def association_embeds_one
-        if defined?(Mongoid::Association)
-          Mongoid::Association::Embedded::EmbedsOne
-        else
-          Mongoid::Relations::Embedded::One
-        end
-      end
-
-      def association_embeds_many
-        if defined?(Mongoid::Association)
-          Mongoid::Association::Embedded::EmbedsMany
-        else
-          Mongoid::Relations::Embedded::Many
-        end
-      end
-
-      def trackable_associations
-        @trackable_associations ||= [association_belongs_to,
-                                     association_has_one,
-                                     association_has_many,
-                                     association_habtm,
-                                     association_embeds_one,
-                                     association_embeds_many]
-      end
-
-      def trackable_proxies
-        @trackable_proxies ||= begin
-          if defined?(Mongoid::Association)
-            trackable_associations.map { |mod| mod::Proxy }
-          else
-            trackable_associations
-          end
+        relation_key = associations[rel_name]
+        case meta.relation.to_s
+        when Mongoid::Relations::Embedded::One.to_s
+          val = send(rel_name)
+          val && val.attributes.clone.delete_if { |key, _| key == 'updated_at' }
+        when Mongoid::Relations::Embedded::Many.to_s
+          val = send(rel_name)
+          val && val.map { |child| child.attributes.clone.delete_if { |key, _| key == 'updated_at' } }
+        when Mongoid::Relations::Referenced::One.to_s
+          send(meta.key)
+        when Mongoid::Relations::Referenced::Many.to_s
+          Array.wrap(send(meta.key))
+        when Mongoid::Relations::Referenced::ManyToMany.to_s
+          Array.wrap(send(meta.key))
         end
       end
     end

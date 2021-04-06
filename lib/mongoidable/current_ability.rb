@@ -10,21 +10,14 @@ module Mongoidable
   module CurrentAbility
     attr_accessor :parent_model
 
-    def current_ability(parent = nil, skip_cache: false)
-      if skip_cache || !@abilities.present?
-        renew_abilities(parent)
-      end
-      @abilities.reset
-      add_inherited_abilities(@abilities, skip_cache)
-      add_ancestral_abilities(@abilities, parent, skip_cache)
-      @abilities.merge(own_abilities(skip_cache))
+    def current_ability(parent = nil)
+      abilities = Mongoidable::Abilities.new(mongoidable_identity, parent || self)
+      add_inherited_abilities(abilities)
+      add_ancestral_abilities(abilities, parent)
+      abilities.merge(own_abilities)
     end
 
     private
-
-    def renew_abilities(parent)
-      @abilities = Mongoidable::Abilities.new(mongoidable_identity, parent || self)
-    end
 
     def rel(inherited_from)
       relation = send(inherited_from[:name])
@@ -39,24 +32,22 @@ module Mongoidable
       relations
     end
 
-    def add_inherited_abilities(abilities, skip_cache)
+    def add_inherited_abilities(abilities)
       self.class.inherits_from.reduce(abilities) do |sum, inherited_from|
-        rel(inherited_from).each { |object| sum.merge(object.current_ability(self, skip_cache: skip_cache || changed_with_relations?)) }
+        rel(inherited_from).each { |object| sum.merge(object.current_ability(self)) }
         sum
       end
     end
 
-    def add_ancestral_abilities(abilities, parent, skip_cache)
-      @ancestral_abilities = nil if skip_cache
-      if @ancestral_abilities.blank? || changed_with_relations?
-        @ancestral_abilities = Mongoidable::Abilities.new(mongoidable_identity, parent || self)
-        @ancestral_abilities.rule_type = :static
-        self.class.ancestral_abilities.each do |ancestral_ability|
-          @parent_model = parent
-          ancestral_ability.call(@ancestral_abilities, self)
-        end
+    def add_ancestral_abilities(abilities, parent)
+      ancestral_abilities = Mongoidable::Abilities.new(mongoidable_identity, parent || self)
+      ancestral_abilities.rule_type = :static
+      self.class.ancestral_abilities.each do |ancestral_ability|
+        @parent_model = parent
+        ancestral_ability.call(ancestral_abilities, self)
       end
-      abilities.merge(@ancestral_abilities)
+
+      abilities.merge(ancestral_abilities)
       abilities
     end
   end

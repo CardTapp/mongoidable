@@ -27,12 +27,22 @@ module Mongoidable
       end
 
       def inherits_abilities_from(relation)
-        inherits_from << { name: relation } if valid_singular_relation?(relation)
+        return unless valid_singular_relation?(relation)
+
+        relations_dirty_tracking_options[:only] << relation
+        relations_dirty_tracking_options[:enabled] = true
+        trackable = { name: relation }
+        inherits_from << trackable
         inherits_from.uniq! { |item| item[:name] }
       end
 
       def inherits_abilities_from_many(relation, order_by, direction = :asc)
-        inherits_from << { name: relation, order_by: order_by, direction: direction } if valid_many_relation?(relation)
+        return unless valid_many_relation?(relation)
+
+        relations_dirty_tracking_options[:only] << relation
+        relations_dirty_tracking_options[:enabled] = true
+        trackable = { name: relation, order_by: order_by, direction: direction }
+        inherits_from << trackable
         inherits_from.uniq! { |item| item[:name] }
       end
 
