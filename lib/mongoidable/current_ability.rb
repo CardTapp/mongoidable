@@ -11,10 +11,11 @@ module Mongoidable
     attr_accessor :parent_model
 
     def current_ability(parent = nil)
-      abilities = Mongoidable::Abilities.new(mongoidable_identity, parent || self)
-      add_inherited_abilities(abilities)
-      add_ancestral_abilities(abilities, parent)
-      abilities.merge(own_abilities)
+      @abilities ||= Mongoidable::Abilities.new(mongoidable_identity, parent || self)
+      @abilities.reset
+      add_inherited_abilities
+      add_ancestral_abilities(parent)
+      @abilities.merge(own_abilities)
     end
 
     private
@@ -32,14 +33,14 @@ module Mongoidable
       relations
     end
 
-    def add_inherited_abilities(abilities)
-      self.class.inherits_from.reduce(abilities) do |sum, inherited_from|
+    def add_inherited_abilities
+      self.class.inherits_from.reduce(@abilities) do |sum, inherited_from|
         rel(inherited_from).each { |object| sum.merge(object.current_ability(self)) }
         sum
       end
     end
 
-    def add_ancestral_abilities(abilities, parent)
+    def add_ancestral_abilities(parent)
       ancestral_abilities = Mongoidable::Abilities.new(mongoidable_identity, parent || self)
       ancestral_abilities.rule_type = :static
       self.class.ancestral_abilities.each do |ancestral_ability|
@@ -47,8 +48,7 @@ module Mongoidable
         ancestral_ability.call(ancestral_abilities, self)
       end
 
-      abilities.merge(ancestral_abilities)
-      abilities
+      @abilities.merge(ancestral_abilities)
     end
   end
 end
