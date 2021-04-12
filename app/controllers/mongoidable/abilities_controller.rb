@@ -10,9 +10,11 @@
 # )
 module Mongoidable
   class AbilitiesController < ApplicationController
+  respond_to :json
     load_resource :current_ability, class: Mongoidable::Ability.name, parent: true, through: :request_object, singleton: true
-    authorize_resource :request_object, parent_action: :index_abilities, only: :index
-    authorize_resource :request_object, parent_action: :update_abilities, only: :create
+  authorize_resource :request_object, parent_action: :read, only: :index
+  authorize_resource :request_object, parent_action: :update, only: :create
+
 
     def index
       render json: { "instance-abilities": request_object.instance_abilities }

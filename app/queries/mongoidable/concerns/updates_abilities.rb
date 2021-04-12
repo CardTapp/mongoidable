@@ -23,10 +23,10 @@ module Mongoidable
       def new_policy_abilities
         return unless params[:policy_id]
 
-        policy = Abilities::Policy.where(tiny_id: params[:policy_id]).first
+        policy = Mongoidable::Policy.where(tiny_id: params[:policy_id]).first
         raise "Invalid policy for type #{object_type}" unless object_type == policy.type
 
-        abilities = policy.merge_attributes(object_for_update)
+        abilities = policy.merge_attributes(params[:requires])
         abilities.map(&:attributes)
       end
 
@@ -52,11 +52,11 @@ module Mongoidable
 
       def apply_abilities(abilities)
         instance_abilities.clear if replace_abilities
-        abilities.map { |ability_params| instance_abilities.update_ability(**ability_params) }
+        abilities.map { |ability_params| object_for_update.instance_abilities.update_ability(**ability_params) }
       end
 
       def replace_abilities
-        defined?(params) && params[:replace]
+        defined?(params) && ActiveModel::Type::Boolean.new.cast(params[:replace])
       end
 
       memoize :object_for_update

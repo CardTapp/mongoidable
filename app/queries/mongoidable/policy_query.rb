@@ -1,10 +1,9 @@
 # frozen_string_literal: true
 
 module Mongoidable
-  module Abilities
     # Provides a policy finder for PoliciesController
     class PolicyQuery < SimpleDelegator
-      include Abilities::Concerns::UpdatesAbilities
+      include Mongoidable::Concerns::UpdatesAbilities
       extend Memoist
 
       attr_reader :authorized_user, :params
@@ -12,11 +11,11 @@ module Mongoidable
       def initialize(authorized_user, params)
         @authorized_user = authorized_user
         @params = params
-        super(Abilities::Policy)
+        super(Mongoidable::Policy)
       end
 
       def object_for_index
-        filter_by_params(index_params)
+        find_by(index_params)
       end
 
       def object_for_show
@@ -34,11 +33,11 @@ module Mongoidable
       private
 
       def query_type
-        Abilities::Policy
+        Mongoidable::Policy
       end
 
       def index_params
-        params.permit(:type)
+        { policy_type: params[:policy_type] }
       end
 
       def create_params
@@ -46,12 +45,15 @@ module Mongoidable
       end
 
       def find_params
-        params.permit(:type, :id)
+        {id: params[:id]}
+      end
+
+      def find_id
+        {id: params.to_unsafe_hash[:id] }
       end
 
       memoize :object_for_index,
               :object_for_update,
               :find_params
     end
-  end
 end

@@ -5,6 +5,6 @@ module Mongoidable
   class PolicySerializer < ActiveModel::Serializer
     include Concerns::SerializesInstanceAbilities
 
-    attributes :_id, :name, :description, :type
+    attributes :_id, :name, :description, :policy_type, :requires
   end
 end

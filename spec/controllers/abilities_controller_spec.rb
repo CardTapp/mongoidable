@@ -3,7 +3,7 @@
 require "rails_helper"
 require "mongoidable"
 
-RSpec.describe Mongoidable::AbilitiesController, :authorizes_controller, type: :controller do
+RSpec.describe Mongoidable::AbilitiesController, type: :controller do
   routes { Mongoidable::Engine.routes }
   let(:disallowed_user) do
     other_user = User.create
@@ -18,7 +18,7 @@ RSpec.describe Mongoidable::AbilitiesController, :authorizes_controller, type: :
 
     it do
       user = User.create
-      expect(subject).to authorize(:index_abilities, instance_variable(:request_object)).for(
+      is_expected.to authorize(:read, instance_variable(:request_object)).for(
           :index, owner_id: user.id.to_s, type: "user"
         )
       expect(instance_variable(:request_object).variable_value).to eq user
@@ -26,7 +26,7 @@ RSpec.describe Mongoidable::AbilitiesController, :authorizes_controller, type: :
 
     it do
       user = User.create
-      expect(subject).to authorize(:update_abilities, instance_variable(:request_object)).for(
+      is_expected.to authorize(:update, instance_variable(:request_object)).for(
           :create, owner_id: user.id.to_s, type: "user"
         )
       expect(instance_variable(:request_object).variable_value).to eq user
@@ -38,7 +38,7 @@ RSpec.describe Mongoidable::AbilitiesController, :authorizes_controller, type: :
 
     describe "index" do
       it "returns abilities for the user" do
-        disallowed_user.instance_abilities.create(base_behavior: true, action: :action, subject: :subject)
+        disallowed_user.instance_abilities.create(base_behavior: true, action: :action, subject: { type: "symbol", value: "subject" })
         get :index, params: { owner_id: disallowed_user.id.to_s, type: "user" }
 
         expect(response).to be_ok
@@ -67,7 +67,6 @@ RSpec.describe Mongoidable::AbilitiesController, :authorizes_controller, type: :
         }, as: :json
 
         expect(response).to be_ok
-        Rails.cache.clear
         disallowed_user.reload
         expect(disallowed_user.current_ability.can?(:test, Object)).to be_truthy
       end
@@ -89,7 +88,6 @@ RSpec.describe Mongoidable::AbilitiesController, :authorizes_controller, type: :
         }, as: :json
 
         expect(response).to be_ok
-        Rails.cache.clear
         disallowed_user.reload
         expect(disallowed_user.current_ability).to be_cannot(test_ability.action, test_ability.subject)
       end

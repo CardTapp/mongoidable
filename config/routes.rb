@@ -2,4 +2,5 @@
 
 Mongoidable::Engine.routes.draw do
   resources :abilities, only: %i[index create]
+  resources :policies
 end

@@ -109,3 +109,5 @@ module Mongoidable
     end
   end
 end
+
+::Ability = Mongoidable::Ability

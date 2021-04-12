@@ -3,27 +3,28 @@
 # Provides a CRUD api for ability policies.
 module Mongoidable
   class PoliciesController < ApplicationController
+    respond_to :json
     before_action :policy
-    authorize_resource class: "Abilities::Policy"
+    authorize_resource class: "Mongoidable::Policy"
 
     def index
-      render json: policy, namespace: ControllerSerializers::PoliciesController
+      render json: policy
     end
 
     def show
-      render json: policy, namespace: ControllerSerializers::PoliciesController
+      render json: policy
     end
 
     def create
       policy.save!
 
-      render json: policy, namespace: ControllerSerializers::PoliciesController
+      render json: policy
     end
 
     def update
       policy.save!
 
-      render json: policy, namespace: ControllerSerializers::PoliciesController
+      render json: policy
     end
 
     def destroy
@@ -35,7 +36,7 @@ module Mongoidable
     private
 
     def query
-      @query ||= Abilities::PolicyQuery.new(current_user, params)
+      @query ||= Mongoidable::PolicyQuery.new(current_user, params)
     end
 
     def policy
