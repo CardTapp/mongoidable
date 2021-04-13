@@ -27,6 +27,8 @@ RSpec.describe Mongoidable::ClassType do
     it "converts a string" do
       expect(described_class.mongoize("asdf")).to eq({ type: "string", value: "asdf" })
     end
+
+
   end
 
   describe "demongoize" do

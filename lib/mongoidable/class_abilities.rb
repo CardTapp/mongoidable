@@ -22,11 +22,13 @@ module Mongoidable
         result
       end
 
-      def accepts_policies
-      end
-
       def inherits_from
         @inherits_from ||= superclass.respond_to?(:inherits_from) ? superclass.inherits_from.dup : []
+      end
+
+      def accepts_policies_as(name)
+        embeds_many name, class_name: "Mongoidable::PolicyRelation"
+        inherits_abilities_from_many name, :id
       end
 
       def inherits_abilities_from(relation)
