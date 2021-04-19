@@ -6,7 +6,7 @@ module Mongoidable
     include Mongoidable::Document
 
     field :requirements, type: Hash
-    belongs_to :policy, class_name: Mongoidable.configuration.policy_class
+    belongs_to :policy, class_name: Mongoidable.configuration.policy_class, polymorphic: true
 
     def add_inherited_abilities
       @abilities.merge(merge_requirements)
@@ -14,6 +14,7 @@ module Mongoidable
 
     def merge_requirements
       result = Mongoidable::Abilities.new(mongoidable_identity, self)
+      return result unless policy
 
       policy_instance_abilities = policy.instance_abilities.clone
       policy_instance_abilities.each do |ability|
