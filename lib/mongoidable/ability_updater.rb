@@ -42,7 +42,7 @@ module Mongoidable
       arguments = if subject_as_class.is_a?(Symbol) || extra.blank?
                     [action, subject_as_class]
                   else
-                    [action, subject_as_class.new(extra.first)]
+                    [action, subject_as_class, extra.first]
                   end
       parent_document.current_ability.can?(*arguments) != base_behavior
     end
