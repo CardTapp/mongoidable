@@ -27,6 +27,12 @@ RSpec.describe "casl_hash" do
     expect(hash[:conditions]).to eq({ id: 1 })
   end
 
+  it "camelizes the conditions when present" do
+    rule = CanCan::Rule.new(false, :action, User, { end_user_id: 1 })
+    hash = Mongoidable::CaslHash.new(rule)
+    expect(hash[:conditions]).to eq({ endUserId: 1 })
+  end
+
   it "skips the conditions when not present" do
     rule = CanCan::Rule.new(false, :action, User)
     hash = Mongoidable::CaslHash.new(rule)
