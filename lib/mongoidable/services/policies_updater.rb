@@ -11,9 +11,9 @@ module Mongoidable
       @requirements = requirements
     end
 
-    def call
+    def call(save_model = true)
       remove_policy? ? remove_policy : add_policy
-      model.save
+      model.save if save_model
     end
 
     private

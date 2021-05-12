@@ -39,7 +39,7 @@ module Mongoidable
             unsafe_params[:policy_relation],
             requirements: unsafe_params[:requirements],
             remove:       unsafe_params[:remove_policy]
-          ).call
+          ).call(false)
       else
         abilities = Array.wrap(unsafe_params[:instance_ability] || unsafe_params[:instance_abilities])
         Mongoidable::AbilitiesUpdater.new(object_for_update, abilities, replace: unsafe_params[:replace]).call
