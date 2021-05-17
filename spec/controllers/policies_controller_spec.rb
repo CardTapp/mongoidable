@@ -50,6 +50,48 @@ RSpec.describe Mongoidable::PoliciesController, type: :controller do
       sign_in user
     end
 
+    describe "custom query" do
+      routes { Mongoidable::Engine.routes }
+
+      class CustomPolicyQuery < Mongoidable::PolicyQuery
+        def object_for_index
+          super.where(name: "only me")
+        end
+      end
+
+      around(:each) do |example|
+        orig_policy_query = Mongoidable.configuration.policy_query
+
+        example.run
+      ensure
+        Mongoidable.configuration.policy_query = orig_policy_query
+      end
+
+      it "uses the custom policies query" do
+        Mongoidable.configuration.policy_query = "CustomPolicyQuery"
+
+        Mongoidable::Policy.create(
+            name:               "not me",
+            owner_type:         "user",
+            instance_abilities: [Mongoidable::Ability.new(base_behavior: true, action: :action, subject: { type: "symbol", value: "subject" })]
+        )
+        Mongoidable::Policy.create(
+            name:               "only me",
+            owner_type:         "user",
+            instance_abilities: [Mongoidable::Ability.new(base_behavior: true, action: :action, subject: { type: "symbol", value: "subject" })]
+        )
+
+        get :index, params: { owner_type: "user" }
+
+        expect(response).to be_ok
+
+        policies = JSON.parse(response.body)["policies"]
+
+        expect(policies.length).to eq 1
+        expect(policies[0]["name"]).to eq "only me"
+      end
+    end
+
     describe "index" do
       routes { Mongoidable::Engine.routes }
       it "returns user type policies" do

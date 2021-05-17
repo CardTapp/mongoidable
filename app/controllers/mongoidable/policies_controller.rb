@@ -36,7 +36,7 @@ module Mongoidable
     private
 
     def query
-      @query ||= Mongoidable::PolicyQuery.new(current_user, params)
+      @query ||= Mongoidable.configuration.policy_query.constantize.new(current_user, params)
     end
 
     def policy

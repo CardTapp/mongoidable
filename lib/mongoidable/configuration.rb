@@ -8,6 +8,7 @@ module Mongoidable
                   :policy_collection,
                   :policy_class,
                   :policy_locator,
+                  :policy_query,
                   :policy_relation_locator,
                   :serialize_ruby,
                   :serialize_js,
@@ -20,6 +21,7 @@ module Mongoidable
       @policy_collection = :mongoidable_policies
       @policy_class = "Mongoidable::Policy"
       @policy_locator = "Mongoidable::PolicyLocator"
+      @policy_query = "Mongoidable::PolicyQuery"
       @policy_relation_locator = "Mongoidable::PolicyRelationLocator"
       @serialize_ruby = true
       @serialize_js = true
