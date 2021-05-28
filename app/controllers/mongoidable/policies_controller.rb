@@ -8,23 +8,23 @@ module Mongoidable
     authorize_resource class: "Mongoidable::Policy"
 
     def index
-      render json: policy, root: :policies
+      render json: policy, root: :policies, namespace: ::Mongoidable
     end
 
     def show
-      render json: policy, root: :policies
+      render json: policy, root: :policies, namespace: ::Mongoidable
     end
 
     def create
       policy.save!
 
-      render json: policy, root: :policies
+      render json: policy, root: :policies, namespace: ::Mongoidable
     end
 
     def update
       policy.save!
 
-      render json: policy, root: :policies
+      render json: policy, root: :policies, namespace: ::Mongoidable
     end
 
     def destroy

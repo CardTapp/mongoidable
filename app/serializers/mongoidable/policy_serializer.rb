@@ -4,8 +4,12 @@ module Mongoidable
   # Default serializer for policies
   class PolicySerializer < ActiveModel::Serializer
     include Mongoidable::Concerns::SerializesInstanceAbilities
-    def attributes(*_args)
-      object.attributes.symbolize_keys
+    include Mongoidable::Concerns::SerializesCaslAbilities
+
+    attribute(:_id) { object.id.to_s }
+
+    def attributes(*args)
+      super(*args).reverse_merge(object.attributes.symbolize_keys)
     end
   end
 end

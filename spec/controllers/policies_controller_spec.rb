@@ -95,7 +95,7 @@ RSpec.describe Mongoidable::PoliciesController, type: :controller do
     describe "index" do
       routes { Mongoidable::Engine.routes }
       it "returns user type policies" do
-        database_policies = 10.times do |index|
+        database_policies = Array.new(10) do |index|
           Mongoidable::Policy.create(
               name:               index,
               owner_type:         "user",
@@ -105,10 +105,8 @@ RSpec.describe Mongoidable::PoliciesController, type: :controller do
 
         get :index, params: { owner_type: "user" }
         expect(response).to be_ok
-        policies = JSON.parse(response.body)["abilities/policies"]
+        policies = JSON.parse(response.body)["policies"]
         verify_policies(policies, database_policies)
-      rescue StandardError => error
-        error
       end
     end
 
@@ -205,7 +203,7 @@ RSpec.describe Mongoidable::PoliciesController, type: :controller do
       response_policies.each do |policy|
         db_policy = db_policies.detect { |db| policy["_id"] == db.id.to_s }
         expect(policy["name"]).to eq(db_policy["name"])
-        expect(policy["type"]).to eq("user")
+        expect(policy["owner_type"]).to eq("user")
 
         db_abilities = db_policy.instance_abilities.to_a
         policy["abilities"].each_with_index do |ability, index|
