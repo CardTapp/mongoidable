@@ -7,7 +7,7 @@ module Mongoidable
 
       included do
         has_many :instance_abilities do
-          object.instance_abilities.map(&:id).map(&:to_s)
+          object.instance_abilities.map { |instance_ability| instance_ability.id.to_s }
         end
       end
     end
