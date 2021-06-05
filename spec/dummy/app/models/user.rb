@@ -13,6 +13,8 @@ class User
   belongs_to :parent1, class_name: "Parent1", optional: true
   belongs_to :parent2, class_name: "Parent2", optional: true
   embeds_many :embedded_parents, class_name: "Parent1"
+  has_and_belongs_to_many :many_relations
+
   inherits_abilities_from(:parent1)
   inherits_abilities_from(:parent2)
   accepts_policies(as: :policies)

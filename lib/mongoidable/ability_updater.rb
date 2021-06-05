@@ -5,13 +5,13 @@ module Mongoidable
     attr_accessor :instance_abilities, :arguments, :parent_document
 
     def initialize(parent_document, arguments)
-      @parent_document = parent_document
+      @parent_document    = parent_document
       @instance_abilities = parent_document.instance_abilities
-      @arguments = if arguments.is_a?(ActionController::Parameters)
-                     arguments.to_unsafe_hash
-                   else
-                     arguments
-                   end.with_indifferent_access
+      @arguments          = if arguments.is_a?(ActionController::Parameters)
+                              arguments.to_unsafe_hash
+                            else
+                              arguments
+                            end.with_indifferent_access
     end
 
     def call
@@ -95,7 +95,18 @@ module Mongoidable
         key  = "_id" if key.to_s == "id"
         type = object.fields[key].type
         if type == Array
-          object.assign_attributes(key => Array.wrap(value))
+          many_to_many_relation = object.relations.detect { |_name, relation| relation.key == key && relation.macro == :has_and_belongs_to_many }
+          value                 = Array.wrap(value)
+
+          if many_to_many_relation
+            relation_name = many_to_many_relation.first
+
+            value.each do |assign_value|
+              object.public_send(relation_name).build(id: assign_value)
+            end
+          else
+            object.assign_attributes(key => value)
+          end
         elsif type == Mongoid::Document
           transform_values(object[key], value)
         else

@@ -123,4 +123,34 @@ RSpec.describe Mongoidable::AbilityUpdater do
     expect(manage_user.current_ability.can?(:an_action, user_1)).to be_truthy
     expect(manage_user.current_ability.can?(:an_action, user_2)).to be_truthy
   end
+
+  it "can store and check m2m relations" do
+    many_relations = Array.new(4) { |index| ManyRelation.create(name: index.to_s) }
+    user_1         = User.create(many_relations: many_relations)
+    user_2         = User.create(many_relations: [many_relations[0]])
+    manage_user    = User.create
+
+    manage_user.
+        instance_abilities.create! base_behavior: true, action: :an_action, subject: User, extra: [{ many_relation_ids: many_relations[0].id }]
+    expect(manage_user.current_ability.can?(:an_action, user_1)).to be_truthy
+    expect(manage_user.current_ability.can?(:an_action, user_2)).to be_truthy
+
+    expect do
+      manage_user.
+          instance_abilities.
+          update_ability base_behavior: true, action: :an_action, subject: User, extra: [{ many_relation_ids: many_relations[0].id }]
+    end.not_to(change { manage_user.reload.instance_abilities.count })
+
+    expect(manage_user.current_ability.can?(:an_action, user_1)).to be_truthy
+    expect(manage_user.current_ability.can?(:an_action, user_2)).to be_truthy
+
+    expect do
+      manage_user.
+          instance_abilities.
+          update_ability base_behavior: false, action: :an_action, subject: User, extra: [{ many_relation_ids: many_relations[0].id }]
+    end.to(change { manage_user.reload.instance_abilities.count }.by(-1))
+
+    expect(manage_user.current_ability.can?(:an_action, user_1)).to be_falsey
+    expect(manage_user.current_ability.can?(:an_action, user_2)).to be_falsey
+  end
 end
