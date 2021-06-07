@@ -19,26 +19,33 @@ module Mongoidable
         relation.save! if save_model
       end
 
-      model.save if save_model
+      save! if save_model
+    end
+
+    def save!
+      unless remove_policy?
+        relation.save!
+      end
+
+      model.save!
     end
 
     private
+
+    def relation
+      @relation ||= relation_locator.call
+    end
 
     def model_type
       model.class.name.downcase
     end
 
     def add_policy
-      relation        = relation_locator.call
-      relation.policy = Mongoidable.configuration.policy_locator.constantize.new(
-          model, policy_id, policy_relation, requirements
-      ).call.id
-
-      relation
+      relation.policy = Mongoidable.configuration.policy_locator.constantize.new(model, policy_id, policy_relation, requirements).call.id
     end
 
     def remove_policy
-      relation_locator.call&.destroy
+      relation&.destroy
     end
 
     def remove_policy?

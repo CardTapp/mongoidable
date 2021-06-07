@@ -9,9 +9,9 @@ module Mongoidable
     attr_reader :authorized_user, :authorized_ability, :params
 
     def initialize(authorized_user, params)
-      @authorized_user = authorized_user
+      @authorized_user    = authorized_user
       @authorized_ability = authorized_user.current_ability
-      @params = params
+      @params             = params
       super(query_type)
     end
 
@@ -29,21 +29,31 @@ module Mongoidable
       object
     end
 
+    def save!
+      if has_policy?
+        policy_updater.save!
+      end
+
+      object_for_update.save!
+    end
+
     private
 
     def after_authorize
       if has_policy?
-        Mongoidable::PoliciesUpdater.new(
-            object_for_update,
-            unsafe_params[:policy_id],
-            unsafe_params[:policy_relation],
-            requirements: unsafe_params[:requirements],
-            remove:       unsafe_params[:remove_policy]
-          ).call(false)
+        policy_updater.call(false)
       else
         abilities = Array.wrap(unsafe_params[:instance_ability] || unsafe_params[:instance_abilities])
         Mongoidable::AbilitiesUpdater.new(object_for_update, abilities, replace: unsafe_params[:replace]).call
       end
+    end
+
+    def policy_updater
+      @policy_updater ||= Mongoidable::PoliciesUpdater.new(object_for_update,
+                                                           unsafe_params[:policy_id],
+                                                           unsafe_params[:policy_relation],
+                                                           requirements: unsafe_params[:requirements],
+                                                           remove:       unsafe_params[:remove_policy])
     end
 
     def unsafe_params

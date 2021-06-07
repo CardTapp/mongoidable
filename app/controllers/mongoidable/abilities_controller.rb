@@ -20,7 +20,7 @@ module Mongoidable
     end
 
     def create
-      request_object.save!
+      query.save!
       render json: request_object.instance_abilities, namespace: Mongoidable, root: :"instance-abilities"
     end
 
