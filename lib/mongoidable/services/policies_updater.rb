@@ -12,12 +12,7 @@ module Mongoidable
     end
 
     def call(save_model = true)
-      if remove_policy?
-        remove_policy
-      else
-        relation = add_policy
-        relation.save! if save_model
-      end
+      remove_policy? ? remove_policy : add_policy
 
       save! if save_model
     end
@@ -53,9 +48,7 @@ module Mongoidable
     end
 
     def relation_locator
-      Mongoidable.configuration.policy_relation_locator.constantize.new(
-          model, policy_id, policy_relation, requirements
-      )
+      Mongoidable.configuration.policy_relation_locator.constantize.new(model, policy_id, policy_relation, requirements)
     end
   end
 end
