@@ -76,7 +76,7 @@ GEM
     bcrypt (3.1.16)
     bson (4.12.1)
     builder (3.2.4)
-    cancancan (3.2.2)
+    cancancan (3.3.0)
     cancancan-mongoid (2.0.0)
       cancancan (>= 2.0, < 4)
     cancancan_pub_sub (0.1.0)
