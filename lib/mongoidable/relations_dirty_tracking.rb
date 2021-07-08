@@ -43,11 +43,11 @@ module Mongoidable
         to_track = (options[:only].present? && options[:only].include?(rel_name)) ||
           (options[:only].blank? && !options[:except].include?(rel_name))
 
-        trackables = [Mongoid::Relations::Embedded::One,
-                      Mongoid::Relations::Embedded::Many,
-                      Mongoid::Relations::Referenced::One,
-                      Mongoid::Relations::Referenced::Many,
-                      Mongoid::Relations::Referenced::ManyToMany]
+        trackables = [Mongoid::Association::Embedded::EmbedsOne::Proxy,
+                      Mongoid::Association::Embedded::EmbedsMany::Proxy,
+                      Mongoid::Association::Referenced::HasOne::Proxy,
+                      Mongoid::Association::Referenced::HasMany::Proxy,
+                      Mongoid::Association::Referenced::HasAndBelongsToMany::Proxy]
 
         to_track && trackables.include?(relations[rel_name].try(:relation))
       end
@@ -103,17 +103,17 @@ module Mongoidable
 
         relation_key = associations[rel_name]
         case meta.relation.to_s
-          when Mongoid::Relations::Embedded::One.to_s
+        when Mongoid::Association::Embedded::EmbedsOne::Proxy.to_s
             val = send(rel_name)
             val && val.attributes.clone.delete_if { |key, _| key == "updated_at" }
-          when Mongoid::Relations::Embedded::Many.to_s
+          when Mongoid::Association::Embedded::EmbedsMany::Proxy.to_s
             val = send(rel_name)
             val && val.map { |child| child.attributes.clone.delete_if { |key, _| key == "updated_at" } }
-          when Mongoid::Relations::Referenced::One.to_s
+          when Mongoid::Association::Referenced::HasOne::Proxy.to_s
             send(meta.key)
-          when Mongoid::Relations::Referenced::Many.to_s
+          when Mongoid::Association::Referenced::HasMany::Proxy.to_s
             Array.wrap(send(meta.key))
-          when Mongoid::Relations::Referenced::ManyToMany.to_s
+          when Mongoid::Association::Referenced::HasAndBelongsToMany::Proxy.to_s
             Array.wrap(send(meta.key))
         end
       end
