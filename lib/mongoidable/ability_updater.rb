@@ -95,7 +95,7 @@ module Mongoidable
         key  = "_id" if key.to_s == "id"
         type = object.fields[key].type
         if type == Array
-          many_to_many_relation = object.relations.detect { |_name, relation| relation.key == key && relation.macro == :has_and_belongs_to_many }
+          many_to_many_relation = object.relations.detect { |_name, relation| relation.key == key && relation.is_a?(Mongoid::Association::Referenced::HasAndBelongsToMany) }
           value                 = Array.wrap(value)
 
           if many_to_many_relation

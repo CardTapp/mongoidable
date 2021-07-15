@@ -38,7 +38,7 @@ module Mongoidable
 
         relations_dirty_tracking_options[:only] << relation
         relations_dirty_tracking_options[:enabled] = true
-        trackable = { name: relation }
+        trackable                                  = { name: relation }
         inherits_from << trackable
         inherits_from.uniq! { |item| item[:name] }
       end
@@ -48,7 +48,7 @@ module Mongoidable
 
         relations_dirty_tracking_options[:only] << relation
         relations_dirty_tracking_options[:enabled] = true
-        trackable = { name: relation, order_by: order_by, direction: direction }
+        trackable                                  = { name: relation, order_by: order_by, direction: direction }
         inherits_from << trackable
         inherits_from.uniq! { |item| item[:name] }
       end
@@ -78,7 +78,10 @@ module Mongoidable
       end
 
       def singular_relation?(relation)
-        relation.relation.macro.to_s.exclude?("many")
+        [Mongoid::Association::Referenced::HasOne,
+         Mongoid::Association::Referenced::BelongsTo].any? do |singleton_class|
+          relation.is_a?(singleton_class)
+        end
       end
     end
     # rubocop:enable Metrics/BlockLength

@@ -52,7 +52,7 @@ RSpec.describe Mongoidable::AbilitiesController, type: :controller do
         expect(abilities.size).to eq(database_abilities.size)
         abilities.each_with_index do |ability, index|
           expect(ability["action"]).to eq(database_abilities[index][:action].to_s)
-          expect(ability["subject"]).to eq(database_abilities[index][:subject].stringify_keys)
+          expect(ability["subject"]).to eq(database_abilities[index].attributes["subject"].stringify_keys)
         end
       end
     end
