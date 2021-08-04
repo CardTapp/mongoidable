@@ -107,4 +107,20 @@ RSpec.describe Mongoidable::AbilityUpdater do
 
     expect(model.instance_abilities.count).to eq 2
   end
+
+  it "can store and check array type attributes" do
+    user_1 = User.create(ids: [1, 2, 3, 4])
+    user_2 = User.create(ids: [1])
+    manage_user = User.create
+    manage_user.instance_abilities.create! base_behavior: true, action: :an_action, subject: User, extra: [{ ids: 1 }]
+    expect(manage_user.current_ability.can?(:an_action, user_1)).to be_truthy
+    expect(manage_user.current_ability.can?(:an_action, user_2)).to be_truthy
+
+    expect do
+      manage_user.instance_abilities.update_ability base_behavior: true, action: :an_action, subject: User, extra: [{ ids: 1 }]
+    end.not_to(change { manage_user.reload.instance_abilities.count })
+
+    expect(manage_user.current_ability.can?(:an_action, user_1)).to be_truthy
+    expect(manage_user.current_ability.can?(:an_action, user_2)).to be_truthy
+  end
 end

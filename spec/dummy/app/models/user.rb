@@ -8,6 +8,7 @@ class User
 
   field :encrypted_password, type: String, default: ""
   field :name, type: String
+  field :ids, type: Array
 
   belongs_to :parent1, class_name: "Parent1", optional: true
   belongs_to :parent2, class_name: "Parent2", optional: true
