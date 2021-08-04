@@ -10,12 +10,21 @@ module Mongoidable
   module CurrentAbility
     attr_accessor :parent_model
 
-    def current_ability(parent = nil)
-      @abilities ||= Mongoidable::Abilities.new(mongoidable_identity, parent || self)
-      @abilities.reset
-      add_inherited_abilities
-      add_ancestral_abilities(parent)
-      @abilities.merge(own_abilities)
+    def current_ability(parent = @parent_model || nil)
+      @parent_model ||= parent
+      if !@abilities.present? || changed_with_relations?
+        @abilities = Mongoidable::Abilities.new(mongoidable_identity, @parent_model || self)
+        add_inherited_abilities
+        add_ancestral_abilities(@parent_model)
+        @abilities.merge(own_abilities)
+      end
+      @abilities
+    end
+
+    def renew_abilities
+      @abilities = nil
+      @own_abilities = nil
+      @ancestral_abilities = nil
     end
 
     private
@@ -41,14 +50,16 @@ module Mongoidable
     end
 
     def add_ancestral_abilities(parent)
-      ancestral_abilities = Mongoidable::Abilities.new(mongoidable_identity, parent || self)
-      ancestral_abilities.rule_type = :static
-      self.class.ancestral_abilities.each do |ancestral_ability|
-        @parent_model = parent
-        ancestral_ability.call(ancestral_abilities, self)
-      end
+      if @ancestral_abilities.blank? || changed_with_relations?
+        @ancestral_abilities = Mongoidable::Abilities.new(mongoidable_identity, parent || self)
+        @ancestral_abilities.rule_type = :static
+        self.class.ancestral_abilities.each do |ancestral_ability|
+          ancestral_ability.call(@ancestral_abilities, self)
+        end
 
-      @abilities.merge(ancestral_abilities)
+        @abilities.merge(@ancestral_abilities)
+      end
+      @abilities
     end
   end
 end

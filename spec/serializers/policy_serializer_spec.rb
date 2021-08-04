@@ -13,7 +13,7 @@ RSpec.describe Mongoidable::PolicySerializer do
                                          action:        :action,
                                          subject:       :subject,
                                          id:            "ability_id"
-                                     )])
+                                       )])
 
     output = Mongoidable::PolicySerializer.new(policy).as_json
 
@@ -26,7 +26,7 @@ RSpec.describe Mongoidable::PolicySerializer do
     expect(output[:abilities]).to eq [{ action:      [:action],
                                         description: "translation missing: en.mongoidable.ability.description.action",
                                         has_block:   false,
-                                        source:      { :id => "id", :model => "Mongoidable::Policy" },
+                                        source:      { id: "id", model: "Mongoidable::Policy" },
                                         subject:     [:subject],
                                         type:        :adhoc }]
   end

@@ -9,23 +9,26 @@ module Mongoidable
     belongs_to :policy, class_name: Mongoidable.configuration.policy_class, polymorphic: true
 
     def add_inherited_abilities
+      return unless @policy_requirements.blank? || changed_with_relations?
+
       @abilities.merge(merge_requirements)
     end
 
     def merge_requirements
-      result = Mongoidable::Abilities.new(mongoidable_identity, self)
-      return result unless policy
+      @policy_requirements = Mongoidable::Abilities.new(mongoidable_identity, self)
+      return @policy_requirements unless policy
 
       policy_instance_abilities = policy.instance_abilities.clone
       policy_instance_abilities.each do |ability|
         ability.merge_requirements(requirements)
         if ability.base_behavior
-          result.can(ability.action, ability.subject, *ability.extra)
+          @policy_requirements.can(ability.action, ability.subject, *ability.extra)
         else
-          result.cannot(ability.action, ability.subject, *ability.extra)
+          @policy_requirements.cannot(ability.action, ability.subject, *ability.extra)
         end
       end
-      result
+
+      @policy_requirements
     end
   end
 end

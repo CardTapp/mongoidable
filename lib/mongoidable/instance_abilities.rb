@@ -13,15 +13,17 @@ module Mongoidable
     end
 
     def own_abilities
-      own_abilities = Mongoidable::Abilities.new(mongoidable_identity, self)
-      instance_abilities.each do |ability|
-        if ability.base_behavior
-          own_abilities.can(ability.action, ability.subject, *ability.extra)
-        else
-          own_abilities.cannot(ability.action, ability.subject, *ability.extra)
+      if @own_abilities.blank? || changed_with_relations?
+        @own_abilities = Mongoidable::Abilities.new(mongoidable_identity, self)
+        instance_abilities.each do |ability|
+          if ability.base_behavior
+            @own_abilities.can(ability.action, ability.subject, *ability.extra)
+          else
+            @own_abilities.cannot(ability.action, ability.subject, *ability.extra)
+          end
         end
       end
-      own_abilities
+      @own_abilities
     end
   end
 end

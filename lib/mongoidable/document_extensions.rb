@@ -13,10 +13,12 @@ module Mongoidable
       embeds_many :instance_abilities, class_name: Mongoidable.configuration.ability_class do
         def update_ability(**attributes)
           Mongoidable::AbilityUpdater.new(parent_document, attributes).call
+          parent_document.renew_abilities
         end
       end
 
       after_find do
+        renew_abilities
         instance_abilities.each { |ability| ability.parentize(self) }
       end
     end

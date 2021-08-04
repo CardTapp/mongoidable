@@ -59,7 +59,7 @@ RSpec.describe Mongoidable::PoliciesController, type: :controller do
         end
       end
 
-      around(:each) do |example|
+      around do |example|
         orig_policy_query = Mongoidable.configuration.policy_query
 
         example.run
@@ -74,12 +74,12 @@ RSpec.describe Mongoidable::PoliciesController, type: :controller do
             name:               "not me",
             owner_type:         "user",
             instance_abilities: [Mongoidable::Ability.new(base_behavior: true, action: :action, subject: { type: "symbol", value: "subject" })]
-        )
+          )
         Mongoidable::Policy.create(
             name:               "only me",
             owner_type:         "user",
             instance_abilities: [Mongoidable::Ability.new(base_behavior: true, action: :action, subject: { type: "symbol", value: "subject" })]
-        )
+          )
 
         get :index, params: { owner_type: "user" }
 

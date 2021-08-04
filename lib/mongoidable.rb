@@ -40,6 +40,14 @@ module Mongoidable
   def self.configure
     yield configuration if block_given?
   end
+
+  def self.without_cache
+    cache_setting = configuration.enable_caching
+    configuration.enable_caching = false
+    yield
+  ensure
+    configuration.enable_caching = cache_setting
+  end
 end
 
 require "mongoidable/document"

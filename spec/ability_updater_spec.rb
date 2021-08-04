@@ -6,6 +6,10 @@ RSpec.describe Mongoidable::AbilityUpdater do
   let(:user) { User.new }
   let(:model) { self.class::Model.create }
 
+  around do |example|
+    Mongoidable.without_cache { example.run }
+  end
+
   class self::Model
     include Mongoid::Document
     include Mongoidable::Document
