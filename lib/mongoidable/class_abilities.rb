@@ -27,7 +27,7 @@ module Mongoidable
       end
 
       def accepts_policies(as:)
-        embeds_many as, class_name: "Mongoidable::PolicyRelation" ,after_add: :renew_abilities, after_remove: :renew_abilities
+        embeds_many as, class_name: "Mongoidable::PolicyRelation", after_add: :renew_abilities, after_remove: :renew_abilities
         relations_dirty_tracking_options[:only] << as.to_s
         relations_dirty_tracking_options[:enabled] = true
 
