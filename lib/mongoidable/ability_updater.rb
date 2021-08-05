@@ -22,6 +22,7 @@ module Mongoidable
       else
         create_ability
       end
+      parent_document.renew_abilities
     end
 
     def destroy_ability

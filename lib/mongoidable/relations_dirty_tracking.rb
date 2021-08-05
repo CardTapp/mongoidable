@@ -86,7 +86,7 @@ module Mongoidable
 
       def relations_changed?
         !relation_changes.empty? && self.class.inherits_from.none? do |from|
-          send(from).relations_changed?
+          Array.wrap(send(from[:name])).any?(&:relations_changed?)
         end
       end
 

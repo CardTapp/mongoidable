@@ -41,7 +41,7 @@ module Mongoidable
 
         relations_dirty_tracking_options[:only] << relation
         relations_dirty_tracking_options[:enabled] = true
-        trackable                                  = { name: relation }
+        trackable                                  = { name: relation, type: :singular }
         inherits_from << trackable
         inherits_from.uniq! { |item| item[:name] }
       end
@@ -51,7 +51,7 @@ module Mongoidable
 
         relations_dirty_tracking_options[:only] << relation
         relations_dirty_tracking_options[:enabled] = true
-        trackable                                  = { name: relation, order_by: order_by, direction: direction }
+        trackable                                  = { name: relation, order_by: order_by, direction: direction, type: :many }
         inherits_from << trackable
         inherits_from.uniq! { |item| item[:name] }
       end

@@ -12,11 +12,12 @@ module Mongoidable
 
     def current_ability(parent = @parent_model || nil)
       @parent_model ||= parent
-      if !@abilities.present? || changed_with_relations?
-        @abilities = Mongoidable::Abilities.new(mongoidable_identity, @parent_model || self)
+      if !@abilities.present? || changed_with_relations? || @renew_abilities
+        @abilities = @abilities&.empty_clone || Mongoidable::Abilities.new(mongoidable_identity, @parent_model || self)
         add_inherited_abilities
         add_ancestral_abilities(@parent_model)
         @abilities.merge(own_abilities)
+        @renew_abilities = false
       end
       @abilities
     end
@@ -24,7 +25,7 @@ module Mongoidable
     def renew_abilities(relation = nil)
       relation.renew_abilities if relation and relation.respond_to?(:renew_abilities)
       parent_model.renew_abilities if parent_model
-      @abilities = nil
+      @renew_abilities = true
       @own_abilities = nil
       @ancestral_abilities = nil
     end

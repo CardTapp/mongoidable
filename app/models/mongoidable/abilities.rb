@@ -9,10 +9,11 @@ module Mongoidable
     attr_reader :ability_source, :parent_model
     attr_accessor :rule_type
 
-    def initialize(ability_source, parent_model)
+    def initialize(ability_source, parent_model, event_subscriptions = nil)
       @parent_model = parent_model
       @ability_source = ability_source
       @rule_type = :adhoc
+      @events = event_subscriptions
     end
 
     def cannot(action = nil, subject = nil, *attributes_and_conditions, &block)
@@ -38,6 +39,9 @@ module Mongoidable
       @rules_index = nil
     end
 
+    def empty_clone
+      Mongoidable::Abilities.new(ability_source, parent_model, events)
+    end
     private
 
     def set_rule_extras(extra)
