@@ -21,7 +21,9 @@ module Mongoidable
       @abilities
     end
 
-    def renew_abilities
+    def renew_abilities(relation = nil)
+      relation.renew_abilities if relation and relation.respond_to?(:renew_abilities)
+      parent_model.renew_abilities if parent_model
       @abilities = nil
       @own_abilities = nil
       @ancestral_abilities = nil

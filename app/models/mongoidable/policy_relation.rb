@@ -7,6 +7,8 @@ module Mongoidable
 
     field :requirements, type: Hash
     belongs_to :policy, class_name: Mongoidable.configuration.policy_class, polymorphic: true
+    relations_dirty_tracking_options[:only] << :policy
+    relations_dirty_tracking_options[:enabled] = true
 
     def add_inherited_abilities
       return unless @policy_requirements.blank? || changed_with_relations?

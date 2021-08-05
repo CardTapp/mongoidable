@@ -27,7 +27,10 @@ module Mongoidable
       end
 
       def accepts_policies(as:)
-        embeds_many as, class_name: "Mongoidable::PolicyRelation"
+        embeds_many as, class_name: "Mongoidable::PolicyRelation" ,after_add: :renew_abilities, after_remove: :renew_abilities
+        relations_dirty_tracking_options[:only] << as.to_s
+        relations_dirty_tracking_options[:enabled] = true
+
         Mongoidable::PolicyRelation.embedded_in as
         Mongoidable::Policy.possible_types.concat([name.downcase]).uniq!
         inherits_abilities_from_many as, :id
