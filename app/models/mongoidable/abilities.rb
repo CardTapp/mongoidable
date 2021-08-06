@@ -43,6 +43,10 @@ module Mongoidable
       Mongoidable::Abilities.new(ability_source, parent_model, events)
     end
 
+    def ability_cache_key_prefix
+      @ability_cache_key_prefix ||= "#{config.cache_key_prefix}/#{parent_model.cache_key}/"
+    end
+
     private
 
     def set_rule_extras(extra)
@@ -59,7 +63,7 @@ module Mongoidable
     end
 
     def ability_cache_key(args)
-      "#{config.cache_key_prefix}/#{parent_model.cache_key}/#{cache_normalize_args(args)}"
+      "#{@ability_cache_key_prefix}/#{cache_normalize_args(args)}"
     end
 
     def cache_normalize_args(args)

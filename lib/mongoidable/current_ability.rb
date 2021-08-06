@@ -28,6 +28,7 @@ module Mongoidable
       @renew_abilities = true
       @own_abilities = nil
       @ancestral_abilities = nil
+
     end
 
     private
