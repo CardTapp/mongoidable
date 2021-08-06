@@ -37,10 +37,12 @@ module Mongoidable
 
     def add_policy
       relation.policy = Mongoidable.configuration.policy_locator.constantize.new(model, policy_id, policy_relation, requirements).call.id
+      model.renew_abilities
     end
 
     def remove_policy
       relation&.destroy
+      model.renew_abilities
     end
 
     def remove_policy?
