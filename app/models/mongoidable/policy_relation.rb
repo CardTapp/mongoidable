@@ -11,26 +11,24 @@ module Mongoidable
     relations_dirty_tracking_options[:enabled] = true
 
     def add_inherited_abilities
-      return unless @policy_requirements.blank? || changed_with_relations? || @renew_abilities
-
-      @abilities.merge(merge_requirements)
+      @abilities.merge(merged_policy_requirements)
     end
 
-    def merge_requirements
-      @policy_requirements = Mongoidable::Abilities.new(mongoidable_identity, self)
-      return @policy_requirements unless policy
+    def merged_policy_requirements
+      merged_policy_requirements = Mongoidable::Abilities.new(mongoidable_identity, self)
+      return merged_policy_requirements unless policy
 
       policy_instance_abilities = policy.instance_abilities.clone
       policy_instance_abilities.each do |ability|
         ability.merge_requirements(requirements)
         if ability.base_behavior
-          @policy_requirements.can(ability.action, ability.subject, *ability.extra)
+          merged_policy_requirements.can(ability.action, ability.subject, *ability.extra)
         else
-          @policy_requirements.cannot(ability.action, ability.subject, *ability.extra)
+          merged_policy_requirements.cannot(ability.action, ability.subject, *ability.extra)
         end
       end
 
-      @policy_requirements
+      merged_policy_requirements
     end
   end
 end
