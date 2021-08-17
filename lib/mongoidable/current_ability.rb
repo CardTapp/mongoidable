@@ -54,7 +54,7 @@ module Mongoidable
     end
 
     def add_ancestral_abilities(parent)
-      if @ancestral_abilities.blank? || changed_with_relations?
+      if @ancestral_abilities.blank? || changed_with_relations? || @renew_abilities
         @ancestral_abilities = Mongoidable::Abilities.new(mongoidable_identity, parent || self)
         @ancestral_abilities.rule_type = :static
         self.class.ancestral_abilities.each do |ancestral_ability|

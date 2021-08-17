@@ -15,16 +15,14 @@ module Mongoidable
     end
 
     def call
-      Mongoidable.without_cache do
-        return unless should_update?
+      return unless should_update?
 
-        if ability_exists?
-          destroy_ability
-        else
-          create_ability
-        end
-        parent_document.renew_abilities
+      if ability_exists?
+        destroy_ability
+      else
+        create_ability
       end
+      parent_document.renew_abilities
     end
 
     def destroy_ability

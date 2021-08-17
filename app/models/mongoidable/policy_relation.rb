@@ -11,7 +11,7 @@ module Mongoidable
     relations_dirty_tracking_options[:enabled] = true
 
     def add_inherited_abilities
-      return unless @policy_requirements.blank? || changed_with_relations?
+      return unless @policy_requirements.blank? || changed_with_relations? || @renew_abilities
 
       @abilities.merge(merge_requirements)
     end

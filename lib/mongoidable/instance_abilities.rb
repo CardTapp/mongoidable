@@ -13,7 +13,7 @@ module Mongoidable
     end
 
     def own_abilities
-      if @own_abilities.blank? || changed_with_relations?
+      if @own_abilities.blank? || changed_with_relations? || @renew_abilities
         @own_abilities = Mongoidable::Abilities.new(mongoidable_identity, self)
         instance_abilities.each do |ability|
           if ability.base_behavior
