@@ -2,16 +2,15 @@
 
 module Mongoidable
   class PolicyRelation
+    extend Memoist
     include Mongoid::Document
     include Mongoidable::Document
 
     field :requirements, type: Hash
     belongs_to :policy, class_name: Mongoidable.configuration.policy_class, polymorphic: true
-    relations_dirty_tracking_options[:only] << :policy
-    relations_dirty_tracking_options[:enabled] = true
 
-    def add_inherited_abilities
-      @abilities.merge(merged_policy_requirements)
+    def inherited_abilities
+      merged_policy_requirements
     end
 
     def merged_policy_requirements
@@ -30,5 +29,7 @@ module Mongoidable
 
       merged_policy_requirements
     end
+
+    memoize :inherited_abilities
   end
 end

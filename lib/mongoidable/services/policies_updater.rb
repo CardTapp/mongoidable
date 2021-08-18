@@ -15,6 +15,7 @@ module Mongoidable
       remove_policy? ? remove_policy : add_policy
 
       save! if save_model
+      model.renew_abilities
     end
 
     def save!
@@ -28,7 +29,7 @@ module Mongoidable
     private
 
     def relation
-      @relation ||= relation_locator.call
+      relation_locator.call
     end
 
     def model_type
@@ -52,5 +53,7 @@ module Mongoidable
     def relation_locator
       Mongoidable.configuration.policy_relation_locator.constantize.new(model, policy_id, policy_relation, requirements)
     end
+
+    memoize :relation, :model_type, :remove_policy?, :relation_locator
   end
 end

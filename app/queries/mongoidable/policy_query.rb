@@ -68,6 +68,9 @@ module Mongoidable
 
     memoize :object_for_index,
             :object_for_update,
+            :object_for_show,
+            :object_for_destroy,
+            :unsafe_params
             :find_params
   end
 end

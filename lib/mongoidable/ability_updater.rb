@@ -2,6 +2,7 @@
 
 module Mongoidable
   class AbilityUpdater
+    extend Memoist
     attr_accessor :instance_abilities, :arguments, :parent_document
 
     def initialize(parent_document, arguments)
@@ -117,5 +118,15 @@ module Mongoidable
         end
       end
     end
+    memoize :database_ability,
+            :should_update?,
+            :ability_exists?,
+            :ability_representation,
+            :create_attributes,
+            :base_behavior,
+            :extra,
+            :subject,
+            :subject_as_class,
+            :ability_type
   end
 end

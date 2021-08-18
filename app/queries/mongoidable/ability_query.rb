@@ -30,30 +30,27 @@ module Mongoidable
     end
 
     def save!
-      if has_policy?
-        policy_updater.save!
-      end
-
+      updater.save!
       object_for_update.save!
     end
 
     private
 
     def after_authorize
-      if has_policy?
-        policy_updater.call(false)
-      else
-        abilities = Array.wrap(unsafe_params[:instance_ability] || unsafe_params[:instance_abilities])
-        Mongoidable::AbilitiesUpdater.new(object_for_update, abilities, replace: unsafe_params[:replace]).call
-      end
+      updater.call(false)
     end
 
-    def policy_updater
-      @policy_updater ||= Mongoidable::PoliciesUpdater.new(object_for_update,
+    def updater
+      if has_policy?
+        Mongoidable::PoliciesUpdater.new(object_for_update,
                                                            unsafe_params[:policy_id],
                                                            unsafe_params[:policy_relation],
                                                            requirements: unsafe_params[:requirements],
                                                            remove:       unsafe_params[:remove_policy])
+      else
+        abilities = Array.wrap(unsafe_params[:instance_ability] || unsafe_params[:instance_abilities])
+        Mongoidable::AbilitiesUpdater.new(object_for_update, abilities, replace: unsafe_params[:replace])
+      end
     end
 
     def unsafe_params
@@ -77,6 +74,7 @@ module Mongoidable
     memoize :object_for_index,
             :object_for_create,
             :object_for_update,
-            :find_params
+            :find_params,
+            :updater
   end
 end

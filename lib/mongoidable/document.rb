@@ -8,7 +8,7 @@ module Mongoidable
     include Mongoidable::ClassAbilities
     include Mongoidable::InstanceAbilities
     include Mongoidable::CurrentAbility
-    include Mongoidable::RelationsDirtyTracking
+    # include Mongoidable::RelationsDirtyTracking
 
     included do
       extend Mongoidable.configuration.context_module.constantize if Mongoidable.configuration.context_module
@@ -21,9 +21,11 @@ module Mongoidable
     end
 
     class_methods do
+      extend Memoist
       def default_ability
         Mongoidable.configuration.ability_class.constantize
       end
+      memoize :default_ability
     end
   end
 end

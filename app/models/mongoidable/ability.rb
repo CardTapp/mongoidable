@@ -3,6 +3,7 @@
 module Mongoidable
   # A mongoid document used to store adhoc abilities.
   class Ability
+    extend Memoist
     include ::Mongoid::Document
 
     attr_accessor :check_block
@@ -83,13 +84,11 @@ module Mongoidable
       end
 
       def all
-        return @all if @all.present?
-
         Dir[Rails.root.join(config.load_path)].sort.each { |file| require file }
 
         namespace = config.ability_class.deconstantize.constantize
 
-        @all = load_namespace(namespace).flatten
+        load_namespace(namespace).flatten
       end
 
       def ability
@@ -118,8 +117,6 @@ module Mongoidable
       def config
         Mongoidable.configuration
       end
-
-      memoize :all
     end
   end
 end

@@ -41,6 +41,7 @@ RSpec.describe "mongoid_ext", :with_abilities do
           other_user.id == "1"
         end
       end
+      User.ancestral_abilities(true)
       current_user = User.new
       current_user.current_ability
       other_user = User.new(id: "1")
