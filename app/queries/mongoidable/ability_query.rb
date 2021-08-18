@@ -43,10 +43,10 @@ module Mongoidable
     def updater
       if has_policy?
         Mongoidable::PoliciesUpdater.new(object_for_update,
-                                                           unsafe_params[:policy_id],
-                                                           unsafe_params[:policy_relation],
-                                                           requirements: unsafe_params[:requirements],
-                                                           remove:       unsafe_params[:remove_policy])
+                                         unsafe_params[:policy_id],
+                                         unsafe_params[:policy_relation],
+                                         requirements: unsafe_params[:requirements],
+                                         remove:       unsafe_params[:remove_policy])
       else
         abilities = Array.wrap(unsafe_params[:instance_ability] || unsafe_params[:instance_abilities])
         Mongoidable::AbilitiesUpdater.new(object_for_update, abilities, replace: unsafe_params[:replace])

@@ -39,7 +39,7 @@ module Mongoidable
       def inherits_abilities_from(relation)
         return unless valid_singular_relation?(relation)
 
-        trackable                                  = { name: relation, type: :singular }
+        trackable = { name: relation, type: :singular }
         inherits_from << trackable
         inherits_from.uniq! { |item| item[:name] }
       end
@@ -47,7 +47,7 @@ module Mongoidable
       def inherits_abilities_from_many(relation, order_by, direction = :asc)
         return unless valid_many_relation?(relation)
 
-        trackable                                  = { name: relation, order_by: order_by, direction: direction, type: :many }
+        trackable = { name: relation, order_by: order_by, direction: direction, type: :many }
         inherits_from << trackable
         inherits_from.uniq! { |item| item[:name] }
       end
