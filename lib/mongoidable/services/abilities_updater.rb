@@ -16,7 +16,7 @@ module Mongoidable
 
     def save!
       model.save!
-      model.renew_abilities
+      model.renew_abilities(types: :instance)
     end
 
     def model_type

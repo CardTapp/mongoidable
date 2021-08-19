@@ -16,18 +16,24 @@ module Mongoidable
                   after_remove: :renew_instance_abilities do
         def update_ability(**attributes)
           Mongoidable::AbilityUpdater.new(parent_document, attributes).call
-          parent_document.renew_instance_abilities
+          parent_document.renew_abilities(types: :instance)
         end
       end
 
+      after_create do
+        renew_abilities(types: :all)
+      end
+
+      after_save do
+        renew_abilities(types: :all)
+      end
       after_find do
-        renew_instance_abilities
+        renew_abilities(types: :all)
         instance_abilities.each { |ability| ability.parentize(self) }
       end
 
       def renew_instance_abilities(_relation = nil)
-        @renew_instance_abilities = true
-        renew_abilities
+        renew_abilities(types: :instance)
       end
     end
   end

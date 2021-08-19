@@ -15,8 +15,7 @@ module Mongoidable
       include Mongoidable::DocumentExtensions
 
       after_initialize do
-        @ancestral_abilities = nil
-        @own_abilities = nil
+        renew_abilities(types: :all)
       end
     end
 

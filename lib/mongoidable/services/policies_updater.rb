@@ -15,7 +15,7 @@ module Mongoidable
       remove_policy? ? remove_policy : add_policy
 
       save! if save_model
-      model.renew_abilities
+      model.renew_abilities(types: :inherited)
     end
 
     def save!
@@ -38,12 +38,10 @@ module Mongoidable
 
     def add_policy
       relation.policy = Mongoidable.configuration.policy_locator.constantize.new(model, policy_id, policy_relation, requirements).call.id
-      model.renew_abilities
     end
 
     def remove_policy
       relation&.destroy
-      model.renew_abilities
     end
 
     def remove_policy?

@@ -29,7 +29,7 @@ module Mongoidable
       end
 
       def accepts_policies(as:)
-        embeds_many as, class_name: "Mongoidable::PolicyRelation", after_add: :renew_abilities, after_remove: :renew_abilities
+        embeds_many as, class_name: "Mongoidable::PolicyRelation", after_add: :renew_policies, after_remove: :renew_policies
 
         Mongoidable::PolicyRelation.embedded_in as
         Mongoidable::Policy.possible_types.concat([name.downcase]).uniq!

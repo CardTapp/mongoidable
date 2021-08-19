@@ -13,26 +13,42 @@ module Mongoidable
 
     def current_ability(parent = @parent_model || nil)
       @parent_model ||= parent
-      if !@abilities.present? || @renew_abilities
+      if @abilities.blank? || @renew
         @abilities = @abilities&.empty_clone || Mongoidable::Abilities.new(mongoidable_identity, @parent_model || self)
         self.class.before_callbacks.each do |block|
           block.call(@abilities, self)
         end
-        @abilities.merge(inherited_abilities(@renew_abilities))
+        @abilities.merge(inherited_abilities(@renew_inherited))
         @abilities.merge(ancestral_abilities)
-        @abilities.merge(own_abilities(@renew_instance_abilities))
+        @abilities.merge(own_abilities(@renew_instance))
         self.class.after_callbacks.each do |block|
           block.call(@abilities, self)
         end
-        @renew_abilities = false
-        @renew_instance_abilities = false
+        @renew = false
+        @renew_instance = false
+        @renew_inherited = false
       end
       @abilities
     end
 
-    def renew_abilities(_relation = nil)
-      parent_model.renew_abilities if parent_model
-      @renew_abilities = true
+    def renew_policies(_relation = nil)
+      renew_abilities(types: :inherited)
+    end
+
+    def renew_abilities(_relation = nil, types: :all)
+      parent_model&.renew_abilities(types: types)
+      @renew = true
+      Array.wrap(types).each do |type|
+        case type
+          when :all
+            @renew_instance = true
+            @renew_inherited = true
+          when :inherited
+            @renew_inherited = true
+          when :instance
+            @renew_instance = true
+        end
+      end
     end
 
     private
