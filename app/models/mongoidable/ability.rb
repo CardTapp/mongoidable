@@ -26,8 +26,8 @@ module Mongoidable
     validates :base_behavior, presence: true
 
     embedded_in :instance_abilities
-    after_destroy :touch_parent
-    after_save :touch_parent
+    after_destroy :after_action
+    after_save :after_action
 
     def description
       I18n.t("mongoidable.ability.description.#{action}", subject: self[:subject])
@@ -60,7 +60,8 @@ module Mongoidable
 
     private
 
-    def touch_parent
+    def after_action
+      _parent.renew_instance_abilities
       _parent.touch
     end
 

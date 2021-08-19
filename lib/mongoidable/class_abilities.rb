@@ -52,6 +52,22 @@ module Mongoidable
         inherits_from.uniq! { |item| item[:name] }
       end
 
+      def before_abilities(&block)
+        before_callbacks << block
+      end
+
+      def after_abilities(&block)
+        after_callbacks << block
+      end
+
+      def after_callbacks
+        @after_callbacks ||= []
+      end
+
+      def before_callbacks
+        @before_callbacks ||= []
+      end
+
       private
 
       def valid_singular_relation?(relation_key)

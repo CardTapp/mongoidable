@@ -23,11 +23,10 @@ module Mongoidable
       else
         create_ability
       end
-      parent_document.renew_abilities
     end
 
     def destroy_ability
-      database_ability.destroy
+      instance_abilities.delete database_ability
     end
 
     def create_ability

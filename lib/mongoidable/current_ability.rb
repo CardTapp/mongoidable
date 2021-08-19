@@ -15,10 +15,17 @@ module Mongoidable
       @parent_model ||= parent
       if !@abilities.present? || @renew_abilities
         @abilities = @abilities&.empty_clone || Mongoidable::Abilities.new(mongoidable_identity, @parent_model || self)
+        self.class.before_callbacks.each do |block|
+          block.call(@abilities, self)
+        end
         @abilities.merge(inherited_abilities(@renew_abilities))
         @abilities.merge(ancestral_abilities)
         @abilities.merge(own_abilities(@renew_instance_abilities))
+        self.class.after_callbacks.each do |block|
+          block.call(@abilities, self)
+        end
         @renew_abilities = false
+        @renew_instance_abilities = false
       end
       @abilities
     end
