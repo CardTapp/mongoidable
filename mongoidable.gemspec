@@ -12,8 +12,8 @@ Gem::Specification.new do |spec|
   spec.authors     = ["Jason Risch"]
   spec.email       = ["jason@cardtapp.com"]
   spec.homepage    = ""
-  spec.summary     = "Summary of Mongoidable."
-  spec.description = "Description of Mongoidable."
+  spec.summary     = _("Summary of Mongoidable.")
+  spec.description = _("Description of Mongoidable.")
   spec.license     = "MIT"
 
   # Prevent pushing this gem to RubyGems.org. To allow pushes either set the 'allowed_push_host'

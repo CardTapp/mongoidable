@@ -11,8 +11,8 @@ module Mongoidable
         ability_class.constantize.ancestors.map(&:to_s).include?(Mongoidable::Ability.name)
 
       embeds_many :instance_abilities,
-                  class_name: Mongoidable.configuration.ability_class,
-                  after_add: :renew_instance_abilities,
+                  class_name:   Mongoidable.configuration.ability_class,
+                  after_add:    :renew_instance_abilities,
                   after_remove: :renew_instance_abilities do
         def update_ability(**attributes)
           Mongoidable::AbilityUpdater.new(parent_document, attributes).call
