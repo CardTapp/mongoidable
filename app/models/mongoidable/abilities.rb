@@ -14,6 +14,7 @@ module Mongoidable
       @ability_source = ability_source
       @rule_type = :adhoc
       @events = event_subscriptions
+      @rules_index ||= {}
     end
 
     def cannot(action = nil, subject = nil, *attributes_and_conditions, &block)
