@@ -52,20 +52,20 @@ module Mongoidable
         inherits_from.uniq! { |item| item[:name] }
       end
 
-      def before_abilities(&block)
-        before_callbacks << block
+      def before_abilities(type, &block)
+        before_callbacks[type] << block
       end
 
-      def after_abilities(&block)
-        after_callbacks << block
+      def after_abilities(type, &block)
+        after_callbacks[type] << block
       end
 
       def after_callbacks
-        @after_callbacks ||= []
+        @after_callbacks ||= { inherited: [], ancestral: [], instance: [] }
       end
 
       def before_callbacks
-        @before_callbacks ||= []
+        @before_callbacks ||= { inherited: [], ancestral: [], instance: [] }
       end
 
       private

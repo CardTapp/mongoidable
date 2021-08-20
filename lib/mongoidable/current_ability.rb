@@ -15,15 +15,18 @@ module Mongoidable
       @parent_model ||= parent
       if @abilities.blank? || @renew
         @abilities = @abilities&.empty_clone || Mongoidable::Abilities.new(mongoidable_identity, @parent_model || self)
-        self.class.before_callbacks.each do |block|
-          block.call(@abilities, self)
-        end
+        run_before_ability_callbacks(:inherited)
         @abilities.merge(inherited_abilities(@renew_inherited))
-        @abilities.merge(ancestral_abilities)
+        run_after_ability_callbacks(:inherited)
+
+        run_before_ability_callbacks(:ancestral)
+        @abilities.merge(ancestral_abilities(self.changed? || @renew_ancestral))
+        run_after_ability_callbacks(:ancestral)
+
+        run_before_ability_callbacks(:instance)
         @abilities.merge(own_abilities(@renew_instance))
-        self.class.after_callbacks.each do |block|
-          block.call(@abilities, self)
-        end
+        run_after_ability_callbacks(:instance)
+
         @renew = false
         @renew_instance = false
         @renew_inherited = false
@@ -43,15 +46,32 @@ module Mongoidable
           when :all
             @renew_instance = true
             @renew_inherited = true
+            @renew_ancestral = true
           when :inherited
             @renew_inherited = true
           when :instance
             @renew_instance = true
+        when :ancestral
+          @renew_ancestral = true
         end
       end
     end
 
     private
+
+    def run_before_ability_callbacks(type)
+      run_ability_callbacks(self.class.before_callbacks[type])
+    end
+
+    def run_after_ability_callbacks(type)
+      run_ability_callbacks(self.class.after_callbacks[type])
+    end
+
+    def run_ability_callbacks(callbacks)
+      callbacks.each do |block|
+        block.call(@abilities, self)
+      end
+    end
 
     def rel(inherited_from)
       relation = send(inherited_from[:name])

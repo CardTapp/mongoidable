@@ -61,7 +61,7 @@ module Mongoidable
     private
 
     def after_action
-      _parent.renew_instance_abilities
+      _parent.renew_abilities(types: :instance)
       _parent.touch
     end
 
