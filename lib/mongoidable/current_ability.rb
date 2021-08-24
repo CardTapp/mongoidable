@@ -51,8 +51,8 @@ module Mongoidable
             @renew_inherited = true
           when :instance
             @renew_instance = true
-        when :ancestral
-          @renew_ancestral = true
+          when :ancestral
+            @renew_ancestral = true
         end
       end
     end

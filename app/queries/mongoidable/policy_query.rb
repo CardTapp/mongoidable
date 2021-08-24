@@ -70,7 +70,7 @@ module Mongoidable
             :object_for_update,
             :object_for_show,
             :object_for_destroy,
-            :unsafe_params
-    :find_params
+            :unsafe_params,
+            :find_params
   end
 end
