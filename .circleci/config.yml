@@ -19,7 +19,7 @@ jobs:
     parallelism: 1
     # here we set TWO docker images.
     docker:
-      - image: cimg/ruby:2.7-node # this is our primary docker image, where step commands run.
+      - image: cimg/ruby:3.0-node # this is our primary docker image, where step commands run.
       - image: circleci/mongo:4.0.12
     # environment variables specific to Ruby/Rails, applied to the primary container.
     environment:
