@@ -36,9 +36,14 @@ module Mongoidable
     private
 
     def set_rule_extras(extra)
-      extra = [{}] if extra.empty?
-      extra.first[:rule_source] = ability_source unless extra.first.key?(:rule_source)
-      extra.first[:rule_type] = rule_type
+      extra_first_hash = extra.presence&.select { |arg| arg.respond_to?(:key?) }&.first
+      first_hash = extra_first_hash || {}
+
+      first_hash[:rule_source] = ability_source unless first_hash.key?(:rule_source)
+      first_hash[:rule_type] = rule_type
+
+      extra = [first_hash] + (extra.presence || []) if !extra_first_hash
+
       extra
     end
 

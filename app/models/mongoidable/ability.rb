@@ -48,13 +48,17 @@ module Mongoidable
       return if @merged
       return if extra.blank?
 
-      hash_attributes = extra.first
-      hash_attributes.each do |key, path|
-        next unless path.to_s.include?("merge|")
+      extra.each do |hash_attributes|
+        next unless hash_attributes.respond_to?(:each)
 
-        attribute_path = path.gsub("merge|", "")
-        hash_attributes[key] = data.with_indifferent_access.dig(*attribute_path.split("."))
+        hash_attributes.each do |key, path|
+          next unless path.to_s.include?("merge|")
+
+          attribute_path = path.gsub("merge|", "")
+          hash_attributes[key] = data.with_indifferent_access.dig(*attribute_path.split("."))
+        end
       end
+
       @merged = true
     end
 

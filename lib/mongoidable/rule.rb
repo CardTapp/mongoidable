@@ -8,9 +8,11 @@ module CanCan
     attr_accessor :abilities, :serialized_block
 
     def initialize(base_behavior, action, subject, *extra_args, &block)
-      @rule_source = extra_args.first&.delete(:rule_source)
-      @rule_type = extra_args.first&.delete(:rule_type)
-      extra_args.shift if extra_args.first && extra_args.first.empty?
+      extra_first_hash = extra_args.presence&.select { |arg| arg.respond_to?(:key?) }&.first || {}
+
+      @rule_source = extra_first_hash&.delete(:rule_source)
+      @rule_type = extra_first_hash&.delete(:rule_type)
+      extra_args&.delete_if { |arg| arg.blank? }
       super
     end
   end

@@ -44,8 +44,9 @@ module Mongoidable
                    [action, subject_as_class]
                  else
                    subject = subject_as_class.new
-                   transform_values(subject, extra.first)
-                   [action, subject]
+                   first_extra = extra.select { |args| args.respond_to?(:each) }.first
+                   transform_values(subject, first_extra) if first_extra
+                   [action, subject, extra.select { |args| !args.respond_to?(:each) }.first].compact
                  end
       parent_document.current_ability.can?(*can_args) != base_behavior
     end
@@ -92,6 +93,8 @@ module Mongoidable
     end
 
     def transform_values(object, hash)
+      return unless hash.respond_to?(:each)
+
       hash.each do |key, value|
         key  = "_id" if key.to_s == "id"
         type = object.fields[key].type

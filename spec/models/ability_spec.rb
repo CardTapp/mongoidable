@@ -15,7 +15,7 @@ RSpec.describe Mongoidable::Ability, :with_abilities do
   end
 
   it "is valid for any parent model by default" do
-    ability = described_class.new(base_behavior: true, action: :do_something, subject: User, extra: [{ id: 2 }])
+    ability = described_class.new(base_behavior: true, action: :do_something, subject: User, extra: [:name, { id: 2 }])
     ability.parentize(Object.new)
     expect(ability.valid?).to eq true
   end
@@ -50,6 +50,32 @@ RSpec.describe Mongoidable::Ability, :with_abilities do
 
     expect(main_instance.current_ability).to be_can(:do_something, other_instance)
     expect(main_instance.current_ability).not_to be_can(:do_something, main_instance)
+  end
+
+  it "accepts an attribute and attribute validation" do
+    main_instance = User.new(id: 1)
+    main_instance.instance_abilities << described_class.new(base_behavior: true, action: :do_something, subject: User, extra: [:name, { id: 2 }])
+    expect(main_instance).to be_valid
+    main_instance.save
+    other_instance = User.new(id: 2)
+    expect(other_instance).to be_valid
+    other_instance.save
+
+    expect(main_instance.current_ability).to be_can(:do_something, other_instance, :name)
+    expect(main_instance.current_ability).not_to be_can(:do_something, main_instance, :name)
+  end
+
+  it "accepts an attribute" do
+    main_instance = User.new(id: 1)
+    main_instance.instance_abilities << described_class.new(base_behavior: true, action: :do_something, subject: User, extra: [:name])
+    expect(main_instance).to be_valid
+    main_instance.save
+    other_instance = User.new(id: 2)
+    expect(other_instance).to be_valid
+    other_instance.save
+
+    expect(main_instance.current_ability).to be_can(:do_something, other_instance, :name)
+    expect(main_instance.current_ability).to be_can(:do_something, main_instance, :name)
   end
 
   it "adds the instance ability source to the rule" do

@@ -29,6 +29,25 @@ RSpec.describe Mongoidable::Abilities do
           {
               type:        :adhoc,
               source:      "test",
+              has_block:   false,
+              fields:      [:name],
+              subject:     ["User"],
+              action:      [:do_attribute_thing],
+              description: "translation missing: en.mongoidable.ability.description.do_attribute_thing"
+          },
+          {
+              type:        :adhoc,
+              source:      "test",
+              has_block:   false,
+              conditions:  { name: "Fred" },
+              fields:      [:name],
+              subject:     ["User"],
+              action:      [:do_all_thing],
+              description: "translation missing: en.mongoidable.ability.description.do_all_thing"
+          },
+          {
+              type:        :adhoc,
+              source:      "test",
               has_block:   true,
               block_ruby:  "abilities.can(:do_block_thing, User) do |user|\n        user.name == \"Fred\"\n      end",
               block_js:    "abilities.can(\"do_block_thing\", User, function(user) {\n  return user.name == \"Fred\"\n})",
@@ -42,6 +61,8 @@ RSpec.describe Mongoidable::Abilities do
     it "produces a casl list of rules" do
       abilities.can(:do_thing, :to_thing)
       abilities.cannot(:do_other_thing, User, { name: "Fred" })
+      abilities.can(:do_attribute_thing, User, :name)
+      abilities.can(:do_all_thing, User, :name, { name: "Fred" })
       abilities.can(:do_block_thing, User) do |user|
         user.name == "Fred"
       end
@@ -53,11 +74,13 @@ RSpec.describe Mongoidable::Abilities do
 
       abilities.can(:do_thing, :to_thing)
       abilities.cannot(:do_other_thing, User, { name: "Fred" })
+      abilities.can(:do_attribute_thing, User, :name)
+      abilities.can(:do_all_thing, User, :name, { name: "Fred" })
       abilities.can(:do_block_thing, User) do |user|
         user.name == "Fred"
       end
 
-      expected_result[2].delete(:block_js)
+      expected_result[4].delete(:block_js)
 
       expect(abilities.to_casl_list).to eq(expected_result)
     end
@@ -67,11 +90,13 @@ RSpec.describe Mongoidable::Abilities do
 
       abilities.can(:do_thing, :to_thing)
       abilities.cannot(:do_other_thing, User, { name: "Fred" })
+      abilities.can(:do_attribute_thing, User, :name)
+      abilities.can(:do_all_thing, User, :name, { name: "Fred" })
       abilities.can(:do_block_thing, User) do |user|
         user.name == "Fred"
       end
 
-      expected_result[2].delete(:block_ruby)
+      expected_result[4].delete(:block_ruby)
 
       expect(abilities.to_casl_list).to eq(expected_result)
     end

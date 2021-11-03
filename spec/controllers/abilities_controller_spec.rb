@@ -152,6 +152,31 @@ RSpec.describe Mongoidable::AbilitiesController, type: :controller do
         expect(other_user.current_ability).to be_can(:action, User.new(id: 1))
         expect(other_user.current_ability).to be_cannot(:action, User.new(id: 2))
       end
+
+      it "applies the policy with attributes" do
+        database_policy = Mongoidable::Policy.create(
+            name:               "policy",
+            owner_type:         "user",
+            requirements:       {
+                user: { id: "ObjectId" }
+            },
+            instance_abilities: [Mongoidable::Ability.new(base_behavior: true, action: :action, subject: User, extra: [:name, { id: "merge|user.id" }])]
+          )
+
+        put :create, params: {
+            owner_id:        other_user.id.to_s,
+            owner_type:      "user",
+            policy_relation: "policies",
+            policy_id:       database_policy.id.to_s,
+            requirements:    { user: { id: 1 } }
+        }, as: :json
+
+        other_user.reload
+        expect(other_user.policies.count).to eq 1
+
+        expect(other_user.current_ability).to be_can(:action, User.new(id: 1), :name)
+        expect(other_user.current_ability).to be_cannot(:action, User.new(id: 2), :name)
+      end
     end
   end
 end

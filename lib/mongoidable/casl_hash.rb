@@ -6,6 +6,7 @@ module Mongoidable
     def initialize(rule)
       self.action = rule
       self.subject = rule
+      self.fields = rule
       self.conditions = rule
       self.inverted = rule
       self.block = rule
@@ -25,6 +26,12 @@ module Mongoidable
 
     def source=(rule)
       self[:source] = rule.rule_source.presence
+    end
+
+    def fields=(rule)
+      return if rule.attributes.blank?
+
+      self[:fields] = rule.attributes.presence
     end
 
     def subject=(rule)

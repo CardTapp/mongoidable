@@ -39,4 +39,22 @@ RSpec.describe "policies", :with_abilities do
     expect(user.current_ability).to be_can(:test, User.new(id: 1))
     expect(user.current_ability).to be_cannot(:test, User.new(id: 2))
   end
+
+  it "generates correct current_abilities with attributes" do
+    policy = Mongoidable::Policy.create(
+        name:               "policy",
+        requirements:       {
+            id: "ObjectId"
+        },
+        instance_abilities: [
+            Mongoidable::Ability.create(base_behavior: true, action: :test, subject: User, extra: [:name, { id: "merge|id" }])
+        ]
+      )
+    user = User.create(policies: [
+                           Mongoidable::PolicyRelation.new(requirements: { id: 1 }, policy: policy)
+                       ])
+
+    expect(user.current_ability).to be_can(:test, User.new(id: 1), :name)
+    expect(user.current_ability).to be_cannot(:test, User.new(id: 2), :name)
+  end
 end
