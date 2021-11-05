@@ -29,6 +29,26 @@ module Mongoidable
     after_destroy :after_action
     after_save :after_action
 
+    class << self
+      def attributes_and_conditions(extra)
+        attributes_and_conditions_return = [[], []]
+
+        Array.wrap(extra).each do |a_or_c|
+          attributes_and_conditions_return[a_or_c.respond_to?(:each) ? 1 : 0] << a_or_c
+        end
+
+        attributes_and_conditions_return
+      end
+    end
+
+    def extra_attributes
+      Mongoidable::Ability.attributes_and_conditions(extra)[0]
+    end
+
+    def extra_conditions
+      Mongoidable::Ability.attributes_and_conditions(extra)[1]
+    end
+
     def description
       I18n.t("mongoidable.ability.description.#{action}", subject: self[:subject])
     end
@@ -48,9 +68,7 @@ module Mongoidable
       return if @merged
       return if extra.blank?
 
-      extra.each do |hash_attributes|
-        next unless hash_attributes.respond_to?(:each)
-
+      extra_conditions.each do |hash_attributes|
         hash_attributes.each do |key, path|
           next unless path.to_s.include?("merge|")
 

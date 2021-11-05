@@ -36,15 +36,16 @@ module Mongoidable
     private
 
     def set_rule_extras(extra)
-      extra_first_hash = extra.presence&.select { |arg| arg.respond_to?(:key?) }&.first
-      first_hash = extra_first_hash || {}
+      attributes_and_conditions = Mongoidable::Ability.attributes_and_conditions(extra)
+      conditions                = attributes_and_conditions[1]
+      first_hash                = conditions.first || {}
 
-      first_hash[:rule_source] = ability_source unless first_hash.key?(:rule_source)
-      first_hash[:rule_type] = rule_type
+      first_hash[:rule_source]  = ability_source unless first_hash.key?(:rule_source)
+      first_hash[:rule_type]    = rule_type
 
-      extra = [first_hash] + (extra.presence || []) if !extra_first_hash
+      conditions << first_hash if conditions.blank?
 
-      extra
+      attributes_and_conditions.flatten
     end
 
     def config

@@ -43,10 +43,13 @@ module Mongoidable
       can_args = if subject_as_class.is_a?(Symbol) || extra.blank?
                    [action, subject_as_class]
                  else
-                   subject = subject_as_class.new
-                   first_extra = extra.select { |args| args.respond_to?(:each) }.first
+                   subject                   = subject_as_class.new
+                   attributes_and_conditions = Mongoidable::Ability.attributes_and_conditions(extra)
+                   first_extra               = attributes_and_conditions[1].first
+
                    transform_values(subject, first_extra) if first_extra
-                   [action, subject, extra.select { |args| !args.respond_to?(:each) }.first].compact
+
+                   [action, subject, attributes_and_conditions[0].first].compact
                  end
       parent_document.current_ability.can?(*can_args) != base_behavior
     end
