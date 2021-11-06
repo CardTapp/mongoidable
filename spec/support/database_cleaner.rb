@@ -1,12 +1,10 @@
 # frozen_string_literal: true
 
-require "database_cleaner"
+require "database_cleaner/mongoid"
 
 RSpec.configure do |config|
   config.before(:suite) do
-    DatabaseCleaner[:mongoid].strategy = :truncation
-    DatabaseCleaner.strategy           = :truncation
-    DatabaseCleaner.orm                = "mongoid"
+    DatabaseCleaner[:mongoid].strategy = :deletion
 
     DatabaseCleaner.clean
   end
