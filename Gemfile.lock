@@ -1,7 +1,7 @@
 PATH
   remote: .
   specs:
-    mongoidable (0.2.1)
+    mongoidable (0.2.2)
       ParseTree
       active_model_serializers
       cancancan
@@ -19,10 +19,10 @@ PATH
 GEM
   remote: https://rubygems.org/
   specs:
-    ParseTree (3.0.8)
-      RubyInline (>= 3.7.0)
-      sexp_processor (>= 3.0.0)
-    RubyInline (3.12.5)
+    ParseTree (3.0.9)
+      RubyInline (~> 3.9.0)
+      sexp_processor (~> 3.2.0)
+    RubyInline (3.9.0)
       ZenTest (~> 4.3)
     ZenTest (4.12.0)
     actioncable (6.1.4.1)
