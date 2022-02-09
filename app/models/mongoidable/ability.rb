@@ -96,14 +96,21 @@ module Mongoidable
     end
 
     def valid_for_parent?
-      true
+      self.class.valid_for?(_parent)
     end
 
     class << self
       extend Memoist
 
-      def from_value(value)
-        all.detect { |klass| klass.ability.to_s == value.to_s }
+      def valid_for?(_parent_klass)
+        true
+      end
+
+      def from_value(action, subject, parent_class)
+        (all - [self]).detect do |ability_klass|
+          ability = ability_klass.new(action: action, subject: subject)
+          ability.action == action && ability.subject == subject && ability_klass.valid_for?(parent_class)
+        end
       end
 
       def all
@@ -140,6 +147,8 @@ module Mongoidable
       def config
         Mongoidable.configuration
       end
+
+      memoize :all, :valid_for?, :from_value
     end
   end
 end
