@@ -129,11 +129,15 @@ RSpec.describe Mongoidable::Ability, :with_abilities do
   describe "class methods" do
     describe "from_value" do
       it "returns nil if no ability is found" do
-        expect(Mongoidable::Ability.from_value(:none)).to be_nil
+        expect(Mongoidable::Ability.from_value(:none, :other_thing, Object)).to be_nil
       end
 
       it "returns the matching ability" do
-        expect(Mongoidable::Ability.from_value(:ability)).to eq Mongoidable::Ability
+        expect(Mongoidable::Ability.from_value(:specific_ability, :specific_subject, User)).to eq Mongoidable::SpecificAbility
+      end
+
+      it "returns nil if the matching ability is not valid for the parent" do
+        expect(Mongoidable::Ability.from_value(:specific_ability, :specific_subject, Parent1)).to eq nil
       end
     end
   end
