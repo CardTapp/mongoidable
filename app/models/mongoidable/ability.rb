@@ -96,7 +96,7 @@ module Mongoidable
     end
 
     def valid_for_parent?
-      self.class.valid_for?(_parent)
+      self.class.valid_for?(_parent.class)
     end
 
     class << self
