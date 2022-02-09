@@ -107,7 +107,7 @@ module Mongoidable
       end
 
       def from_value(action, subject, parent_class)
-        (all - [self]).detect do |ability_klass|
+        (all - [self, Mongoidable.configuration.ability_class]).detect do |ability_klass|
           ability = ability_klass.new(action: action, subject: subject)
           ability.action == action && ability.subject == subject && ability_klass.valid_for?(parent_class)
         end
