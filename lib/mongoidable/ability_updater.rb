@@ -92,7 +92,7 @@ module Mongoidable
     end
 
     def ability_type
-      Mongoidable::Ability.from_value(action, subject, parent_document.class) || parent_document.class.default_ability
+      Mongoidable::Ability.from_value(action, subject_as_class, parent_document.class) || parent_document.class.default_ability
     end
 
     def transform_values(object, hash)

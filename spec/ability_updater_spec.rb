@@ -22,6 +22,33 @@ RSpec.describe Mongoidable::AbilityUpdater do
     expect(ability.subject).to eq :subject
   end
 
+  it "creates an ability by class if appropriate" do
+    updater = Mongoidable::AbilityUpdater.new(user, { action: :specific_ability, subject: :specific_subject, base_behavior: true })
+    updater.call
+
+    expect(user.current_ability).to be_can(:specific_ability, :specific_subject)
+
+    ability = user.instance_abilities.first
+    expect(ability.action).to eq :specific_ability
+    expect(ability.subject).to eq :specific_subject
+    expect(ability).to be_a(Mongoidable::SpecificAbility)
+  end
+
+  it "creates an ability by class if appropriate if subject is hash" do
+    updater = Mongoidable::AbilityUpdater.new(user,
+                                              { action:        :specific_ability,
+                                                subject:       { type: "symbol", value: "specific_subject" },
+                                                base_behavior: true })
+    updater.call
+
+    expect(user.current_ability).to be_can(:specific_ability, :specific_subject)
+
+    ability = user.instance_abilities.first
+    expect(ability.action).to eq :specific_ability
+    expect(ability.subject).to eq :specific_subject
+    expect(ability).to be_a(Mongoidable::SpecificAbility)
+  end
+
   it "destroys an existing ability if necessary" do
     model.instance_abilities.create(action: :action, subject: :subject, base_behavior: true)
 
@@ -64,16 +91,16 @@ RSpec.describe Mongoidable::AbilityUpdater do
         subject:       User,
         base_behavior: true,
         extra:         [{ id: user.id }]
-      )
+    )
 
     expect(model.current_ability).to be_can(:action, user)
 
     updater = Mongoidable::AbilityUpdater.new(model, {
-                                                  action:        :action,
-                                                  subject:       User,
-                                                  base_behavior: true,
-                                                  extra:         [{ id: user.id }]
-                                              })
+        action:        :action,
+        subject:       User,
+        base_behavior: true,
+        extra:         [{ id: user.id }]
+    })
     updater.call
 
     expect(model.current_ability).to be_can(:action, user)
@@ -87,16 +114,16 @@ RSpec.describe Mongoidable::AbilityUpdater do
         subject:       User,
         base_behavior: true,
         extra:         [:name, { id: user.id }]
-      )
+    )
 
     expect(model.current_ability).to be_can(:action, user, :name)
 
     updater = Mongoidable::AbilityUpdater.new(model, {
-                                                  action:        :action,
-                                                  subject:       User,
-                                                  base_behavior: true,
-                                                  extra:         [:name, { id: user.id }]
-                                              })
+        action:        :action,
+        subject:       User,
+        base_behavior: true,
+        extra:         [:name, { id: user.id }]
+    })
     updater.call
 
     expect(model.current_ability).to be_can(:action, user, :name)
@@ -110,14 +137,14 @@ RSpec.describe Mongoidable::AbilityUpdater do
         subject:       User,
         base_behavior: true,
         extra:         [{ id: "merge|organization.user.id" }]
-      )
+    )
 
     updater = Mongoidable::AbilityUpdater.new(model, {
-                                                  action:        :action,
-                                                  subject:       User,
-                                                  base_behavior: true,
-                                                  extra:         [{ id: "merge|organization.user.id" }]
-                                              })
+        action:        :action,
+        subject:       User,
+        base_behavior: true,
+        extra:         [{ id: "merge|organization.user.id" }]
+    })
     updater.call
 
     expect(model.instance_abilities.first).to be
@@ -130,14 +157,14 @@ RSpec.describe Mongoidable::AbilityUpdater do
         subject:       User,
         base_behavior: true,
         extra:         [:name, { id: "merge|organization.user.id" }]
-      )
+    )
 
     updater = Mongoidable::AbilityUpdater.new(model, {
-                                                  action:        :action,
-                                                  subject:       User,
-                                                  base_behavior: true,
-                                                  extra:         [:name, { id: "merge|organization.user.id" }]
-                                              })
+        action:        :action,
+        subject:       User,
+        base_behavior: true,
+        extra:         [:name, { id: "merge|organization.user.id" }]
+    })
     updater.call
 
     expect(model.instance_abilities.first).to be
@@ -150,14 +177,14 @@ RSpec.describe Mongoidable::AbilityUpdater do
         subject:       User,
         base_behavior: true,
         extra:         [{ id: "merge|organization.user.id" }]
-      )
+    )
 
     updater = Mongoidable::AbilityUpdater.new(model, {
-                                                  action:        :manage,
-                                                  subject:       User,
-                                                  base_behavior: true,
-                                                  extra:         [{ id: "merge|user.id" }]
-                                              })
+        action:        :manage,
+        subject:       User,
+        base_behavior: true,
+        extra:         [{ id: "merge|user.id" }]
+    })
     updater.call
 
     expect(model.instance_abilities.count).to eq 2
@@ -169,14 +196,14 @@ RSpec.describe Mongoidable::AbilityUpdater do
         subject:       User,
         base_behavior: true,
         extra:         [:name, { id: "merge|organization.user.id" }]
-      )
+    )
 
     updater = Mongoidable::AbilityUpdater.new(model, {
-                                                  action:        :manage,
-                                                  subject:       User,
-                                                  base_behavior: true,
-                                                  extra:         [:name, { id: "merge|user.id" }]
-                                              })
+        action:        :manage,
+        subject:       User,
+        base_behavior: true,
+        extra:         [:name, { id: "merge|user.id" }]
+    })
     updater.call
 
     expect(model.instance_abilities.count).to eq 2
@@ -188,14 +215,14 @@ RSpec.describe Mongoidable::AbilityUpdater do
         subject:       User,
         base_behavior: true,
         extra:         [:name]
-      )
+    )
 
     updater = Mongoidable::AbilityUpdater.new(model, {
-                                                  action:        :manage,
-                                                  subject:       User,
-                                                  base_behavior: true,
-                                                  extra:         [:encrypted_password]
-                                              })
+        action:        :manage,
+        subject:       User,
+        base_behavior: true,
+        extra:         [:encrypted_password]
+    })
     updater.call
 
     expect(model.instance_abilities.count).to eq 2
@@ -207,14 +234,14 @@ RSpec.describe Mongoidable::AbilityUpdater do
         subject:       User,
         base_behavior: true,
         extra:         [:name, { id: "merge|organization.user.id" }]
-      )
+    )
 
     updater = Mongoidable::AbilityUpdater.new(model, {
-                                                  action:        :manage,
-                                                  subject:       User,
-                                                  base_behavior: true,
-                                                  extra:         [:encrypted_password, { id: "merge|organization.user.id" }]
-                                              })
+        action:        :manage,
+        subject:       User,
+        base_behavior: true,
+        extra:         [:encrypted_password, { id: "merge|organization.user.id" }]
+    })
     updater.call
 
     expect(model.instance_abilities.count).to eq 2
