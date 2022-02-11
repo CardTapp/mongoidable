@@ -32,7 +32,6 @@ module Mongoidable
       Mongoidable::Abilities.new(ability_source, parent_model, events)
     end
 
-
     private
 
     def set_rule_extras(extra)

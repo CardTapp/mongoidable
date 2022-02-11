@@ -160,7 +160,8 @@ RSpec.describe Mongoidable::AbilitiesController, type: :controller do
             requirements:       {
                 user: { id: "ObjectId" }
             },
-            instance_abilities: [Mongoidable::Ability.new(base_behavior: true, action: :action, subject: User, extra: [:name, { id: "merge|user.id" }])]
+            instance_abilities: [Mongoidable::Ability.new(base_behavior: true, action: :action, subject: User,
+                                                          extra: [:name, { id: "merge|user.id" }])]
           )
 
         put :create, params: {

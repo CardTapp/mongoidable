@@ -50,4 +50,5 @@ Gem::Specification.new do |spec|
   spec.add_development_dependency "rubocop-require_tools"
   spec.add_development_dependency "rubocop-rspec"
   spec.add_development_dependency "rubocop-thread_safety"
+  spec.metadata["rubygems_mfa_required"] = "true"
 end

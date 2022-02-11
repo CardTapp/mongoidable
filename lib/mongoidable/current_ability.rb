@@ -15,12 +15,17 @@ module Mongoidable
       @parent_model ||= parent
       if @abilities.blank? || @renew
         @abilities = @abilities&.empty_clone || Mongoidable::Abilities.new(mongoidable_identity, @parent_model || self)
+
         run_before_ability_callbacks(:inherited)
         @abilities.merge(inherited_abilities(@renew_inherited))
         run_after_ability_callbacks(:inherited)
 
+        run_before_ability_callbacks(:provided)
+        @abilities.merge(provided_abilities(@renew_instance))
+        run_after_ability_callbacks(:provided)
+
         run_before_ability_callbacks(:ancestral)
-        @abilities.merge(ancestral_abilities(self.changed? || @renew_ancestral))
+        @abilities.merge(ancestral_abilities(changed? || @renew_ancestral))
         run_after_ability_callbacks(:ancestral)
 
         run_before_ability_callbacks(:instance)
@@ -47,6 +52,8 @@ module Mongoidable
             @renew_instance = true
             @renew_inherited = true
             @renew_ancestral = true
+          when :provided
+            @renew_provided = true
           when :inherited
             @renew_inherited = true
           when :instance
@@ -90,6 +97,20 @@ module Mongoidable
       @abilities.merge(inherited_abilities)
     end
 
+    def provided_abilities
+      provided_abilities = Mongoidable::Abilities.new(mongoidable_identity, self)
+      self.class.inherits_from.each do |trackable|
+        attributes[trackable[:name]]&.each do |ability|
+          if ability.base_behavior
+            own_abilities.can(ability.action, ability.subject, *ability.extra)
+          else
+            own_abilities.cannot(ability.action, ability.subject, *ability.extra)
+          end
+        end
+      end
+      provided_abilities
+    end
+
     def inherited_abilities
       inherited = Mongoidable::Abilities.new(mongoidable_identity, parent_model || self)
       self.class.inherits_from.each do |inherited_from|
@@ -112,6 +133,6 @@ module Mongoidable
       ancestral
     end
 
-    memoize :ancestral_abilities, :inherited_abilities
+    memoize :ancestral_abilities, :inherited_abilities, :provided_abilities
   end
 end
