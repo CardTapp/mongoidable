@@ -39,9 +39,8 @@ module Mongoidable
       def inherits_abilities_from(relation_name)
         return unless valid_singular_relation?(relation_name)
 
-        parent_class = relations[relation_name].options[:class_name].constantize
         trackable = { name: relation_name, type: :singular }
-        define_provider_relation(parent_class)
+        define_provider_relation(relations[relation_name].class_name.constantize)
         inherits_from << trackable
         inherits_from.uniq! { |item| item[:name] }
       end
