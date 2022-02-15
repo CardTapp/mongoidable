@@ -15,6 +15,7 @@ module Mongoidable
 
       after_initialize do
         renew_abilities(types: :all)
+        current_ability
       end
     end
 
