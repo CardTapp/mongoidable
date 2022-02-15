@@ -3,9 +3,10 @@
 module Mongoidable
   class AbilityUpdater
     extend Memoist
-    attr_accessor :instance_abilities, :arguments, :parent_document
+    attr_accessor :instance_abilities, :arguments, :parent_document, :validity_class
 
-    def initialize(parent_document, context, arguments)
+    def initialize(parent_document, context, arguments, validity_class = nil)
+      @validity_class = validity_class || parent_document.class
       @parent_document    = parent_document
       @instance_abilities = context
       @arguments          = if arguments.is_a?(ActionController::Parameters)
@@ -92,7 +93,7 @@ module Mongoidable
     end
 
     def ability_type
-      Mongoidable::Ability.from_value(action, subject, parent_document.class) || parent_document.class.default_ability
+      Mongoidable::Ability.from_value(action, subject, validity_class) || validity_class.default_ability
     end
 
     def transform_values(object, hash)
