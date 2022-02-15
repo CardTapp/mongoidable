@@ -39,16 +39,16 @@ module Mongoidable
       def inherits_abilities_from(relation_name)
         return unless valid_singular_relation?(relation_name)
 
-        trackable = { name: relation_name, type: :singular }
-        define_provider_relation(relations[relation_name].class_name.constantize)
+        trackable = { name: relation_name, class_name: name, type: :singular }
         inherits_from << trackable
         inherits_from.uniq! { |item| item[:name] }
+        define_provider_relation(relations[relation_name].class_name.constantize) unless self == Mongoidable::PolicyRelation
       end
 
       def inherits_abilities_from_many(relation, order_by, direction = :asc)
         return unless valid_many_relation?(relation)
 
-        trackable = { name: relation, order_by: order_by, direction: direction, type: :many }
+        trackable = { name: relation, class_name: name, order_by: order_by, direction: direction, type: :many }
         inherits_from << trackable
         inherits_from.uniq! { |item| item[:name] }
       end
@@ -89,7 +89,7 @@ module Mongoidable
         raise ArgumentError, "Could not find relation #{relation_key}" unless relation_exists?(relation_key)
 
         relation = relations[relation_key.to_s]
-        raise ArgumentError, _("Attempt to use singular inheritance on many relation") unless singular_relation?(relation)
+        raise ArgumentError, "Attempt to use singular inheritance on many relation" unless singular_relation?(relation)
 
         true
       end

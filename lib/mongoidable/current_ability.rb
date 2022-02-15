@@ -101,10 +101,13 @@ module Mongoidable
 
     def provided_abilities
       provided_abilities = Mongoidable::Abilities.new(mongoidable_identity, self)
-      relation_name = "#{self.class.name.downcase}_provided_abilities".to_sym
       self.class.inherits_from.each do |trackable|
+        relation_name = "#{trackable[:class_name].downcase}_provided_abilities".to_sym
         Array.wrap(send(trackable[:name])).each do |related|
+          next if related.is_a?(Mongoidable::PolicyRelation)
+
           related.send(relation_name).each do |ability|
+            ability.parentize(self)
             if ability.base_behavior
               provided_abilities.can(ability.action, ability.subject, *ability.extra)
             else
