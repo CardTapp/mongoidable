@@ -62,7 +62,7 @@ module Mongoidable
                                  after_remove: :renew_provided_abilities do
           def update_ability(**attributes)
             Mongoidable::AbilityUpdater.new(parent_document, parent_document.send(association.name), attributes).call
-            parent_document.renew_abilities(types: :instance)
+            parent_document.renew_abilities(types: :provider)
           end
         end
       end
