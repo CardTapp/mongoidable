@@ -61,7 +61,7 @@ module Mongoidable
                                  after_add:    :renew_provided_abilities,
                                  after_remove: :renew_provided_abilities do
           def update_ability(**attributes)
-            Mongoidable::AbilityUpdater.new(parent_document, attributes).call
+            Mongoidable::AbilityUpdater.new(parent_document, parent_document.send(association.name), attributes).call
             parent_document.renew_abilities(types: :instance)
           end
         end
@@ -89,7 +89,7 @@ module Mongoidable
         raise ArgumentError, "Could not find relation #{relation_key}" unless relation_exists?(relation_key)
 
         relation = relations[relation_key.to_s]
-        raise ArgumentError, "Attempt to use singular inheritance on many relation" unless singular_relation?(relation)
+        raise ArgumentError, _("Attempt to use singular inheritance on many relation") unless singular_relation?(relation)
 
         true
       end

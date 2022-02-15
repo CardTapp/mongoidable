@@ -21,7 +21,7 @@ module Mongoidable
         run_after_ability_callbacks(:inherited)
 
         run_before_ability_callbacks(:provided)
-        @abilities.merge(provided_abilities(@renew_instance))
+        @abilities.merge(provided_abilities(@renew_provided))
         run_after_ability_callbacks(:provided)
 
         run_before_ability_callbacks(:ancestral)
@@ -34,6 +34,7 @@ module Mongoidable
 
         @renew = false
         @renew_instance = false
+        @renew_provided = false
         @renew_inherited = false
       end
       @abilities
@@ -51,6 +52,7 @@ module Mongoidable
           when :all
             @renew_instance = true
             @renew_inherited = true
+            @renew_provided = true
             @renew_ancestral = true
           when :provided
             @renew_provided = true
@@ -99,12 +101,15 @@ module Mongoidable
 
     def provided_abilities
       provided_abilities = Mongoidable::Abilities.new(mongoidable_identity, self)
+      relation_name = "#{self.class.name.downcase}_provided_abilities".to_sym
       self.class.inherits_from.each do |trackable|
-        attributes[trackable[:name]]&.each do |ability|
-          if ability.base_behavior
-            own_abilities.can(ability.action, ability.subject, *ability.extra)
-          else
-            own_abilities.cannot(ability.action, ability.subject, *ability.extra)
+        Array.wrap(send(trackable[:name])).each do |related|
+          related.send(relation_name).each do |ability|
+            if ability.base_behavior
+              provided_abilities.can(ability.action, ability.subject, *ability.extra)
+            else
+              provided_abilities.cannot(ability.action, ability.subject, *ability.extra)
+            end
           end
         end
       end

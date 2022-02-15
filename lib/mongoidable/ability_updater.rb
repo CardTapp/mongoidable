@@ -5,9 +5,9 @@ module Mongoidable
     extend Memoist
     attr_accessor :instance_abilities, :arguments, :parent_document
 
-    def initialize(parent_document, arguments)
+    def initialize(parent_document, context, arguments)
       @parent_document    = parent_document
-      @instance_abilities = parent_document.instance_abilities
+      @instance_abilities = context
       @arguments          = if arguments.is_a?(ActionController::Parameters)
                               arguments.to_unsafe_hash
                             else

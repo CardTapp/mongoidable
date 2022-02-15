@@ -7,7 +7,7 @@ module Mongoidable
 
     included do
       ability_class = Mongoidable.configuration.ability_class
-      raise TypeError, "Mongoidable::Document can only be included in a Mongoid::Document" unless
+      raise TypeError, _("Mongoidable::Document can only be included in a Mongoid::Document") unless
         ability_class.constantize.ancestors.map(&:to_s).include?(Mongoidable::Ability.name)
 
       embeds_many :instance_abilities,
@@ -15,7 +15,7 @@ module Mongoidable
                   after_add:    :renew_instance_abilities,
                   after_remove: :renew_instance_abilities do
         def update_ability(**attributes)
-          Mongoidable::AbilityUpdater.new(parent_document, attributes).call
+          Mongoidable::AbilityUpdater.new(parent_document, parent_document.send(association.name), attributes).call
           parent_document.renew_abilities(types: :instance)
         end
       end
@@ -34,6 +34,10 @@ module Mongoidable
 
       def renew_instance_abilities(_relation = nil)
         renew_abilities(types: :instance)
+      end
+
+      def renew_provided_abilities(_relation = nil)
+        renew_abilities(types: :provided)
       end
     end
   end
