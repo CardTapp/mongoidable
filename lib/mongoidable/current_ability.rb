@@ -29,7 +29,7 @@ module Mongoidable
         run_after_ability_callbacks(:ancestral)
 
         run_before_ability_callbacks(:instance)
-        @abilities.merge(own_abilities(@renew_instance))
+        @abilities.merge(own_abilities(changed? || @renew_instance))
         run_after_ability_callbacks(:instance)
 
         @renew = false
@@ -107,7 +107,8 @@ module Mongoidable
           next if related.is_a?(Mongoidable::PolicyRelation)
 
           related.send(relation_name).each do |ability|
-            ability.parentize(self)
+            ability.provide(self) if ability.respond_to?(:provide)
+
             if ability.base_behavior
               provided_abilities.can(ability.action, ability.subject, *ability.extra)
             else
