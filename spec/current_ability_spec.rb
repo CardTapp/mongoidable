@@ -99,10 +99,12 @@ RSpec.describe "current_ability", :with_abilities do
     two = Parent2.new
     user.embedded_parents << two
 
-    one.instance_abilities << Mongoidable::Ability.new(base_behavior: true, action: :one_thing, subject: User)
-    two.instance_abilities << Mongoidable::Ability.new(base_behavior: true, action: :two_thing, subject: User)
-
     User.inherits_abilities_from_many :embedded_parents, :id, :asc
+
+    one.instance_abilities.update_ability(base_behavior: true, action: :one_thing, subject: User)
+    two.instance_abilities.update_ability(base_behavior: true, action: :two_thing, subject: User)
+
+    user.renew_abilities
     expect(user.current_ability.can?(:one_thing, User)).to eq true
     expect(user.current_ability.can?(:two_thing, User)).to eq true
   end
@@ -134,6 +136,8 @@ RSpec.describe "current_ability", :with_abilities do
       expect(model.parent_model).to eq user
     end
 
+    parent.renew_abilities
+    user.renew_abilities
     user.current_ability
   end
 end

@@ -40,6 +40,7 @@ RSpec.describe "class_abilities", :with_abilities do
   it "checks abilities for included modules" do
     model = Modules.new
     allow(model).to receive(:mongoidable_identity).and_return({})
+    model.renew_abilities
     expect(model.current_ability.to_casl_list).to eq(
         [
             {
