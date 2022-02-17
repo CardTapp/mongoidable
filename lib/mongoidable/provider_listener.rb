@@ -1,30 +1,11 @@
 # frozen_string_literal: true
 
 module Mongoidable
-  class ProviderListener
-    attr_reader :providee_relation,
-                :provider_relation,
-                :providee_class,
-                :provider_class,
-                :providee_class_name,
-                :provider_class_name,
-                :providee_relation_name,
-                :provider_relation_name,
-                :provider_ability_collection_name,
-                :providee_ability_collection_name,
-                :cede_method_name,
+  class ProviderListener < Mongoidable::BaseListener
+    attr_reader :cede_method_name,
                 :recede_method_name
     def initialize(providee_relation)
-      @providee_relation = providee_relation
-      @providee_class = providee_relation.klass
-      @providee_class_name = providee_class.name
-      @provider_class = providee_relation.inverse_klass
-      @provider_class_name = provider_class.name
-      @providee_relation_name = providee_relation.name
-      @provider_relation_name = providee_relation.inverse
-      @provider_ability_collection_name = "#{providee_class_name.downcase}_abilities".to_sym
-      @providee_ability_collection_name = "#{provider_class_name.downcase}_#{providee_class_name.downcase}_abilities".to_sym
-      @provider_relation = providee_class.relations[provider_relation_name]
+      super
       @cede_method_name = "cede_#{providee_class_name}_abilities".to_sym
       @recede_method_name = "recede_#{providee_class_name}_abilities".to_sym
     end
