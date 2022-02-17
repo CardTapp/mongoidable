@@ -10,6 +10,8 @@ class User
   field :name, type: String
   field :ids, type: Array
 
+  belongs_to :provider, class_name: "ProvidingParent", optional: true, inverse_of: :providee
+  # belongs_to :provider_two, class_name: "ProvidingParent", optional: true, inverse_of: :providees
   belongs_to :parent1, class_name: "Parent1", optional: true
   belongs_to :parent2, class_name: "Parent2", optional: true
   embeds_many :embedded_parents, class_name: "Parent1"

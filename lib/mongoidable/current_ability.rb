@@ -20,9 +20,12 @@ module Mongoidable
         @abilities.merge(inherited_abilities(@renew_inherited))
         run_after_ability_callbacks(:inherited)
 
-        run_before_ability_callbacks(:provided)
-        @abilities.merge(provided_abilities(@renew_provided))
-        run_after_ability_callbacks(:provided)
+        self.class.provided_ability_relations.each do |relation|
+          run_before_ability_callbacks(:inherited)
+          # TODO caching
+          @abilities.merge(provided_abilities(relation, true))
+          run_after_ability_callbacks(:inherited)
+        end
 
         run_before_ability_callbacks(:ancestral)
         @abilities.merge(ancestral_abilities(changed? || @renew_ancestral))
@@ -34,7 +37,6 @@ module Mongoidable
 
         @renew = false
         @renew_instance = false
-        @renew_provided = false
         @renew_inherited = false
       end
       @abilities
@@ -52,10 +54,7 @@ module Mongoidable
           when :all
             @renew_instance = true
             @renew_inherited = true
-            @renew_provided = true
             @renew_ancestral = true
-          when :provided
-            @renew_provided = true
           when :inherited
             @renew_inherited = true
           when :instance
@@ -99,27 +98,6 @@ module Mongoidable
       @abilities.merge(inherited_abilities)
     end
 
-    def provided_abilities
-      provided_abilities = Mongoidable::Abilities.new(mongoidable_identity, self)
-      self.class.inherits_from.each do |trackable|
-        relation_name = "#{trackable[:class_name].downcase}_provided_abilities".to_sym
-        Array.wrap(send(trackable[:name])).each do |related|
-          next if related.is_a?(Mongoidable::PolicyRelation)
-
-          related.send(relation_name).each do |ability|
-            ability.provide(self) if ability.respond_to?(:provide)
-
-            if ability.base_behavior
-              provided_abilities.can(ability.action, ability.subject, *ability.extra)
-            else
-              provided_abilities.cannot(ability.action, ability.subject, *ability.extra)
-            end
-          end
-        end
-      end
-      provided_abilities
-    end
-
     def inherited_abilities
       inherited = Mongoidable::Abilities.new(mongoidable_identity, parent_model || self)
       self.class.inherits_from.each do |inherited_from|
@@ -142,6 +120,6 @@ module Mongoidable
       ancestral
     end
 
-    memoize :ancestral_abilities, :inherited_abilities, :provided_abilities
+    memoize :ancestral_abilities, :inherited_abilities
   end
 end

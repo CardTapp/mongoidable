@@ -8,6 +8,7 @@ module Mongoidable
     include Mongoidable::ClassAbilities
     include Mongoidable::InstanceAbilities
     include Mongoidable::CurrentAbility
+    include Mongoidable::AbilityProvider
 
     included do
       extend Mongoidable.configuration.context_module.constantize if Mongoidable.configuration.context_module

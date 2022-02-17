@@ -35,10 +35,6 @@ module Mongoidable
       def renew_instance_abilities(_relation = nil)
         renew_abilities(types: :instance)
       end
-
-      def renew_provided_abilities(_relation = nil)
-        renew_abilities(types: :provided)
-      end
     end
   end
 end

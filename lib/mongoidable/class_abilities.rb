@@ -42,7 +42,6 @@ module Mongoidable
         trackable = { name: relation_name, class_name: name, type: :singular }
         inherits_from << trackable
         inherits_from.uniq! { |item| item[:name] }
-        define_provider_relation(relations[relation_name].class_name.constantize) unless self == Mongoidable::PolicyRelation
       end
 
       def inherits_abilities_from_many(relation, order_by, direction = :asc)
@@ -51,20 +50,6 @@ module Mongoidable
         trackable = { name: relation, class_name: name, order_by: order_by, direction: direction, type: :many }
         inherits_from << trackable
         inherits_from.uniq! { |item| item[:name] }
-      end
-
-      def define_provider_relation(parent_klass)
-        relation_name = "#{name.downcase}_provided_abilities".to_sym
-        Mongoidable::Ability.embedded_in(relation_name)
-        parent_klass.embeds_many relation_name,
-                                 class_name:   Mongoidable.configuration.ability_class,
-                                 after_add:    :renew_provided_abilities,
-                                 after_remove: :renew_provided_abilities do
-          def update_ability(**attributes)
-            Mongoidable::AbilityUpdater.new(parent_document, parent_document.send(association.name), attributes).call
-            parent_document.renew_abilities(types: :provider)
-          end
-        end
       end
 
       def before_abilities(type, &block)
@@ -76,11 +61,11 @@ module Mongoidable
       end
 
       def after_callbacks
-        @after_callbacks ||= { inherited: [], provided: [], ancestral: [], instance: [] }
+        @after_callbacks ||= { inherited: [], ancestral: [], instance: [] }
       end
 
       def before_callbacks
-        @before_callbacks ||= { inherited: [], provided: [], ancestral: [], instance: [] }
+        @before_callbacks ||= { inherited: [], ancestral: [], instance: [] }
       end
 
       private
