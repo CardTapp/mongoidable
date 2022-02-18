@@ -4,6 +4,7 @@ module Mongoidable
   class ProviderListener < Mongoidable::BaseListener
     attr_reader :cede_method_name,
                 :recede_method_name
+
     def initialize(providee_relation)
       super
       @cede_method_name = "cede_#{providee_class_name.downcase}_abilities".to_sym
@@ -75,16 +76,21 @@ module Mongoidable
     end
 
     def gather_initial_values(provider)
-      # stores_foreign_key?
-      # respond_to? :criteria
+      provider.send "#{providee_relation_was}=", related_ids_from_model(provider)
+    end
 
-      # Is a many or one relation
-      if providee_relation.respond_to? :criteria
-        #  many
-        provider.send "#{providee_relation_was}=", provider.send(providee_relation_name)&.pluck(:_id)
+    def related_ids_from_model(model)
+      # Many or one relation, stored key or not
+      if providee_relation.stores_foreign_key?
+        model.send(providee_relation.foreign_key)
       else
-        # one
-        provider.send "#{providee_relation_was}=", provider.send(providee_relation_name)&.id
+        if providee_relation.respond_to? :criteria
+          #  many
+          model.send(providee_relation_name)&.pluck(:_id)
+        else
+          # one
+          model.send(providee_relation_name)&.id
+        end
       end
     end
 

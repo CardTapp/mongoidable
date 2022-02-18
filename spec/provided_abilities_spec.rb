@@ -54,6 +54,7 @@ RSpec.describe "provied ability", :with_abilities do
         expect(providee.current_ability).to be_can(:provided_action, :provided_subject)
       end
     end
+
     describe "setting a nil providee to a value" do
       it "adds the ability to providee" do
         provider = ProvidingParent.new
