@@ -26,7 +26,7 @@ module Mongoidable
       @provider_relation_name = providee_relation.inverse
       @provider_relation_was = "#{provider_relation_name}_was"
       @provider_ability_collection_name = "#{providee_class_name.downcase}_abilities".to_sym
-      @providee_ability_collection_name = "#{provider_class_name.downcase}_#{providee_class_name.downcase}_abilities".to_sym
+      @providee_ability_collection_name = "#{provider_class_name.downcase}_provided_abilities".to_sym
       @provider_relation = providee_class.relations[provider_relation_name]
     end
   end
