@@ -55,14 +55,14 @@ module Mongoidable
       added, removed = if providee_relation.respond_to? :criteria
                          #  many
                          [
-                           provider.send(providee_relation_name).where(providee_relation.primary_key.to_sym.in => added_ids),
-                           providee_class.where(providee_relation.primary_key.to_sym.in => removed_ids)
+                             provider.send(providee_relation_name).where(providee_relation.primary_key.to_sym.in => added_ids),
+                             providee_class.where(providee_relation.primary_key.to_sym.in => removed_ids)
                          ]
                        else
                          # one
                          [
-                           Array.wrap(provider.send(providee_relation_name)),
-                           providee_class.where(providee_relation.primary_key.to_sym.in => removed_ids)
+                             Array.wrap(provider.send(providee_relation_name)),
+                             providee_class.where(providee_relation.primary_key.to_sym.in => removed_ids)
                          ]
                        end
 

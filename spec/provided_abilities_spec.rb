@@ -74,7 +74,6 @@ RSpec.describe "provied ability", :with_abilities do
           expect(providee.reload.current_ability).to be_cannot(:provided_action, :provided_subject)
         end
       end
-
     end
 
     describe "modifying a provider" do
