@@ -33,7 +33,11 @@ module Mongoidable
       provider_class.embeds_many provider_ability_collection_name,
                                  class_name:   Mongoidable::ProvidedAbility,
                                  after_add:    cede_method_name,
-                                 after_remove: recede_method_name
+                                 after_remove: recede_method_name do
+        def update_ability(**attributes)
+          Mongoidable::AbilityUpdater.new(parent_document, parent_document.send(association.name), attributes).call
+        end
+      end
     end
 
     def define_dynamic_methods
@@ -68,8 +72,8 @@ module Mongoidable
 
 
       provider.send(provider_ability_collection_name).each do |ability|
-        apply_to_providees(added, ability.to_args)
-        apply_to_providees(removed, ability.to_inverse_args)
+        add_to_providees(added, ability)
+        remove_from_providees(removed, ability)
       end
     end
 
@@ -90,43 +94,40 @@ module Mongoidable
 
     def cede_ability(provider, ability)
       providees = Array.wrap(provider.send(providee_relation_name))
-      apply_to_providees(providees, ability.to_args)
+      add_to_providees(providees, ability)
     end
 
     def recede_ability(provider, ability)
       providees = Array.wrap(provider.send(providee_relation_name))
-      apply_to_providees(providees, ability.to_inverse_args)
+      remove_from_providees(providees, ability)
     end
 
     def destroy_abilities(provider)
       providees = Array.wrap(provider.send(providee_relation_name))
-      sanitize_providees(providees, provider)
       provider.send(provider_ability_collection_name).each do |ability|
-        apply_to_providees(providees, ability.to_inverse_args)
+        remove_from_providees(providees, ability)
       end
     end
 
     # TODO: cede and recede may have perf implications and need a mass update instead of each
-    def apply_to_providees(providees, args)
-      providees.each { |providee| apply_to_providee(providee, args) }
+    def add_to_providees(providees, ability)
+      providees.each { |providee| add_to_providee(providee, ability) }
     end
 
-    def apply_to_providee(providee, args)
+    def remove_from_providees(providees, ability)
+      providees.each { |providee| remove_from_providee(providee, ability) }
+    end
+
+    def add_to_providee(providee, ability)
       ability_collection = providee.send(providee_ability_collection_name)
-      ability_collection.update_ability(**args)
+      ability_collection << ability
       providee.save
     end
 
-    def sanitize_providees(providees, provider)
-      providees.each do |providee|
-        if providee_relation.respond_to? :criteria
-          providee.send(provider_relation_name).delete(provider)
-          #  many
-        else
-          # one
-          providee.send("#{provider_relation_name}=", nil)
-        end
-      end
+    def remove_from_providee(providee, ability)
+      ability_collection = providee.send(providee_ability_collection_name)
+      ability_collection.delete(ability)
+      providee.save
     end
 
     CEDE_METHOD = instance_method(:cede_ability)
