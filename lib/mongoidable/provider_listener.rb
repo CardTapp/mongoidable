@@ -11,12 +11,11 @@ module Mongoidable
       @recede_method_name = "recede_#{providee_class_name.downcase}_abilities".to_sym
     end
 
-
     def call
       if [
-        Mongoid::Association::Referenced::HasOne,
-        Mongoid::Association::Embedded::EmbedsOne,
-        Mongoid::Association::Referenced::BelongsTo
+          Mongoid::Association::Referenced::HasOne,
+          Mongoid::Association::Embedded::EmbedsOne,
+          Mongoid::Association::Referenced::BelongsTo
       ].any? { |relation_type| providee_relation.is_a? relation_type }
         provider_class.before_save do |document|
           # if changed.include?(inverse_relation.foreign_key)
@@ -31,8 +30,8 @@ module Mongoidable
         provider_class.after_find :gather_initial_values
         provider_class.after_save :gather_initial_values
 
-        provider_class.before_create do |document|
-          self.to_s
+        provider_class.before_create do |_document|
+          to_s
         end
         # provider_class.before_upsert do |document|
         #   self.to_s
@@ -41,10 +40,9 @@ module Mongoidable
         #   self.to_s
         # end
       else
-        self.to_s
+        to_s
         # define_provider_collection_callbacks
       end
-
 
       Mongoidable::Ability.embedded_in(provider_ability_collection_name)
 
@@ -55,14 +53,12 @@ module Mongoidable
 
       define_dynamic_methods
 
-      # TODO update providee abilities after provider change
+      # TODO: update providee abilities after provider change
       #   providee.provider (from nil to value, from value to value, from value to nil, providee.provider.destroy, providee.provider << new_value)
       #
       # TODO update providee abilities after providee change
       #   provider.providee (from nil to value, from value to value, from value to nil, provider.providee.destroy, provider.providee << new_value)
     end
-
-
 
     def define_dynamic_methods
       this = self
@@ -70,9 +66,9 @@ module Mongoidable
       recede_method = self.class.instance_method(:recede_ability)
       gather_method = self.class.instance_method(:gather_initial_values)
       provider_class.attr_accessor providee_relation_was
-      provider_class.define_method(:gather_initial_values) { gather_method.bind_call(this, self)}
-      provider_class.define_method(cede_method_name) {|ability| cede_method.bind_call(this, self, ability)}
-      provider_class.define_method(recede_method_name) {|ability| recede_method.bind_call(this, self, ability)}
+      provider_class.define_method(:gather_initial_values) { gather_method.bind_call(this, self) }
+      provider_class.define_method(cede_method_name) { |ability| cede_method.bind_call(this, self, ability) }
+      provider_class.define_method(recede_method_name) { |ability| recede_method.bind_call(this, self, ability) }
     end
 
     def gather_initial_values(provider)
@@ -83,14 +79,12 @@ module Mongoidable
       # Many or one relation, stored key or not
       if providee_relation.stores_foreign_key?
         model.send(providee_relation.foreign_key)
+      elsif providee_relation.respond_to? :criteria
+        model.send(providee_relation_name)&.pluck(:_id)
+      #  many
       else
-        if providee_relation.respond_to? :criteria
-          #  many
-          model.send(providee_relation_name)&.pluck(:_id)
-        else
-          # one
-          model.send(providee_relation_name)&.id
-        end
+        # one
+        model.send(providee_relation_name)&.id
       end
     end
 

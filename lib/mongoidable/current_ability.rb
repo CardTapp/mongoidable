@@ -22,7 +22,7 @@ module Mongoidable
 
         self.class.provided_ability_relations.each do |relation|
           run_before_ability_callbacks(:inherited)
-          # TODO caching
+          # TODO: caching
           @abilities.merge(provided_abilities(relation, true))
           run_after_ability_callbacks(:inherited)
         end

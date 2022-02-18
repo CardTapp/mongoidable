@@ -13,6 +13,7 @@ RSpec.describe Mongoidable::Ability, :with_abilities do
       @valid
     end
   end
+
   class self::ValidAbility < Mongoidable::Ability
     def initialize(base_behavior: true, action: :thing, subject: :other_thing, extra: [])
       super base_behavior: true, action: :thing, subject: :other_thing, extra: []

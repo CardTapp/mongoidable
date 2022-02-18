@@ -58,8 +58,7 @@ RSpec.describe "provied ability", :with_abilities do
     describe "setting a nil providee to a value" do
       it "adds the ability to providee" do
         provider = ProvidingParent.new
-        providee = User.new()
-
+        providee = User.new
 
         expect(provider.current_ability).to be_cannot(:provided_action, :provided_subject)
         expect(providee.current_ability).to be_cannot(:provided_action, :provided_subject)
@@ -72,19 +71,19 @@ RSpec.describe "provied ability", :with_abilities do
         expect(providee.current_ability).to be_can(:provided_action, :provided_subject)
       end
     end
+
     describe "setting a provider to a nil" do
       it "removes the ability from the previous providee" do
-
       end
     end
+
     describe "setting a providee to a nil" do
       it "removes the ability from the previous providee" do
-
       end
     end
+
     describe "destroying a provider" do
       it "removes the ability from the providee" do
-
       end
     end
   end

@@ -14,6 +14,7 @@ module Mongoidable
                 :provider_relation_was,
                 :provider_ability_collection_name,
                 :providee_ability_collection_name
+
     def initialize(providee_relation)
       @providee_relation = providee_relation
       @providee_class = providee_relation.klass

@@ -2,7 +2,7 @@
 
 module Mongoidable
   class SpecificAbility < Mongoidable::Ability
-    def initialize(**args)
+    def initialize(**_args)
       super base_behavior: true, action: :specific_ability, subject: :specific_subject, extra: []
     end
 

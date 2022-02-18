@@ -3,46 +3,46 @@
 module Mongoidable
   class ProvideeListener < Mongoidable::BaseListener
     attr_reader :apply_provider_method_name
+
     def initialize(providee_relation)
       super(providee_relation)
       @apply_provider_method_name = "apply_#{providee_class_name}_abilities".to_sym
     end
 
     def call
-        providee_class.after_find do |document|
-          self.to_s
-        end
-        providee_class.after_initialize do |document|
-          self.to_s
-        end
-        providee_class.after_upsert do |document|
-          self.to_s
-        end
-        providee_class.after_save do |document|
-          self.to_s
-        end
-        providee_class.before_save do |document|
-          self.to_s
-
-        end
-        providee_class.after_initialize do |document|
-          self.to_s
-        end
-        providee_class.after_find do |document|
-          self.to_s
-        end
-        providee_class.before_update do |document|
-          self.to_s
-        end
-        providee_class.before_create do |document|
-          self.to_s
-        end
-        providee_class.before_upsert do |document|
-          self.to_s
-        end
-        providee_class.before_destroy do |document|
-          self.to_s
-        end
+      providee_class.after_find do |_document|
+        to_s
+      end
+      providee_class.after_initialize do |_document|
+        to_s
+      end
+      providee_class.after_upsert do |_document|
+        to_s
+      end
+      providee_class.after_save do |_document|
+        to_s
+      end
+      providee_class.before_save do |_document|
+        to_s
+      end
+      providee_class.after_initialize do |_document|
+        to_s
+      end
+      providee_class.after_find do |_document|
+        to_s
+      end
+      providee_class.before_update do |_document|
+        to_s
+      end
+      providee_class.before_create do |_document|
+        to_s
+      end
+      providee_class.before_upsert do |_document|
+        to_s
+      end
+      providee_class.before_destroy do |_document|
+        to_s
+      end
 
       providee_class.provided_ability_relations << providee_ability_collection_name
 
@@ -63,7 +63,7 @@ module Mongoidable
     def define_dynamic_methods
       this = self
       apply_provider_method = self.class.instance_method(:apply_provider_abilities)
-      providee_class.define_method(apply_provider_method_name) { apply_provider_method.bind_call(this, self)}
+      providee_class.define_method(apply_provider_method_name) { apply_provider_method.bind_call(this, self) }
     end
 
     def apply_provider_abilities(providee)
