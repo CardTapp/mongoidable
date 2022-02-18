@@ -3,11 +3,11 @@
 module Mongoidable
   class AbilityUpdater
     extend Memoist
-    attr_accessor :instance_abilities, :arguments, :parent_document
+    attr_accessor :ability_collection, :arguments, :parent_document
 
     def initialize(parent_document, context, arguments)
       @parent_document    = parent_document
-      @instance_abilities = context
+      @ability_collection = context
       @arguments          = if arguments.is_a?(ActionController::Parameters)
                               arguments.to_unsafe_hash
                             else
@@ -26,16 +26,16 @@ module Mongoidable
     end
 
     def destroy_ability
-      instance_abilities.delete database_ability
+      ability_collection.delete database_ability
     end
 
     def create_ability
       method = parent_document.new_record? ? :build : :create
-      instance_abilities.send(method, create_attributes, ability_type)
+      ability_collection.send(method, create_attributes, ability_type)
     end
 
     def database_ability
-      instance_abilities.detect { |ability| ability == ability_representation }
+      ability_collection.detect { |ability| ability == ability_representation }
     end
 
     def should_update?

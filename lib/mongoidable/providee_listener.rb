@@ -10,40 +10,6 @@ module Mongoidable
     end
 
     def call
-      providee_class.after_find do |_document|
-        to_s
-      end
-      providee_class.after_initialize do |_document|
-        to_s
-      end
-      providee_class.after_upsert do |_document|
-        to_s
-      end
-      providee_class.after_save do |_document|
-        to_s
-      end
-      providee_class.before_save do |_document|
-        to_s
-      end
-      providee_class.after_initialize do |_document|
-        to_s
-      end
-      providee_class.after_find do |_document|
-        to_s
-      end
-      providee_class.before_update do |_document|
-        to_s
-      end
-      providee_class.before_create do |_document|
-        to_s
-      end
-      providee_class.before_upsert do |_document|
-        to_s
-      end
-      providee_class.before_destroy do |_document|
-        to_s
-      end
-
       providee_class.provided_ability_relations << providee_ability_collection_name
 
       Mongoidable::Ability.embedded_in(providee_ability_collection_name)
