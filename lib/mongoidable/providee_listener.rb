@@ -12,24 +12,28 @@ module Mongoidable
     def call
       providee_class.provided_ability_relations << providee_ability_collection_name
 
+      bind_events
+      define_relationship
+      define_dynamic_methods
+    end
+
+    def bind_events
+      providee_class.after_save apply_provider_method_name
+    end
+
+    def define_dynamic_methods
+      this = self
+      providee_class.define_method(apply_provider_method_name) { APPLY_PROVIDER_METHOD.bind_call(this, self) }
+    end
+
+    def define_relationship
       Mongoidable::Ability.embedded_in(providee_ability_collection_name)
       providee_class.embeds_many providee_ability_collection_name,
                                  class_name: Mongoidable.configuration.ability_class do
         def update_ability(**attributes)
           Mongoidable::AbilityUpdater.new(parent_document, parent_document.send(association.name), attributes).call
-          # TODO: parent_document.renew_abilities(types: :provider)
         end
       end
-
-      providee_class.after_save apply_provider_method_name
-
-      define_dynamic_methods
-    end
-
-    def define_dynamic_methods
-      this = self
-      apply_provider_method = self.class.instance_method(:apply_provider_abilities)
-      providee_class.define_method(apply_provider_method_name) { apply_provider_method.bind_call(this, self) }
     end
 
     def apply_provider_abilities(providee)
@@ -40,5 +44,7 @@ module Mongoidable
         end
       end
     end
+
+    APPLY_PROVIDER_METHOD = instance_method(:apply_provider_abilities)
   end
 end
