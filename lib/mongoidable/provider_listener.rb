@@ -66,6 +66,7 @@ module Mongoidable
                          ]
                        end
 
+
       provider.send(provider_ability_collection_name).each do |ability|
         apply_to_providees(added, ability.to_args)
         apply_to_providees(removed, ability.to_inverse_args)
@@ -78,9 +79,7 @@ module Mongoidable
 
     def related_ids_from_model(model)
       # Many or one relation, stored key or not
-      if providee_relation.stores_foreign_key?
-        model.send(providee_relation.foreign_key)
-      elsif providee_relation.respond_to? :criteria
+      if providee_relation.respond_to? :criteria
         model.send(providee_relation_name)&.pluck(:_id)
         #  many
       else
@@ -101,6 +100,7 @@ module Mongoidable
 
     def destroy_abilities(provider)
       providees = Array.wrap(provider.send(providee_relation_name))
+      sanitize_providees(providees, provider)
       provider.send(provider_ability_collection_name).each do |ability|
         apply_to_providees(providees, ability.to_inverse_args)
       end
@@ -115,6 +115,18 @@ module Mongoidable
       ability_collection = providee.send(providee_ability_collection_name)
       ability_collection.update_ability(**args)
       providee.save
+    end
+
+    def sanitize_providees(providees, provider)
+      providees.each do |providee|
+        if providee_relation.respond_to? :criteria
+          providee.send(provider_relation_name).delete(provider)
+          #  many
+        else
+          # one
+          providee.send("#{provider_relation_name}=", nil)
+        end
+      end
     end
 
     CEDE_METHOD = instance_method(:cede_ability)

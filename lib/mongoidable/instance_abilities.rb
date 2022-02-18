@@ -29,6 +29,7 @@ module Mongoidable
       end
       new_abilities
     end
+
     memoize :own_abilities
   end
 end

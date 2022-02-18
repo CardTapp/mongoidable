@@ -4,6 +4,10 @@ require "rails_helper"
 require "cancan/matchers"
 
 RSpec.describe "provied ability", :with_abilities do
+  # TODO one to many
+  # TODO many to one
+  # TODO many to many
+  # TODO create vs new
   describe "one to one relationship" do
     describe "modifying provider abilities" do
       describe "ability added to provider" do
@@ -60,8 +64,8 @@ RSpec.describe "provied ability", :with_abilities do
 
       describe "setting a provider to a nil" do
         it "removes the ability from the providee" do
-          providee = User.new
-          provider = ProvidingParent.new(providee: providee)
+          providee = User.create
+          provider = ProvidingParent.create(providee: providee)
           provider.user_abilities.build(base_behavior: true, action: :provided_action, subject: :provided_subject)
 
           expect(provider.current_ability).to be_cannot(:provided_action, :provided_subject)
