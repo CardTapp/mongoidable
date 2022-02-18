@@ -9,11 +9,6 @@ module Mongoidable
     end
 
     def call
-      if [
-        Mongoid::Association::Referenced::HasOne,
-        Mongoid::Association::Embedded::EmbedsOne,
-        Mongoid::Association::Referenced::BelongsTo
-      ].any? { |relation_type| providee_relation.is_a? relation_type }
         providee_class.after_find do |document|
           self.to_s
         end
@@ -48,10 +43,6 @@ module Mongoidable
         providee_class.before_destroy do |document|
           self.to_s
         end
-      else
-        self.to_s
-        # define_providee_collection_callbacks
-      end
 
       providee_class.provided_ability_relations << providee_ability_collection_name
 
