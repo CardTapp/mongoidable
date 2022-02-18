@@ -34,7 +34,7 @@ RSpec.describe "provied ability", :with_abilities do
           expect(provider.current_ability).to be_cannot(:provided_action, :provided_subject)
           expect(providee.current_ability).to be_can(:provided_action, :provided_subject)
 
-          provider.user_abilities.build(base_behavior: false, action: :provided_action, subject: :provided_subject)
+          provider.user_abilities.clear
 
           providee.renew_abilities
           expect(provider.current_ability).to be_cannot(:provided_action, :provided_subject)

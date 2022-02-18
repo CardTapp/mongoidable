@@ -33,11 +33,7 @@ module Mongoidable
       provider_class.embeds_many provider_ability_collection_name,
                                  class_name:   Mongoidable::ProvidedAbility,
                                  after_add:    cede_method_name,
-                                 after_remove: recede_method_name do
-        def update_ability(**attributes)
-          Mongoidable::AbilityUpdater.new(parent_document, parent_document.send(association.name), attributes).call
-        end
-      end
+                                 after_remove: recede_method_name
     end
 
     def define_dynamic_methods
@@ -120,13 +116,15 @@ module Mongoidable
 
     def add_to_providee(providee, ability)
       ability_collection = providee.send(providee_ability_collection_name)
-      ability_collection << ability
+      provided_ability_class = Mongoidable::Ability.from_value(ability.action, ability.subject, providee_class) || Mongoidable.configuration.ability_class.constantize
+      ability_collection << provided_ability_class.new(**ability.attributes)
       providee.save
     end
 
     def remove_from_providee(providee, ability)
       ability_collection = providee.send(providee_ability_collection_name)
-      ability_collection.delete(ability)
+      provided_ability_class = Mongoidable::Ability.from_value(ability.action, ability.subject, providee_class) || Mongoidable.configuration.ability_class.constantize
+      ability_collection.delete(provided_ability_class.new(**ability.attributes))
       providee.save
     end
 
