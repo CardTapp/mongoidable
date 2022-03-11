@@ -11,7 +11,7 @@ module Mongoidable
         def initialize(obj, controller, authorize_pairs)
           super(obj)
 
-          @controller = controller
+          @controller      = controller
           @authorize_pairs = authorize_pairs
         end
 
@@ -34,11 +34,12 @@ module Mongoidable
                     :authorize_pairs
 
         def authorization_matcher
-          authorize_pairs.map do |authorize_action, authorized_object|
-            matcher = receive(:authorize!).with(
-                exact_match(authorize_action),
-                exact_match(authorized_object)
-              )
+          authorize_pairs.map do |authorize_action, authorized_object, authorize_field = nil|
+            matcher = if authorize_field
+                        receive(:authorize!).with(exact_match(authorize_action), exact_match(authorized_object), authorize_field)
+                      else
+                        receive(:authorize!).with(exact_match(authorize_action), exact_match(authorized_object))
+                      end
             matcher.setup_expectation(controller)
           end
         end
@@ -96,8 +97,8 @@ module Mongoidable
       #     for(:controller_action, controller_params = {}).
       #     [optional, multiple] with_variable(variable, instance_name = nil).
       #     [optional] after_action(action_name)
-      ::RSpec::Matchers.define :authorize do |authorize_action, authorized_object|
-        authorize_pairs = [[authorize_action, authorized_object]]
+      ::RSpec::Matchers.define :authorize do |authorize_action, authorized_object, authorized_field = nil|
+        authorize_pairs = [[authorize_action, authorized_object, authorized_field].compact]
         failure_message do
           if @helper
             @helper.error_message
@@ -123,8 +124,8 @@ module Mongoidable
           @run_actions_named = Array.wrap(filter_name)
         end
 
-        chain :and do |new_action, new_object|
-          authorize_pairs << [new_action, new_object]
+        chain :and do |new_action, new_object, new_field = nil|
+          authorize_pairs << [new_action, new_object, new_field].compact
         end
       end
 
