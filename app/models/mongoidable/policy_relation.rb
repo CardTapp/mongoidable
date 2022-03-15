@@ -17,7 +17,7 @@ module Mongoidable
       merged_policy_requirements = Mongoidable::Abilities.new(mongoidable_identity, self)
       return merged_policy_requirements unless policy
 
-      policy_instance_abilities = policy.instance_abilities.clone
+      policy_instance_abilities = policy.instance_abilities.map(&:clone)
       policy_instance_abilities.each do |ability|
         ability.merge_requirements(requirements)
         if ability.base_behavior
