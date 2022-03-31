@@ -26,7 +26,7 @@ module Mongoidable
     end
 
     def destroy_ability
-      instance_abilities.delete database_ability
+      database_ability.destroy!
     end
 
     def create_ability

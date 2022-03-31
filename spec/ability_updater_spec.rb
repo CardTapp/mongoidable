@@ -34,6 +34,14 @@ RSpec.describe Mongoidable::AbilityUpdater do
     expect(ability).to be_a(Mongoidable::SpecificAbility)
   end
 
+  it "calls the callbacks on a class if unset" do
+    updater = Mongoidable::AbilityUpdater.new(user, { action: :specific_ability, subject: :specific_subject, base_behavior: true })
+    updater.call
+
+    updater = Mongoidable::AbilityUpdater.new(user, { action: :specific_ability, subject: :specific_subject, extra: [], base_behavior: false })
+    expect { updater.call }.to raise_error "Testing that destroy is called"
+  end
+
   it "creates an ability by class if appropriate if subject is hash" do
     updater = Mongoidable::AbilityUpdater.new(user,
                                               { action:        :specific_ability,
