@@ -32,7 +32,7 @@ module Mongoidable
         embeds_many as, class_name: "Mongoidable::PolicyRelation", after_add: :renew_policies, after_remove: :renew_policies
 
         Mongoidable::PolicyRelation.embedded_in as
-        Mongoidable::Policy.possible_types.concat([name.downcase]).uniq!
+        Mongoidable::Policy.possible_types.push(name.downcase).uniq!
         inherits_abilities_from_many as, :id
       end
 

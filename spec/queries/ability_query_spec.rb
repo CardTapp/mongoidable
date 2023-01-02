@@ -14,7 +14,7 @@ RSpec.describe Mongoidable::AbilityQuery do
     describe "for document" do
       let(:params) do
         ActionController::Parameters.new({ owner_type: "user", owner_id: user.id.to_s, instance_abilities: [{
-                                             "action"  => "test",
+                                             "action" => "test",
                                              "subject" => { type: "symbol", value: "ability" },
                                              "enabled" => "true"
                                          }] })
@@ -40,7 +40,7 @@ RSpec.describe Mongoidable::AbilityQuery do
 
         it "gives the specified user the specified typed ability" do
           params = ActionController::Parameters.new({ owner_type: "user", owner_id: user.id.to_s, instance_abilities: [{
-                                                        "action"  => "organization_owner",
+                                                        "action" => "organization_owner",
                                                         "subject" => { type: "symbol", value: "ability" },
                                                         "enabled" => "true"
                                                     }] })
@@ -52,7 +52,7 @@ RSpec.describe Mongoidable::AbilityQuery do
 
         it "revokes the specified ability from the specified user" do
           params = ActionController::Parameters.new({ owner_type: "user", owner_id: user.id.to_s, instance_abilities: [{
-                                                        "action"  => "organization_owner",
+                                                        "action" => "organization_owner",
                                                         "subject" => { type: "symbol", value: "ability" },
                                                         "enabled" => "false"
                                                     }] })

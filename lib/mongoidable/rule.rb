@@ -13,7 +13,7 @@ module CanCan
       @rule_source = extra_first_hash&.delete(:rule_source)
       @rule_type = extra_first_hash&.delete(:rule_type)
 
-      extra_args.delete_if { |arg| arg.blank? }
+      extra_args.delete_if(&:blank?)
 
       super
     end

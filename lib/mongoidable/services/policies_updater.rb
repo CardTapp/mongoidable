@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 module Mongoidable
   class PoliciesUpdater
     extend Memoist
@@ -19,9 +21,7 @@ module Mongoidable
     end
 
     def save!
-      unless remove_policy?
-        relation.save!
-      end
+      relation.save! unless remove_policy?
 
       model.save!
     end

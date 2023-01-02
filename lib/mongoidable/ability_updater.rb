@@ -64,10 +64,10 @@ module Mongoidable
 
     def create_attributes
       {
-          action:        action,
+          action: action,
           base_behavior: base_behavior,
-          subject:       subject_as_class,
-          extra:         extra
+          subject: subject_as_class,
+          extra: extra
       }
     end
 

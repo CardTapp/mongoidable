@@ -10,7 +10,7 @@ module Mongoidable
     def mongoidable_identity
       {
           model: model_name&.name || nil,
-          id:    attributes.nil? ? nil : id
+          id: attributes.nil? ? nil : id
       }
     end
 

@@ -37,11 +37,10 @@ module Mongoidable
           when "string"
             value.to_s
           else
-            if type.nil? && value.nil?
-              nil
-            else
-              raise ArgumentError, "Unable to deserialize #{object}"
-            end
+            raise ArgumentError, "Unable to deserialize #{object}" unless type.nil? && value.nil?
+
+            nil
+
         end
       end
 

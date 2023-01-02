@@ -1,3 +1,9 @@
+![CircleCI](https://img.shields.io/circleci/build/github/krimsonkla/mongoidable?token=93f6e6dbdeff146992116c0b8bebef6140aa1dbf)
+[![Maintainability](https://api.codeclimate.com/v1/badges/482191f22e1af5047c6b/maintainability)](https://codeclimate.com/github/krimsonkla/mongoidable/maintainability)
+![Snyk Vulnerabilities for GitHub Repo](https://img.shields.io/snyk/vulnerabilities/github/krimsonkla/mongoidable)
+
+**Written by Jason Risch for Cardtapp LLC**
+
 # Mongoidable
 An implementation of cancancan (https://github.com/CanCanCommunity/cancancan) which allows abilities to be statically or dynamically defined in one or many classes.
 

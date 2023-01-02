@@ -6,6 +6,6 @@ require_relative "application"
 # Initialize the Rails application.
 begin
   Rails.application.initialize!
-rescue StandardError => error
-  error.to_s
+rescue StandardError => e
+  e.to_s
 end

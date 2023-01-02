@@ -14,19 +14,19 @@ RSpec.describe Mongoidable::PoliciesController, type: :controller do
     it {
       allow(Mongoidable::Policy).to receive(:find_by).with({ owner_type: "user" }).and_return(policy)
       expect(subject).to authorize(:index, Mongoidable::Policy).
-          for("index", owner_type: "user", format: :json).run_actions(:policy)
+                             for("index", owner_type: "user", format: :json).run_actions(:policy)
     }
 
     it {
       allow(Mongoidable::Policy).to receive(:find_by).with({ id: 1 }).and_return(policy)
       expect(subject).to authorize(:show, policy).
-          for("show", id: 1, format: :json).run_actions(:policy)
+                             for("show", id: 1, format: :json).run_actions(:policy)
     }
 
     it {
       allow(Mongoidable::Policy).to receive(:new).and_return(policy)
       expect(subject).to authorize(:create, policy).
-          for("create", policy: { name: "test" }, format: :json).run_actions(:policy)
+                             for("create", policy: { name: "test" }, format: :json).run_actions(:policy)
     }
 
     it {
@@ -34,13 +34,13 @@ RSpec.describe Mongoidable::PoliciesController, type: :controller do
       allow(Mongoidable::Policy).to receive(:find_by).with({ id: 1 }).and_return(policy)
       allow(policy).to receive(:subscribe)
       expect(subject).to authorize(:update, policy).
-          for("update", id: 1, format: :json).run_actions(:policy)
+                             for("update", id: 1, format: :json).run_actions(:policy)
     }
 
     it {
       allow(Mongoidable::Policy).to receive(:find_by).with({ id: 1 }).and_return(policy)
       expect(subject).to authorize(:destroy, policy).
-          for("destroy", id: 1, format: :json).run_actions(:policy)
+                             for("destroy", id: 1, format: :json).run_actions(:policy)
     }
   end
 
@@ -71,15 +71,15 @@ RSpec.describe Mongoidable::PoliciesController, type: :controller do
         Mongoidable.configuration.policy_query = "CustomPolicyQuery"
 
         Mongoidable::Policy.create(
-            name:               "not me",
-            owner_type:         "user",
-            instance_abilities: [Mongoidable::Ability.new(base_behavior: true, action: :action, subject: { type: "symbol", value: "subject" })]
-          )
+          name: "not me",
+          owner_type: "user",
+          instance_abilities: [Mongoidable::Ability.new(base_behavior: true, action: :action, subject: { type: "symbol", value: "subject" })]
+        )
         Mongoidable::Policy.create(
-            name:               "only me",
-            owner_type:         "user",
-            instance_abilities: [Mongoidable::Ability.new(base_behavior: true, action: :action, subject: { type: "symbol", value: "subject" })]
-          )
+          name: "only me",
+          owner_type: "user",
+          instance_abilities: [Mongoidable::Ability.new(base_behavior: true, action: :action, subject: { type: "symbol", value: "subject" })]
+        )
 
         get :index, params: { owner_type: "user" }
 
@@ -97,10 +97,10 @@ RSpec.describe Mongoidable::PoliciesController, type: :controller do
       it "returns user type policies" do
         database_policies = Array.new(10) do |index|
           Mongoidable::Policy.create(
-              name:               index,
-              owner_type:         "user",
-              instance_abilities: [Mongoidable::Ability.new(base_behavior: true, action: :action, subject: { type: "symbol", value: "subject" })]
-            )
+            name: index,
+            owner_type: "user",
+            instance_abilities: [Mongoidable::Ability.new(base_behavior: true, action: :action, subject: { type: "symbol", value: "subject" })]
+          )
         end
 
         get :index, params: { owner_type: "user" }
@@ -113,10 +113,10 @@ RSpec.describe Mongoidable::PoliciesController, type: :controller do
     describe "show" do
       it "returns the requested policy" do
         database_policy = Mongoidable::Policy.create(
-            name:               "policy",
-            owner_type:         "user",
-            instance_abilities: [Mongoidable::Ability.new(base_behavior: true, action: :action, subject: { type: "symbol", value: "subject" })]
-          )
+          name: "policy",
+          owner_type: "user",
+          instance_abilities: [Mongoidable::Ability.new(base_behavior: true, action: :action, subject: { type: "symbol", value: "subject" })]
+        )
 
         get :show, params: { id: database_policy.id.to_s, owner_type: database_policy.owner_type }
 
@@ -129,19 +129,19 @@ RSpec.describe Mongoidable::PoliciesController, type: :controller do
     describe "update" do
       it "adds abilities" do
         database_policy = Mongoidable::Policy.create(
-            name:               "policy",
-            owner_type:         "user",
-            instance_abilities: [Mongoidable::Ability.new(base_behavior: true, action: :action, subject: { type: "symbol", value: "subject" })]
-          )
+          name: "policy",
+          owner_type: "user",
+          instance_abilities: [Mongoidable::Ability.new(base_behavior: true, action: :action, subject: { type: "symbol", value: "subject" })]
+        )
 
-        new_abilites = 3.times.map do |index|
+        new_abilites = Array.new(3) do |index|
           Mongoidable::Ability.create(base_behavior: true, action: index.to_s, subject: { "type" => "symbol", value: "subject" }).attributes
         end
 
         put :update, params: {
-            id:                 database_policy.id.to_s,
-            owner_type:         database_policy.owner_type,
-            replace:            false,
+            id: database_policy.id.to_s,
+            owner_type: database_policy.owner_type,
+            replace: false,
             instance_abilities: new_abilites
         }
 
@@ -155,17 +155,17 @@ RSpec.describe Mongoidable::PoliciesController, type: :controller do
 
       it "removes abilities" do
         database_policy = Mongoidable::Policy.create(
-            name:               "policy",
-            owner_type:         "user",
-            instance_abilities: [Mongoidable::Ability.new(base_behavior: true, action: :action, subject: { type: "symbol", value: "subject" })]
-          )
+          name: "policy",
+          owner_type: "user",
+          instance_abilities: [Mongoidable::Ability.new(base_behavior: true, action: :action, subject: { type: "symbol", value: "subject" })]
+        )
 
         removed_ability = database_policy.instance_abilities.first.attributes
         removed_ability["base_behavior"] = false
         put :update, params: {
-            id:                 database_policy.id.to_s,
-            owner_type:         database_policy.owner_type,
-            replace:            false,
+            id: database_policy.id.to_s,
+            owner_type: database_policy.owner_type,
+            replace: false,
             instance_abilities: [removed_ability]
         }
 
@@ -181,13 +181,13 @@ RSpec.describe Mongoidable::PoliciesController, type: :controller do
     describe "destroy" do
       it "destroys the policy" do
         database_policy = Mongoidable::Policy.create(
-            name:               "policy",
-            owner_type:         "user",
-            instance_abilities: [Mongoidable::Ability.new(base_behavior: true, action: :action, subject: { type: "symbol", value: "subject" })]
-          )
+          name: "policy",
+          owner_type: "user",
+          instance_abilities: [Mongoidable::Ability.new(base_behavior: true, action: :action, subject: { type: "symbol", value: "subject" })]
+        )
 
         put :destroy, params: {
-            id:         database_policy.id.to_s,
+            id: database_policy.id.to_s,
             owner_type: database_policy.owner_type
         }
 

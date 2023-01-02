@@ -60,8 +60,8 @@ module Mongoidable
 
     def ==(other)
       other.action == action &&
-        other.subject == subject &&
-        other.extra == extra
+          other.subject == subject &&
+          other.extra == extra
     end
 
     def merge_requirements(data)
@@ -153,4 +153,4 @@ module Mongoidable
   end
 end
 
-::Ability = Mongoidable::Ability
+Ability = Mongoidable::Ability

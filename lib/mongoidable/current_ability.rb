@@ -20,7 +20,7 @@ module Mongoidable
         run_after_ability_callbacks(:inherited)
 
         run_before_ability_callbacks(:ancestral)
-        @abilities.merge(ancestral_abilities(self.changed? || @renew_ancestral))
+        @abilities.merge(ancestral_abilities(changed? || @renew_ancestral))
         run_after_ability_callbacks(:ancestral)
 
         run_before_ability_callbacks(:instance)

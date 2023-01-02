@@ -3,7 +3,8 @@
 require "rails_helper"
 
 RSpec.describe Mongoidable::Ability, :with_abilities do
-  class self::DerivedAbility < Mongoidable::Ability
+  module self
+    class DerivedAbility < Mongoidable::Ability
     def initialize(base_behavior: true, action: :thing, subject: :other_thing, extra: [], valid: true)
       @valid = valid
       super base_behavior: true, action: :thing, subject: :other_thing, extra: []
@@ -12,14 +13,18 @@ RSpec.describe Mongoidable::Ability, :with_abilities do
     def valid_for_parent?
       @valid
     end
+    end
   end
-  class self::ValidAbility < Mongoidable::Ability
+
+  module self
+    class ValidAbility < Mongoidable::Ability
     def initialize(base_behavior: true, action: :thing, subject: :other_thing, extra: [])
       super base_behavior: true, action: :thing, subject: :other_thing, extra: []
     end
 
     def self.valid_for?(klass)
       klass == User
+    end
     end
   end
   it "is valid for any parent model by default" do
@@ -106,14 +111,14 @@ RSpec.describe Mongoidable::Ability, :with_abilities do
     main_instance = User.new(id: 1)
     main_instance.instance_abilities << described_class.new(base_behavior: true, action: :do_something, subject: User, extra: [{ id: 2 }])
     allow(I18n).to receive(:t).
-        with("mongoidable.ability.description.do_user_class_stuff", { subject: ["User"] }).
-        and_return("This is my do_user_class_stuff description")
+                       with("mongoidable.ability.description.do_user_class_stuff", { subject: ["User"] }).
+                       and_return("This is my do_user_class_stuff description")
     allow(I18n).to receive(:t).
-        with("mongoidable.ability.description.do_other_user_class_stuff", { subject: ["User"] }).
-        and_return("This is my do_other_user_class_stuff description")
+                       with("mongoidable.ability.description.do_other_user_class_stuff", { subject: ["User"] }).
+                       and_return("This is my do_other_user_class_stuff description")
     allow(I18n).to receive(:t).
-        with("mongoidable.ability.description.do_something", { subject: ["User"] }).
-        and_return("This is my do_something description")
+                       with("mongoidable.ability.description.do_something", { subject: ["User"] }).
+                       and_return("This is my do_something description")
     list = main_instance.current_ability.to_casl_list
     expect(list[2][:description]).to eq "This is my do_something description"
   end

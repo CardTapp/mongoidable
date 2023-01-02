@@ -24,16 +24,16 @@ RSpec.describe Mongoidable::AbilitiesController, type: :controller do
     it do
       user = User.create
       expect(subject).to authorize(:read_abilities, instance_variable(:request_object)).for(
-          :index, owner_id: user.id.to_s, owner_type: "user"
-        ).run_actions(:request_object)
+        :index, owner_id: user.id.to_s, owner_type: "user"
+      ).run_actions(:request_object)
       expect(instance_variable(:request_object).variable_value).to eq user
     end
 
     it do
       user = User.create
       expect(subject).to authorize(:manage_abilities, instance_variable(:request_object)).for(
-          :create, owner_id: user.id.to_s, owner_type: "user"
-        ).run_actions(:request_object)
+        :create, owner_id: user.id.to_s, owner_type: "user"
+      ).run_actions(:request_object)
       expect(instance_variable(:request_object).variable_value).to eq user
     end
   end
@@ -62,10 +62,10 @@ RSpec.describe Mongoidable::AbilitiesController, type: :controller do
         expect(other_user.current_ability.can?(:test, Object)).to be_falsy
 
         put :create, params: {
-            owner_id:           other_user.id.to_s,
-            owner_type:         "user",
+            owner_id: other_user.id.to_s,
+            owner_type: "user",
             instance_abilities: [{
-                action:  :test,
+                action: :test,
                 subject: { type: "class", value: "Object" },
                 enabled: true
             }]
@@ -83,11 +83,11 @@ RSpec.describe Mongoidable::AbilitiesController, type: :controller do
         expect(other_user.current_ability.can?(test_ability.action, test_ability.subject)).to be_truthy
 
         put :create, params: {
-            owner_id:           other_user.id.to_s,
-            owner_type:         "user",
+            owner_id: other_user.id.to_s,
+            owner_type: "user",
             instance_abilities: [{
-                action:        test_ability.action,
-                subject:       { type: "symbol", value: "subject" },
+                action: test_ability.action,
+                subject: { type: "symbol", value: "subject" },
                 base_behavior: false
             }]
         }, as: :json
@@ -99,29 +99,29 @@ RSpec.describe Mongoidable::AbilitiesController, type: :controller do
 
       it "removes the policy" do
         policy_1 = Mongoidable::Policy.create(
-            name:               "policy_one",
-            owner_type:         "user",
-            requirements:       {
-                user: { id: "ObjectId" }
-            },
-            instance_abilities: [Mongoidable::Ability.new(base_behavior: true, action: :action_one, subject: User, extra: [{ id: "merge|user.id" }])]
-          )
+          name: "policy_one",
+          owner_type: "user",
+          requirements: {
+              user: { id: "ObjectId" }
+          },
+          instance_abilities: [Mongoidable::Ability.new(base_behavior: true, action: :action_one, subject: User, extra: [{ id: "merge|user.id" }])]
+        )
 
         other_user.policies.create(
-            requirements: { user: { id: 1 } },
-            policy_id:    policy_1.id
-          )
+          requirements: { user: { id: 1 } },
+          policy_id: policy_1.id
+        )
 
         expect(other_user.current_ability).to be_can(:action_one, User.new(id: 1))
         expect(other_user.current_ability).to be_cannot(:action_two, User.new(id: 1))
 
         put :create, params: {
-            owner_id:        other_user.id.to_s,
-            owner_type:      "user",
+            owner_id: other_user.id.to_s,
+            owner_type: "user",
             policy_relation: "policies",
-            policy_id:       policy_1.id.to_s,
-            requirements:    { user: { id: 1 } },
-            remove_policy:   "true"
+            policy_id: policy_1.id.to_s,
+            requirements: { user: { id: 1 } },
+            remove_policy: "true"
         }, as: :json
 
         other_user.reload
@@ -130,20 +130,20 @@ RSpec.describe Mongoidable::AbilitiesController, type: :controller do
 
       it "applies the policy" do
         database_policy = Mongoidable::Policy.create(
-            name:               "policy",
-            owner_type:         "user",
-            requirements:       {
-                user: { id: "ObjectId" }
-            },
-            instance_abilities: [Mongoidable::Ability.new(base_behavior: true, action: :action, subject: User, extra: [{ id: "merge|user.id" }])]
-          )
+          name: "policy",
+          owner_type: "user",
+          requirements: {
+              user: { id: "ObjectId" }
+          },
+          instance_abilities: [Mongoidable::Ability.new(base_behavior: true, action: :action, subject: User, extra: [{ id: "merge|user.id" }])]
+        )
 
         put :create, params: {
-            owner_id:        other_user.id.to_s,
-            owner_type:      "user",
+            owner_id: other_user.id.to_s,
+            owner_type: "user",
             policy_relation: "policies",
-            policy_id:       database_policy.id.to_s,
-            requirements:    { user: { id: 1 } }
+            policy_id: database_policy.id.to_s,
+            requirements: { user: { id: 1 } }
         }, as: :json
 
         other_user.reload
@@ -155,20 +155,21 @@ RSpec.describe Mongoidable::AbilitiesController, type: :controller do
 
       it "applies the policy with attributes" do
         database_policy = Mongoidable::Policy.create(
-            name:               "policy",
-            owner_type:         "user",
-            requirements:       {
-                user: { id: "ObjectId" }
-            },
-            instance_abilities: [Mongoidable::Ability.new(base_behavior: true, action: :action, subject: User, extra: [:name, { id: "merge|user.id" }])]
-          )
+          name: "policy",
+          owner_type: "user",
+          requirements: {
+              user: { id: "ObjectId" }
+          },
+          instance_abilities: [Mongoidable::Ability.new(base_behavior: true, action: :action, subject: User,
+                                                        extra: [:name, { id: "merge|user.id" }])]
+        )
 
         put :create, params: {
-            owner_id:        other_user.id.to_s,
-            owner_type:      "user",
+            owner_id: other_user.id.to_s,
+            owner_type: "user",
             policy_relation: "policies",
-            policy_id:       database_policy.id.to_s,
-            requirements:    { user: { id: 1 } }
+            policy_id: database_policy.id.to_s,
+            requirements: { user: { id: 1 } }
         }, as: :json
 
         other_user.reload
