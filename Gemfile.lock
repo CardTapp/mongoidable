@@ -157,7 +157,7 @@ GEM
       racc (~> 1.4)
     orm_adapter (0.5.0)
     parallel (1.22.1)
-    parser (3.2.0.0)
+    parser (3.2.1.0)
       ast (~> 2.4.1)
     racc (1.6.2)
     rack (2.2.6.2)
@@ -247,7 +247,7 @@ GEM
       rubocop (>= 0.53.0)
     ruby-progressbar (1.11.0)
     ruby2_keywords (0.0.5)
-    ruby2js (5.0.1)
+    ruby2js (5.1.0)
       parser
       regexp_parser (~> 2.1.1)
     ruby2ruby (2.5.0)
