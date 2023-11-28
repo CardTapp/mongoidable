@@ -24,7 +24,7 @@ RSpec.describe Mongoidable::PolicySerializer do
     expect(output[:instance_abilities]).to eq ["ability_id"]
 
     expect(output[:abilities]).to eq [{ action:      [:action],
-                                        description: "translation missing: en.mongoidable.ability.description.action",
+                                        description: "Translation missing: en.mongoidable.ability.description.action",
                                         has_block:   false,
                                         source:      { id: "id", model: "Mongoidable::Policy" },
                                         subject:     [:subject],

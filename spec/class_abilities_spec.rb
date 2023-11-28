@@ -47,7 +47,7 @@ RSpec.describe "class_abilities", :with_abilities do
                 subject:     ["User"],
                 has_block:   false,
                 source:      nil,
-                description: "translation missing: en.mongoidable.ability.description.do_included_stuff",
+                description: "Translation missing: en.mongoidable.ability.description.do_included_stuff",
                 type:        :static
             },
             {
@@ -55,7 +55,7 @@ RSpec.describe "class_abilities", :with_abilities do
                 subject:     ["User"],
                 has_block:   false,
                 source:      nil,
-                description: "translation missing: en.mongoidable.ability.description.do_own_stuff",
+                description: "Translation missing: en.mongoidable.ability.description.do_own_stuff",
                 type:        :static
             },
             {
@@ -64,7 +64,7 @@ RSpec.describe "class_abilities", :with_abilities do
                 inverted:    true,
                 has_block:   false,
                 source:      nil,
-                description: "translation missing: en.mongoidable.ability.description.do_other_own_stuff",
+                description: "Translation missing: en.mongoidable.ability.description.do_other_own_stuff",
                 type:        :static
             }
         ]
