@@ -14,7 +14,7 @@ RSpec.describe Mongoidable::Abilities do
               has_block:   false,
               subject:     [:to_thing],
               action:      [:do_thing],
-              description: "translation missing: en.mongoidable.ability.description.do_thing"
+              description: "Translation missing: en.mongoidable.ability.description.do_thing"
           },
           {
               type:        :adhoc,
@@ -24,7 +24,7 @@ RSpec.describe Mongoidable::Abilities do
               conditions:  { name: "Fred" },
               subject:     ["User"],
               action:      [:do_other_thing],
-              description: "translation missing: en.mongoidable.ability.description.do_other_thing"
+              description: "Translation missing: en.mongoidable.ability.description.do_other_thing"
           },
           {
               type:        :adhoc,
@@ -33,7 +33,7 @@ RSpec.describe Mongoidable::Abilities do
               fields:      [:name],
               subject:     ["User"],
               action:      [:do_attribute_thing],
-              description: "translation missing: en.mongoidable.ability.description.do_attribute_thing"
+              description: "Translation missing: en.mongoidable.ability.description.do_attribute_thing"
           },
           {
               type:        :adhoc,
@@ -43,7 +43,7 @@ RSpec.describe Mongoidable::Abilities do
               fields:      [:name],
               subject:     ["User"],
               action:      [:do_all_thing],
-              description: "translation missing: en.mongoidable.ability.description.do_all_thing"
+              description: "Translation missing: en.mongoidable.ability.description.do_all_thing"
           },
           {
               type:        :adhoc,
@@ -53,7 +53,7 @@ RSpec.describe Mongoidable::Abilities do
               block_js:    "abilities.can(\"do_block_thing\", User, function(user) {\n  return user.name == \"Fred\"\n})",
               subject:     ["User"],
               action:      [:do_block_thing],
-              description: "translation missing: en.mongoidable.ability.description.do_block_thing"
+              description: "Translation missing: en.mongoidable.ability.description.do_block_thing"
           }
       ]
     end

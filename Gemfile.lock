@@ -195,7 +195,7 @@ GEM
       thor (~> 1.0)
     rainbow (3.1.1)
     rake (13.1.0)
-    regexp_parser (2.1.1)
+    regexp_parser (2.8.2)
     responders (3.1.1)
       actionpack (>= 5.2)
       railties (>= 5.2)
