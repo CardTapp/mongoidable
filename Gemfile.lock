@@ -1,7 +1,7 @@
 PATH
   remote: .
   specs:
-    mongoidable (0.2.3)
+    mongoidable (0.2.4)
       ParseTree
       active_model_serializers
       cancancan
