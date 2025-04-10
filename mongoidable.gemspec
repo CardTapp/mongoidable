@@ -34,7 +34,7 @@ Gem::Specification.new do |spec|
   spec.add_dependency "devise"
   spec.add_dependency "memoist"
   spec.add_dependency "method_source"
-  spec.add_dependency "mongoid", "~> 7"
+  spec.add_dependency "mongoid", "~> 8"
   spec.add_dependency "ParseTree"
   spec.add_dependency "rails", "~> 6"
   spec.add_dependency "ruby2js"
