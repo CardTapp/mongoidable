@@ -1,7 +1,7 @@
 PATH
   remote: .
   specs:
-    mongoidable (0.2.4)
+    mongoidable (0.2.3)
       ParseTree
       active_model_serializers
       cancancan
@@ -10,7 +10,7 @@ PATH
       devise
       memoist
       method_source
-      mongoid (~> 7)
+      mongoid (~> 7, <= 9.0.6)
       rails (~> 6)
       ruby2js
       ruby2ruby
@@ -22,7 +22,7 @@ GEM
     ParseTree (3.0.8)
       RubyInline (>= 3.7.0)
       sexp_processor (>= 3.0.0)
-    RubyInline (3.12.5)
+    RubyInline (3.13.0)
       ZenTest (~> 4.3)
     ZenTest (4.12.1)
     actioncable (6.1.7.6)
@@ -256,9 +256,9 @@ GEM
       rubocop (>= 0.90.0)
     ruby-progressbar (1.13.0)
     ruby2_keywords (0.0.5)
-    ruby2js (5.1.0)
+    ruby2js (4.0.0)
       parser
-      regexp_parser (~> 2.1.1)
+      regexp_parser
     ruby2ruby (2.5.0)
       ruby_parser (~> 3.1)
       sexp_processor (~> 4.6)
