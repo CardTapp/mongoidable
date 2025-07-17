@@ -36,7 +36,7 @@ Gem::Specification.new do |spec|
   spec.add_dependency "method_source"
   spec.add_dependency "mongoid", ">= 7", "<= 9.0.6"
   spec.add_dependency "ParseTree"
-  spec.add_dependency "rails", "~> 6"
+  spec.add_dependency "rails", ">= 6"
   spec.add_dependency "ruby2js"
   spec.add_dependency "ruby2ruby"
   spec.add_dependency "ruby_parser"
