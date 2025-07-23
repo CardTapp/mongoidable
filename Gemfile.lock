@@ -10,7 +10,7 @@ PATH
       devise
       memoist
       method_source
-      mongoid (>= 7, <= 9.0.6)
+      mongoid (>= 7)
       rails (>= 6)
       ruby2js
       ruby2ruby
