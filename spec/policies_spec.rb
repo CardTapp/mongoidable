@@ -7,6 +7,7 @@ RSpec.describe "policies", :with_abilities do
   it "can store valid policy relations" do
     policy = Mongoidable::Policy.create(
         name:               "policy",
+        owner_type:         "user",
         requirements:       {
             some_id: "ObjectId"
         },
