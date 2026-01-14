@@ -8,6 +8,9 @@ git_source(:github) { |repo| "https://github.com/#{repo}.git" }
 # development dependencies will be added by default to the :development group.
 gemspec
 
+# Explicitly pin nokogiri to a Ruby 3.4-compatible release
+gem "nokogiri", "~> 1.16.5"
+
 # Declare any dependencies that are still in development here instead of in
 # your gemspec. These might include edge Rails or gems from your path or
 # Git. Remember to move these dependencies to your gemspec before releasing
@@ -15,3 +18,6 @@ gemspec
 
 # To use a debugger
 # gem 'byebug', group: [:development, :test]
+gem 'bigdecimal', '~> 3.1'
+gem 'mutex_m'
+gem 'drb'

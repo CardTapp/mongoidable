@@ -19,9 +19,9 @@ module Mongoidable
 
     validates :action, presence: true
     validate do |object|
-      errors[:subject] << "cannot be blank" if object.subject.nil?
-      errors[:parent] << "does not support model of type #{_parent.class.name}" unless valid_for_parent?
-      errors[:parent] << "ability must be embedded in another model" if _parent.blank?
+      errors.add(:subject, "cannot be blank") if object.subject.nil?
+      errors.add(:parent, "does not support model of type #{_parent.class.name}") unless valid_for_parent?
+      errors.add(:parent, "ability must be embedded in another model") if _parent.blank?
     end
     validates :base_behavior, presence: true
 
@@ -61,7 +61,7 @@ module Mongoidable
     def ==(other)
       other.action == action &&
         other.subject == subject &&
-        other.extra == extra
+        (other.extra || []) == (extra || [])
     end
 
     def merge_requirements(data)

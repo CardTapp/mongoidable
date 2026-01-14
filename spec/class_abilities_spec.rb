@@ -17,7 +17,7 @@ RSpec.describe "class_abilities", :with_abilities do
   end
 
   it "passes validation when klass is a Mongoid::Document" do
-    expect { User.inherits_abilities_from(:parent1) }.not_to raise_error(ArgumentError)
+    expect { User.inherits_abilities_from(:parent1) }.not_to raise_error
   end
 
   it "defines inherits_abilities_from on document models" do
