@@ -21,7 +21,6 @@ jobs:
     steps:
       - checkout
       - ruby/install-deps:
-          bundler-cache: true
       - run:
           name: Wait for MongoDB
           command: "timeout 90s bash -c 'until nc -z localhost 27017; do sleep 1; done'"
