@@ -92,6 +92,7 @@ GEM
     ast (2.4.2)
     base64 (0.3.0)
     bcrypt (3.1.21)
+    bigdecimal (3.3.1)
     bson (4.15.0)
     builder (3.2.4)
     cancancan (3.6.1)
@@ -294,6 +295,7 @@ PLATFORMS
   ruby
 
 DEPENDENCIES
+  bigdecimal (~> 3.1)
   database_cleaner-mongoid
   mongoidable!
   rspec-rails
@@ -307,4 +309,4 @@ DEPENDENCIES
   rubocop-thread_safety
 
 BUNDLED WITH
-   2.6.7
+   2.3.26
