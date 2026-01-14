@@ -40,6 +40,12 @@ jobs:
           command: dockerize -wait tcp://localhost:27017 -timeout 1m
       # Run rspec in parallel
       - ruby/rspec-test
+            # collect reports
+      - store_test_results:
+          path: /tmp/test-results
+      - store_artifacts:
+          path: /tmp/test-results
+          destination: test-results
 
 # We use workflows to orchestrate the jobs that we declared above.
 workflows:
