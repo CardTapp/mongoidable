@@ -29,7 +29,8 @@ module Mongoidable
       end
       after_find do
         renew_abilities(types: :all)
-        instance_abilities.each { |ability| ability.parentize(self) }
+        # instance_abilities will not be defined if an "only" clause is used in the query
+        instance_abilities.each { |ability| ability.parentize(self) } if attributes.key?("instance_abilities")
       end
 
       def renew_instance_abilities(_relation = nil)

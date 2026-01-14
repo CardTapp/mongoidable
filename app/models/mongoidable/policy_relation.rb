@@ -9,6 +9,9 @@ module Mongoidable
     field :requirements, type: Hash
     belongs_to :policy, class_name: Mongoidable.configuration.policy_class, polymorphic: true
 
+    before_validation :symbolize_requirements
+    before_save :symbolize_requirements
+
     def inherited_abilities
       merged_policy_requirements
     end
@@ -28,6 +31,18 @@ module Mongoidable
       end
 
       merged_policy_requirements
+    end
+
+    def requirements
+      value = super
+      value.respond_to?(:deep_symbolize_keys) ? value.deep_symbolize_keys : value
+    end
+
+    private
+
+    def symbolize_requirements
+      raw = read_attribute(:requirements)
+      self[:requirements] = raw.deep_symbolize_keys if raw.respond_to?(:deep_symbolize_keys)
     end
 
     memoize :inherited_abilities

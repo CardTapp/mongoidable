@@ -25,7 +25,10 @@ module Mongoidable
     end
 
     def source=(rule)
-      self[:source] = rule.rule_source.presence
+      source = rule.rule_source
+      source = source.deep_symbolize_keys if source.respond_to?(:deep_symbolize_keys)
+
+      self[:source] = source.presence
     end
 
     def fields=(rule)
