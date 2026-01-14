@@ -10,7 +10,7 @@ jobs:
        - image: cimg/ruby:3.4.4
          environment:
            PRONTO_GITHUB_ACCESS_TOKEN: testing
-       - image: cimg/mongodb:4.4
+       - image: mongo:3.6.7-jessie
 
     working_directory: ~/repo
 
