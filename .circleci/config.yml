@@ -3,12 +3,15 @@ version: 2.1 # Use 2.1 to enable using orbs and other features.
 # Declare the orbs that we'll use in our config.
 # read more about orbs: https://circleci.com/docs/2.0/using-orbs/
 orbs:
-  ruby: circleci/ruby@1.0
+  ruby: circleci/ruby@2.6
 
 jobs:
   build: # our first job, named "build"
     docker:
-      - image: cimg/ruby:2.7-node # use a tailored CircleCI docker image.
+      - image: cimg/ruby:3.4.4
+        environment:
+          PRONTO_GITHUB_ACCESS_TOKEN: testing
+
     steps:
       - checkout # pull down our git code.
       - ruby/install-deps # use the ruby orb to install dependencies
@@ -19,7 +22,7 @@ jobs:
     parallelism: 1
     # here we set TWO docker images.
     docker:
-      - image: cimg/ruby:2.7-node # this is our primary docker image, where step commands run.
+      - image: cimg/ruby:3.4.4 # this is our primary docker image, where step commands run.
       - image: circleci/mongo:4.0.12
     # environment variables specific to Ruby/Rails, applied to the primary container.
     environment:
