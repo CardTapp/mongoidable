@@ -20,6 +20,9 @@ jobs:
     executor: ruby_mongo
     steps:
       - checkout
+      - run:
+          name: Install bigdecimal (Ruby stdlib gem)
+          command: gem install bigdecimal -v "~>3.1" --no-document
       - ruby/install-deps
       - run:
           name: Wait for MongoDB
