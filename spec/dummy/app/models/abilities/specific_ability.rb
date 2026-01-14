@@ -2,8 +2,9 @@
 
 module Mongoidable
   class SpecificAbility < Mongoidable::Ability
-    def initialize(**args)
-      super base_behavior: true, action: :specific_ability, subject: :specific_subject, extra: []
+    def initialize(attributes = nil, options = nil)
+      defaults = { base_behavior: true, action: :specific_ability, subject: :specific_subject, extra: [] }
+      super(defaults.merge(attributes || {}))
     end
 
     after_destroy :raise_error
