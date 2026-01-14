@@ -13,7 +13,7 @@ executors:
           BUNDLE_RETRY: "3"
           BUNDLE_PATH: vendor/bundle
           RAILS_ENV: test
-      - image: cimg/mongodb:4.4
+      - image: circleci/mongo:4.4
 
 jobs:
   test:
