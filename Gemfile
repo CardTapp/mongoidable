@@ -9,7 +9,7 @@ git_source(:github) { |repo| "https://github.com/#{repo}.git" }
 gemspec
 
 # Explicitly pin nokogiri to a Ruby 3.4-compatible release
-gem "nokogiri", "~> 1.16.5"
+gem "nokogiri", "~> 1.19.1"
 
 # Declare any dependencies that are still in development here instead of in
 # your gemspec. These might include edge Rails or gems from your path or
